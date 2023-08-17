@@ -1,0 +1,8 @@
+.container {
+    -fx-background-color: rgba(0, 0, 0, 0.25);
+}
+
+.clickButton {
+    -fx-background-color: rgb(255, 255, 255);
+    -fx-text-fill: rgba(30, 2, 2, 0);
+}
