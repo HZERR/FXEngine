@@ -2,17 +2,18 @@ package ru.hzerr.fx.engine.core.language;
 
 import com.typesafe.config.Config;
 
-public class LanguagePack {
+public class LanguagePack implements ILanguagePack {
 
-    private BaseLanguageMetaData metaData;
+    private BaseLanguagePackMetaData metaData;
     private Config configuration;
 
-    protected LanguagePack(BaseLanguageMetaData metaData, Config configuration) {
+    protected LanguagePack(BaseLanguagePackMetaData metaData, Config configuration) {
         this.metaData = metaData;
         this.configuration = configuration;
     }
 
-    public BaseLanguageMetaData getMetaData() {
+    @Override
+    public BaseLanguagePackMetaData getMetaData() {
         return metaData;
     }
 
@@ -20,6 +21,7 @@ public class LanguagePack {
         this.configuration = configuration;
     }
 
+    @Override
     public Config getConfiguration() {
         return configuration;
     }

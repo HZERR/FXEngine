@@ -6,8 +6,6 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import ru.hzerr.file.HFile;
-import ru.hzerr.fx.engine.core.FXEngine;
 
 /**
  * Класс прдставлящий из себя конфигурацию приложения.
@@ -18,23 +16,23 @@ import ru.hzerr.fx.engine.core.FXEngine;
  * Конфигурация по-умолчанию должна быть загружена в контекст до того момента, как начнется загрузка данной конфигурации
  */
 @Component
-@Qualifier("application.configuration")
+@Qualifier("applicationConfiguration")
 public class ApplicationConfiguration implements IApplicationConfiguration {
 
     private Config applicationConfig;
     private IApplicationConfiguration baseConfiguration;
 
     @Autowired
-    public ApplicationConfiguration(@Qualifier("base.application.configuration") IApplicationConfiguration baseConfiguration, IStructureConfiguration configuration) {
+    public ApplicationConfiguration(@Qualifier("baseApplicationConfiguration") IApplicationConfiguration baseConfiguration, IStructureConfiguration configuration) {
         this.baseConfiguration = baseConfiguration;
         this.applicationConfig = ConfigFactory.parseFile(configuration.getApplicationConfigurationFile().asIOFile());
     }
 
     @Override
-    public @NotNull String getLanguageID() {
+    public @NotNull String getApplicationLanguageID() {
         if (applicationConfig.hasPath("language.name")) {
             return applicationConfig.getString("language.name");
         } else
-            return baseConfiguration.getLanguageID();
+            return baseConfiguration.getApplicationLanguageID();
     }
 }

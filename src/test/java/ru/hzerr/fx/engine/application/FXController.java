@@ -8,19 +8,16 @@ import ru.hzerr.fx.engine.core.FXEngine;
 import ru.hzerr.fx.engine.core.entity.Controller;
 import ru.hzerr.fx.engine.core.language.LanguagePack;
 import ru.hzerr.fx.engine.core.theme.Theme;
-import ru.hzerr.fx.engine.logging.factory.FXApplicationLogProvider;
 import ru.hzerr.fx.engine.logging.factory.ILogProvider;
 
-@FXEntity(fxml = "fxml/main.fxml", internationalization = "main.conf", theme = "main.css")
+@FXEntity(fxml = "fxml/main.fxml", internationalization = "main.json", theme = "main.css")
 public class FXController extends Controller {
-
     @FXML
     private Button click;
-
     @FXML
     private AnchorPane root;
 
-    private ILogProvider logProvider = FXEngine.getContext().getBeanByQualifier(FXApplicationLogProvider.class);
+    private ILogProvider logProvider = FXEngine.getContext().getApplicationLogProvider();
 
 
     @Override
@@ -36,7 +33,7 @@ public class FXController extends Controller {
 
     @Override
     protected void onChangeLanguage(LanguagePack languagePack) {
-        click.setText(languagePack.getConfiguration().getString("buttonclick"));
+        click.setText(languagePack.getConfiguration().getString("button.click"));
     }
 
     @Override

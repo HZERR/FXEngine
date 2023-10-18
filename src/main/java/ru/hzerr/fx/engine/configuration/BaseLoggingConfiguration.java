@@ -2,6 +2,8 @@ package ru.hzerr.fx.engine.configuration;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.PatternLayout;
+import ru.hzerr.fx.engine.core.language.BaseLanguagePackMetaData;
+import ru.hzerr.fx.engine.core.language.EngineLoggingLanguagePackMetaDataEn;
 import ru.hzerr.fx.engine.logging.encoder.ColoredPatternLayoutEncoder;
 
 import java.nio.charset.Charset;
@@ -20,19 +22,24 @@ public class BaseLoggingConfiguration implements ILoggingConfiguration {
     private Charset fileEncoding = StandardCharsets.UTF_8;
     private Charset consoleEncoding = StandardCharsets.UTF_8;
     private Level loggerLevel = Level.DEBUG;
+    private boolean internationalizationEnabled = false;
     private boolean enabled = true;
 
-    private boolean frameworkEnabled = true;
+    private boolean engineEnabled = true;
     private boolean consoleEnabled = true;
     private boolean fileLoggingEnabled = true;
 
+    private BaseLanguagePackMetaData applicationLoggingLanguageMetaData;
+    private BaseLanguagePackMetaData engineLoggingLanguageMetaData = new EngineLoggingLanguagePackMetaDataEn();
+    private String applicationLoggingFileName = "internationalization.json";
+
     @Override
-    public String getLogFileName() {
+    public String getNextLogFileName() {
         return logFileName;
     }
 
     @Override
-    public void setLogFileName(String logFileName) {
+    public void setNextLogFileName(String logFileName) {
         this.logFileName = logFileName;
     }
 
@@ -97,13 +104,40 @@ public class BaseLoggingConfiguration implements ILoggingConfiguration {
     }
 
     @Override
-    public boolean isFrameworkLoggingEnabled() {
-        return frameworkEnabled;
+    public BaseLanguagePackMetaData getApplicationLoggingLanguageMetaData() {
+        return applicationLoggingLanguageMetaData;
     }
 
     @Override
-    public void setFrameworkLoggingEnabled(boolean frameworkEnabled) {
-        this.frameworkEnabled = frameworkEnabled;
+    public BaseLanguagePackMetaData getEngineLoggingLanguageMetaData() {
+        return engineLoggingLanguageMetaData;
+    }
+
+    public void setEngineLoggingLanguageMetaData(BaseLanguagePackMetaData engineLoggingLanguageMetaData) {
+        this.engineLoggingLanguageMetaData = engineLoggingLanguageMetaData;
+    }
+
+    public void setApplicationLoggingLanguageMetaData(BaseLanguagePackMetaData applicationLoggingLanguageMetaData) {
+        this.applicationLoggingLanguageMetaData = applicationLoggingLanguageMetaData;
+    }
+
+    @Override
+    public String getApplicationLoggingLanguageFileName() {
+        return applicationLoggingFileName;
+    }
+
+    public void setApplicationLoggingLanguageFileName(String applicationLoggingFileName) {
+        this.applicationLoggingFileName = applicationLoggingFileName;
+    }
+
+    @Override
+    public boolean isEngineLoggingEnabled() {
+        return engineEnabled;
+    }
+
+    @Override
+    public void setEngineLoggingEnabled(boolean frameworkEnabled) {
+        this.engineEnabled = frameworkEnabled;
     }
 
     @Override
@@ -144,5 +178,13 @@ public class BaseLoggingConfiguration implements ILoggingConfiguration {
     @Override
     public void setConsolePatternLayout(PatternLayout consolePatternLayout) {
         this.consolePatternLayout = consolePatternLayout;
+    }
+
+    public boolean isInternationalizationEnabled() {
+        return internationalizationEnabled;
+    }
+
+    public void setInternationalizationEnabled(boolean internationalizationEnabled) {
+        this.internationalizationEnabled = internationalizationEnabled;
     }
 }

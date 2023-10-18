@@ -1,0 +1,14 @@
+{
+  "fxEngine": {
+    "applicationContext": {
+      "getBeanByQualifier": {
+        "started": "Search for bean '{}' by qualifier is performed",
+        "annotationWasNotFound": {
+          "continuationSearchInChildAnnotation": "The class '{}' does not have an annotation {} directly. Searches for 'child' annotations..."
+        },
+        "getByNameOrQualifier": "Getting the bean '{}' by name/qualifier '{}'",
+        "getByQualifier": "Getting the bean '{}' by qualifier '{}'"
+      }
+    }
+  }
+}

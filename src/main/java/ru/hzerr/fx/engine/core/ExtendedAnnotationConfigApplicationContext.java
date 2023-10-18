@@ -1,5 +1,6 @@
 package ru.hzerr.fx.engine.core;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
@@ -15,7 +16,7 @@ import org.springframework.context.*;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ScopeMetadataResolver;
 import org.springframework.core.ResolvableType;
-import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.annotation.*;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.ProtocolResolver;
 import org.springframework.core.io.Resource;
@@ -25,6 +26,9 @@ import org.springframework.core.metrics.ApplicationStartup;
 import ru.hzerr.fx.engine.configuration.IApplicationConfiguration;
 import ru.hzerr.fx.engine.configuration.IStructureApplicationConfiguration;
 import ru.hzerr.fx.engine.configuration.IStructureConfiguration;
+import ru.hzerr.fx.engine.configuration.StructureInitializer;
+import ru.hzerr.fx.engine.logging.ConfigurableException;
+import ru.hzerr.fx.engine.logging.factory.FXApplicationLogProvider;
 import ru.hzerr.fx.engine.logging.factory.FXEngineLogProvider;
 import ru.hzerr.fx.engine.logging.factory.ILogProvider;
 
@@ -35,20 +39,46 @@ import java.util.function.Supplier;
 
 public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfigApplicationContext {
 
+    private final ILogProvider engineLogProvider = BeanFactoryAnnotationUtils.qualifiedBeanOfType(getBeanFactory(), FXEngineLogProvider.class, "engineLogProvider");
+
     public ExtendedAnnotationConfigApplicationContext() {
         super();
+        prepareStructureConfiguration();
+        prepareLogProvider();
     }
 
     public ExtendedAnnotationConfigApplicationContext(DefaultListableBeanFactory beanFactory) {
         super(beanFactory);
+        prepareStructureConfiguration();
+        prepareLogProvider();
     }
 
     public ExtendedAnnotationConfigApplicationContext(Class<?>... componentClasses) {
         super(componentClasses);
+        prepareStructureConfiguration();
+        prepareLogProvider();
     }
 
     public ExtendedAnnotationConfigApplicationContext(String... basePackages) {
         super(basePackages);
+        prepareStructureConfiguration();
+        prepareLogProvider();
+    }
+
+    private void prepareStructureConfiguration() {
+        try {
+            getBean(StructureInitializer.class).initialize();
+        } catch (InitializationException e) {
+            throw new ApplicationContextInitializationException("Unable to create ApplicationContext. An error occurred while configuring the application structure", e);
+        }
+    }
+
+    private void prepareLogProvider() {
+        try {
+            engineLogProvider.configure();
+        } catch (ConfigurableException e) {
+            throw new ApplicationContextInitializationException("Unable to create ApplicationContext. A logger configuration error has occurred", e);
+        }
     }
 
     public IStructureConfiguration getStructureConfiguration() {
@@ -62,13 +92,16 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
     public ILogProvider getFXEngineLogProvider() {
         return getBeanByQualifier(FXEngineLogProvider.class);
     }
+    public ILogProvider getApplicationLogProvider() {
+        return getBeanByQualifier(FXApplicationLogProvider.class);
+    }
 
     public IApplicationConfiguration getApplicationConfiguration() {
-        return getBeanByQualifier("application.configuration", IApplicationConfiguration.class);
+        return getBeanByQualifier("applicationConfiguration", IApplicationConfiguration.class);
     }
 
     public IApplicationConfiguration getBaseApplicationConfiguration() {
-        return getBeanByQualifier("base.application.configuration", IApplicationConfiguration.class);
+        return getBeanByQualifier("baseApplicationConfiguration", IApplicationConfiguration.class);
     }
 
     @Override
@@ -442,14 +475,31 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
     }
 
     public <T> T getBeanByQualifier(Class<T> requiredType) throws BeansException {
+        engineLogProvider.getLogger().debug("fxEngine.applicationContext.getBeanByQualifier.started", requiredType.getSimpleName());
         Qualifier metaData = AnnotationUtils.findAnnotation(requiredType, Qualifier.class);
         if (metaData != null) {
-            return getBeanByQualifier(metaData.value(), requiredType);
+            if (StringUtils.isEmpty(metaData.value())) {
+                engineLogProvider.getLogger().debug("fxEngine.applicationContext.getBeanByQualifier.annotationWasNotFound.continuationSearchInChildAnnotation", requiredType.getSimpleName(), Qualifier.class.getSimpleName());
+                for (MergedAnnotation<Annotation> annotation : MergedAnnotations.from(requiredType)) {
+                    if (annotation.getType().isAnnotationPresent(Qualifier.class)) {
+                        String value = annotation.getString("value");
+                        if (StringUtils.isNotEmpty(value)) {
+                            engineLogProvider.getLogger().debug("fxEngine.applicationContext.getBeanByQualifier.getByNameOrQualifier", requiredType.getSimpleName(), value);
+                            return getBean(value, requiredType);
+                        }
+                    }
+                }
+
+                throw new IllegalArgumentException("Необходимая аннотация 'Qualifier' присутствует в классе " + requiredType.getSimpleName() + ". " +
+                        "Однако она имеет пустое значение и движок не может найти 'Child' аннотацию по отношению к Qualifier аннотации");
+            } else
+                return getBeanByQualifier(metaData.value(), requiredType);
         } else
-            throw new IllegalArgumentException("Required annotation 'Qualifier' is not present");
+            throw new IllegalArgumentException("Необходимая аннотация 'Qualifier' отсутствует в классе " + requiredType.getSimpleName());
     }
 
     public <T> T getBeanByQualifier(String qualifier, Class<T> requiredType) throws BeansException {
+        engineLogProvider.getLogger().debug("fxEngine.applicationContext.getBeanByQualifier.getByQualifier", requiredType.getSimpleName(), qualifier);
         return BeanFactoryAnnotationUtils.qualifiedBeanOfType(getBeanFactory(), requiredType, qualifier);
     }
 

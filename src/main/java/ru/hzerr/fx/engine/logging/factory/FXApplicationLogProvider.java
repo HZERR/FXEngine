@@ -1,7 +1,6 @@
 package ru.hzerr.fx.engine.logging.factory;
 
 import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.PatternLayout;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
@@ -10,25 +9,30 @@ import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.encoder.LayoutWrappingEncoder;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import ru.hzerr.file.BaseFile;
 import ru.hzerr.file.SizeType;
 import ru.hzerr.fx.engine.annotation.LogProvider;
 import ru.hzerr.fx.engine.configuration.ILoggingConfiguration;
+import ru.hzerr.fx.engine.configuration.IStructureApplicationConfiguration;
 import ru.hzerr.fx.engine.configuration.IStructureConfiguration;
+import ru.hzerr.fx.engine.core.language.LanguagePack;
+import ru.hzerr.fx.engine.core.language.LanguagePackLoader;
+import ru.hzerr.fx.engine.core.language.MergedLanguagePack;
+import ru.hzerr.fx.engine.core.path.*;
 import ru.hzerr.fx.engine.logging.ConfigurableException;
 import ru.hzerr.fx.engine.logging.FactoryCloseableException;
 import ru.hzerr.fx.engine.logging.policy.CancelRollingPolicy;
 
 import java.io.IOException;
 
-@LogProvider
-@Qualifier("application.log.provider")
+@LogProvider("application.log.provider")
 public class FXApplicationLogProvider implements ILogProvider {
 
     private ILoggingConfiguration applicationLoggingConfiguration;
+    private IStructureApplicationConfiguration structureApplicationConfiguration;
 
     private final BaseFile sessionLogFile;
     private final LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
@@ -39,14 +43,17 @@ public class FXApplicationLogProvider implements ILogProvider {
     private final PatternLayoutEncoder fileEncoder = new PatternLayoutEncoder();
     private final RollingFileAppender<ILoggingEvent> fileAppender = new RollingFileAppender<>();
 
-    private final Logger log;
+    private Logger log;
 
     @Autowired
-    public FXApplicationLogProvider(@NotNull ILoggingConfiguration applicationLoggingConfiguration, @NotNull IStructureConfiguration structureConfiguration) {
+    public FXApplicationLogProvider(@NotNull ILoggingConfiguration applicationLoggingConfiguration,
+                                    @NotNull IStructureConfiguration structureConfiguration,
+                                    @NotNull IStructureApplicationConfiguration structureApplicationConfiguration) {
+
         this.applicationLoggingConfiguration = applicationLoggingConfiguration;
-        sessionLogFile = structureConfiguration.getLoggingDirectory().getSubFile(applicationLoggingConfiguration.getLogFileName());
+        this.structureApplicationConfiguration = structureApplicationConfiguration;
+        sessionLogFile = structureConfiguration.getLoggingDirectory().getSubFile(applicationLoggingConfiguration.getNextLogFileName());
         consolePatternLayout = applicationLoggingConfiguration.getConsolePatternLayout();
-        log = lc.getLogger(applicationLoggingConfiguration.getLoggerName());
     }
 
     @Override
@@ -72,6 +79,7 @@ public class FXApplicationLogProvider implements ILogProvider {
 
     @Override
     public void configure() throws ConfigurableException {
+        ch.qos.logback.classic.Logger logbackLogger = lc.getLogger(applicationLoggingConfiguration.getLoggerName());
         if (applicationLoggingConfiguration.isEnabled()) {
             if (applicationLoggingConfiguration.isConsoleLoggingEnabled()) {
                 consolePatternLayout.setContext(lc);
@@ -85,7 +93,7 @@ public class FXApplicationLogProvider implements ILogProvider {
                 consoleAppender.setEncoder(consoleEncoder);
                 consoleAppender.start();
 
-                log.addAppender(consoleAppender);
+                logbackLogger.addAppender(consoleAppender);
             }
 
             if (applicationLoggingConfiguration.isFileLoggingEnabled()) {
@@ -93,7 +101,7 @@ public class FXApplicationLogProvider implements ILogProvider {
                     try {
                         sessionLogFile.create();
                     } catch (IOException io) {
-                        throw new ConfigurableException("Невозможно создать файл журнала текущей сессии", io);
+                        throw new ConfigurableException("Unable to create a log file for the current session", io);
                     }
                 }
 
@@ -114,15 +122,63 @@ public class FXApplicationLogProvider implements ILogProvider {
                 fileAppender.setRollingPolicy(filePolicy);
                 fileAppender.start();
 
-                log.addAppender(fileAppender);
+                logbackLogger.addAppender(fileAppender);
             }
 
-            log.setLevel(applicationLoggingConfiguration.getLoggerLevel());
+            logbackLogger.setLevel(applicationLoggingConfiguration.getLoggerLevel());
         } else
-            log.setLevel(Level.OFF);
+            logbackLogger.setLevel(Level.OFF);
 
-        log.setAdditive(false);
+        logbackLogger.setAdditive(false);
         Runtime.getRuntime().addShutdownHook(new Thread(this::safelyClose));
+        // initialize target logger
+        if (applicationLoggingConfiguration.isInternationalizationEnabled()) {
+            log = new ru.hzerr.fx.engine.logging.Logger(logbackLogger, new MergedLanguagePack(
+                    getLoadedEngineLanguagePack(),
+                    getLoadedApplicationLanguagePack()
+            ));
+        } else
+            log = logbackLogger;
+    }
+
+    private LanguagePack getLoadedEngineLanguagePack() {
+        LanguagePackLoader loader = new LanguagePackLoader(
+                applicationLoggingConfiguration.getEngineLoggingLanguageMetaData(),
+                applicationLoggingConfiguration.getEngineLoggingLanguageMetaData().getILocation().getLocation()
+        );
+
+        return loader.load();
+    }
+
+    private LanguagePack getLoadedApplicationLanguagePack() {
+        String applicationLanguagePackageLocation = LocationTools.resolve(
+                ResolvableLocation.of(
+                        structureApplicationConfiguration.getApplicationLoggingInternationalizationPackage(),
+                        NullSafeResolveLocationOptions.THROW_EXCEPTION
+                ),
+                ResolvableLocation.of(
+                        applicationLoggingConfiguration.getApplicationLoggingLanguageMetaData().getILocation(),
+                        NullSafeResolveLocationOptions.INSERT_EVERYWHERE
+                ),
+                SeparatorResolveLocationOptions.INSERT_EVERYWHERE,
+                Separator.SLASH_SEPARATOR
+        );
+
+        String applicationLanguagePackLocation = LocationTools.resolve(
+                ResolvableLocation.of(
+                        applicationLanguagePackageLocation,
+                        NullSafeResolveLocationOptions.THROW_EXCEPTION
+                ),
+                ResolvableLocation.of(
+                        applicationLoggingConfiguration.getApplicationLoggingLanguageFileName(),
+                        NullSafeResolveLocationOptions.THROW_EXCEPTION
+                ),
+                SeparatorResolveLocationOptions.INSERT_START,
+                Separator.SLASH_SEPARATOR
+        );
+
+        LanguagePackLoader loader = new LanguagePackLoader(applicationLoggingConfiguration.getApplicationLoggingLanguageMetaData(), applicationLanguagePackLocation);
+        return loader.load();
     }
 
     private void safelyClose() {

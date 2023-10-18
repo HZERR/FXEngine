@@ -8,7 +8,6 @@ import ru.hzerr.fx.engine.core.entity.EntityLoader.ControllerLoadData;
 import ru.hzerr.fx.engine.core.ExtendedAnnotationConfigApplicationContext;
 import ru.hzerr.fx.engine.core.FXEngine;
 import ru.hzerr.fx.engine.core.entity.Entity;
-import ru.hzerr.fx.engine.core.language.BaseLanguageMetaData;
 
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
@@ -30,6 +29,7 @@ public class FXEngineTest extends FXEngine {
         CompletableFuture<Entity<FXController, Parent>> mainFuture = EntityLoader.load("main", ControllerLoadData.from(FXController.class), Parent.class);
 
         Entity<FXController, Parent> mainEntity = mainFuture.join();
+        context.getApplicationLogProvider().getLogger().info("Entity '{}' has been successfully loaded", mainEntity.getController().getMetaData().fxml());
         Scene scene = new Scene(mainEntity.getNode());
         return scene;
     }

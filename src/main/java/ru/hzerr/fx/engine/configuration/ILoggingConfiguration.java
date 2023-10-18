@@ -2,14 +2,15 @@ package ru.hzerr.fx.engine.configuration;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.PatternLayout;
+import ru.hzerr.fx.engine.core.language.BaseLanguagePackMetaData;
 
 import java.nio.charset.Charset;
 
 public interface ILoggingConfiguration {
 
-    String getLogFileName();
+    String getNextLogFileName();
 
-    void setLogFileName(String logFileName);
+    void setNextLogFileName(String logFileName);
 
     String getLoggerConsolePattern();
 
@@ -39,9 +40,19 @@ public interface ILoggingConfiguration {
 
     void setLoggerLevel(Level loggerLevel);
 
-    boolean isFrameworkLoggingEnabled();
 
-    void setFrameworkLoggingEnabled(boolean enabled);
+    BaseLanguagePackMetaData getApplicationLoggingLanguageMetaData();
+    BaseLanguagePackMetaData getEngineLoggingLanguageMetaData();
+
+    /**
+     * Пример: internationalization.json
+     * @return имя файла, в котором хранится информация об отладке приложения на конкретном языке
+     */
+    String getApplicationLoggingLanguageFileName();
+
+    boolean isEngineLoggingEnabled();
+
+    void setEngineLoggingEnabled(boolean enabled);
 
     boolean isEnabled();
 
@@ -54,4 +65,7 @@ public interface ILoggingConfiguration {
     boolean isFileLoggingEnabled();
 
     void setEnabledFileLogging(boolean fileLoggingEnabled);
+
+    boolean isInternationalizationEnabled();
+    void setInternationalizationEnabled(boolean internationalizationEnabled);
 }

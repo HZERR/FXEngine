@@ -1,8 +1,9 @@
 package ru.hzerr.fx.engine.logging.factory;
 
 import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
+
 import ch.qos.logback.classic.LoggerContext;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -16,12 +17,11 @@ public class FXEngineLogProvider implements ILogProvider {
     @Autowired
     @Qualifier("application.log.provider")
     private ILogProvider applicationLogProvider;
-
-    private Logger nopLogger = ((LoggerContext) LoggerFactory.getILoggerFactory()).getLogger("NOPLogger");
+    private ch.qos.logback.classic.Logger nopLogger = ((LoggerContext) LoggerFactory.getILoggerFactory()).getLogger("NOPLogger");
 
     @Override
     public Logger getLogger() {
-        if (applicationLogProvider.getConfiguration().isFrameworkLoggingEnabled()) {
+        if (applicationLogProvider.getConfiguration().isEngineLoggingEnabled()) {
             return applicationLogProvider.getLogger();
         } else
             return nopLogger;

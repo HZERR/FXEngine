@@ -1,20 +1,40 @@
 package ru.hzerr.fx.engine.core.entity;
 
-import org.springframework.beans.factory.annotation.BeanFactoryAnnotationUtils;
 import ru.hzerr.fx.engine.annotation.FXEntity;
-import ru.hzerr.fx.engine.configuration.IApplicationConfiguration;
 import ru.hzerr.fx.engine.core.FXEngine;
-import ru.hzerr.fx.engine.core.language.BaseLanguageMetaData;
+import ru.hzerr.fx.engine.core.language.BaseLanguagePackMetaData;
 import ru.hzerr.fx.engine.core.language.LanguagePack;
 import ru.hzerr.fx.engine.core.language.LanguagePackLoader;
+import ru.hzerr.fx.engine.core.path.*;
 import ru.hzerr.fx.engine.core.theme.Theme;
 
 public abstract class Controller {
 
     public void initialize() {
         onInit();
-        BaseLanguageMetaData currentLanguageMetaData = getCurrentLanguageMetaData();
-        onChangeLanguage(new LanguagePackLoader(currentLanguageMetaData, getControllerMetaData().internationalization()).load());
+        BaseLanguagePackMetaData currentLanguageMetaData = getCurrentLanguageMetaData();
+        String currentLanguagePackageLocation = LocationTools.resolve(
+                ResolvableLocation.of(
+                    FXEngine.getContext().getStructureApplicationConfiguration().getApplicationInternationalizationPackage(),
+                    NullSafeResolveLocationOptions.THROW_EXCEPTION
+                ),
+                ResolvableLocation.of(
+                    currentLanguageMetaData.getILocation(),
+                    NullSafeResolveLocationOptions.INSERT_EVERYWHERE
+                ),
+                SeparatorResolveLocationOptions.INSERT_END,
+                Separator.SLASH_SEPARATOR
+        );
+
+        String currentLanguagePackLocation = LocationTools.resolve(
+                ResolvableLocation.of(currentLanguagePackageLocation, NullSafeResolveLocationOptions.THROW_EXCEPTION),
+                ResolvableLocation.of(getMetaData().internationalization(), NullSafeResolveLocationOptions.THROW_EXCEPTION),
+                SeparatorResolveLocationOptions.DEFAULT,
+                Separator.SLASH_SEPARATOR
+        );
+
+        LanguagePackLoader languagePackLoader = new LanguagePackLoader(currentLanguageMetaData, currentLanguagePackLocation);
+        onChangeLanguage(languagePackLoader.load());
     }
 
     protected abstract void onInit();
@@ -23,12 +43,12 @@ public abstract class Controller {
     protected abstract void onChangeLanguage(LanguagePack languagePack);
     protected abstract void onChangeUI(Theme theme);
 
-    private BaseLanguageMetaData getCurrentLanguageMetaData() {
-        String languageId = FXEngine.getContext().getApplicationConfiguration().getLanguageID();
-        return FXEngine.getContext().getBeanByQualifier(languageId, BaseLanguageMetaData.class);
+    private BaseLanguagePackMetaData getCurrentLanguageMetaData() {
+        String languageId = FXEngine.getContext().getApplicationConfiguration().getApplicationLanguageID();
+        return FXEngine.getContext().getBeanByQualifier(languageId, BaseLanguagePackMetaData.class);
     }
 
-    private FXEntity getControllerMetaData() {
+    public FXEntity getMetaData() {
         return this.getClass().getAnnotation(FXEntity.class);
     }
 }

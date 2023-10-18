@@ -9,7 +9,7 @@ public class BaseApplicationConfig implements IApplicationConfiguration {
 
     @NotNull
     @Override
-    public String getLanguageID() {
-        return "language.meta.data.ru";
+    public String getApplicationLanguageID() {
+        return "language.meta.data.en";
     }
 }

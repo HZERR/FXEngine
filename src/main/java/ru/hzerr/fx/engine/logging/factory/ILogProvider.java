@@ -1,6 +1,6 @@
 package ru.hzerr.fx.engine.logging.factory;
 
-import ch.qos.logback.classic.Logger;
+import org.slf4j.Logger;
 
 import java.io.Closeable;
 

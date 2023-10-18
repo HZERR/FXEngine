@@ -1,0 +1,16 @@
+{
+  "fxEngine": {
+    "applicationContext": {
+      "getBeanByQualifier": {
+        "started": "Выполняется поиск бина '{}' по квалификатору",
+        "annotationWasNotFound": {
+          "continuationSearchInChildAnnotation": "У класса '{}' отстутствует аннотация {} напрямую. Выполняется поиск дочерних аннотаций..."
+        },
+        "getByNameOrQualifier": "Получение бина '{}' по имени/квалификатору '{}'",
+        "getByQualifier": "Получение бина '{}' по квалификатору '{}'",
+        "qualifierValueIsEmptyException": "Необходимая аннотация 'Qualifier' присутствует в классе '{}'. Однако она имеет пустое значение и движок не может найти 'Child' аннотацию по отношению к Qualifier аннотации",
+        "qualifierAnnotationNotFoundException": ""
+      }
+    }
+  }
+}

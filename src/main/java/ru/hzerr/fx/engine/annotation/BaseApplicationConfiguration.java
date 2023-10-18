@@ -7,7 +7,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Component
-@Qualifier("base.application.configuration")
+@Qualifier("baseApplicationConfiguration")
 @Retention(RetentionPolicy.RUNTIME)
 public @interface BaseApplicationConfiguration {
 }

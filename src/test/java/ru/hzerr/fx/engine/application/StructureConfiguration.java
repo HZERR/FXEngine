@@ -3,7 +3,6 @@ package ru.hzerr.fx.engine.application;
 import ru.hzerr.file.BaseDirectory;
 import ru.hzerr.file.BaseFile;
 import ru.hzerr.file.HDirectory;
-import ru.hzerr.file.HFile;
 import ru.hzerr.fx.engine.configuration.IStructureConfiguration;
 import ru.hzerr.fx.engine.annotation.FXConfiguration;
 import ru.hzerr.util.SystemInfo;
@@ -32,6 +31,6 @@ public class StructureConfiguration implements IStructureConfiguration {
 
     @Override
     public BaseFile getApplicationConfigurationFile() {
-        return getConfigurationDirectory().getSubFile("application.conf");
+        return getConfigurationDirectory().getSubFile("application.json");
     }
 }

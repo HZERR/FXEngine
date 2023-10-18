@@ -7,8 +7,7 @@ import ru.hzerr.fx.engine.core.InitializationException;
 
 import java.io.IOException;
 
-
-@FXInitializer(value = "structure.initializer")
+@FXInitializer("structureInitializer")
 public class StructureInitializer implements Initializer {
 
     private IStructureConfiguration configuration;
@@ -23,22 +22,22 @@ public class StructureInitializer implements Initializer {
         try {
             configuration.getApplicationDirectory().create();
         } catch (IOException e) {
-            throw new InitializationException(String.format("Невозможно создать директорию по пути '%s'", configuration.getApplicationDirectory().getLocation()), e);
+            throw new InitializationException(String.format("It is not possible to create a directory on the path '%s'", configuration.getApplicationDirectory().getLocation()), e);
         }
         try {
             configuration.getLoggingDirectory().create();
         } catch (IOException e) {
-            throw new InitializationException(String.format("Невозможно создать директорию по пути '%s'", configuration.getLoggingDirectory().getLocation()), e);
+            throw new InitializationException(String.format("It is not possible to create a directory on the path '%s'", configuration.getLoggingDirectory().getLocation()), e);
         }
         try {
             configuration.getConfigurationDirectory().create();
         } catch (IOException e) {
-            throw new InitializationException(String.format("Невозможно создать директорию по пути '%s'", configuration.getConfigurationDirectory().getLocation()), e);
+            throw new InitializationException(String.format("It is not possible to create a directory on the path '%s'", configuration.getConfigurationDirectory().getLocation()), e);
         }
         try {
             configuration.getApplicationConfigurationFile().create();
         } catch (IOException e) {
-            throw new InitializationException(String.format("Невозможно создать Файл по пути '%s'", configuration.getApplicationConfigurationFile().getLocation()), e);
+            throw new InitializationException(String.format("It is not possible to create a file on the path '%s'", configuration.getApplicationConfigurationFile().getLocation()), e);
         }
     }
 }
