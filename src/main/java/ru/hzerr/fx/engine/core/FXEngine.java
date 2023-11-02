@@ -10,12 +10,6 @@ import ru.hzerr.fx.engine.core.entity.EntityLoader;
 
 import java.io.IOException;
 
-// TODO 1) Додумать и дописать логику сохранения entity, чтобы потом можно было менять у всех сразу язык, тему и тп
-// TODO 2) ОПРЕДЕЛИТЬ, КАКИМ ОБРАЗОМ БУДЕТ ЗАКРЫВАТЬСЯ КОНТРОЛЛЕР
-// TODO 3) ВЫДЕЛИТЬ ПУТЬ ДО FXML В КОНТРОЛЛЕРЕ. FXMLLOADER-Е НУЖНО СКОМБИНИРОВАТЬ ПУТЬ С ПУТЕМ ApplicationStructureConfiguration
-// TODO 4) Куда девать ClassLoader-ы, stage, scene, версионнирование, название приложения и тп
-// TODO 5) ПРОТЕСТИРОВАТЬ. ДОБАВИТЬ ВСЕ ПРОВЕРКИ. В ТЕСТОВОМ ВАРИАНТЕ ТУПО ВРЕМЕННО УБИРАТЬ ФАЙЛЫ, ЗАПУСКАТЬ И ЧЕКАТЬ. УДАЛИТЬ ВСЮ СТРУКТУРУ(ФАЙЛОВУЮ ВНЕШНЮЮ) ЕСЛИ НЕОБХОДИМО
-// TODO 6) CombineLanguagePack НУЖНО ПРИВЕСТИ ВСЕ ДАННЫЕ К ОДНОЙ МЕТАДАТЕ. ПРИНЦИП - ОДИН ЭКЗЕМПЛЯР МЕТАДАННЫХ - НЕСКОЛЬКО КОНФИГУРАЦИЙ(НЕСКОЛЬКО LANGUAGE PACKS). РАЗРЕШИТЬ ЭТУ ПРОБЛЕМУ ПРИ ЗАГРУЗКЕ FXApplicationLogProvider. ИЗМЕНЕНИЯ В USER META DATA НЕ ДОЛЖНЫ КАСАТЬСЯ ENGINE META DATA. ПРИ ЭТОМ ОНИ МОГУТ БЫТЬ РАВНЫ
 public abstract class FXEngine extends Application {
 
     protected static ExtendedAnnotationConfigApplicationContext context;
