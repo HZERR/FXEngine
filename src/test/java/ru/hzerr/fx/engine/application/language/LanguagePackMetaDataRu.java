@@ -1,16 +1,14 @@
 package ru.hzerr.fx.engine.application.language;
 
 import com.typesafe.config.ConfigSyntax;
-import ru.hzerr.fx.engine.annotation.LanguagePackMetaData;
-import ru.hzerr.fx.engine.core.language.BaseLanguagePackMetaData;
+import ru.hzerr.fx.engine.annotation.Registered;
+import ru.hzerr.fx.engine.core.language.ApplicationLanguagePackMetaData;
 import ru.hzerr.fx.engine.core.path.BaseLocation;
 
-import java.util.Locale;
-
-@LanguagePackMetaData("language.meta.data.ru")
-public class LanguagePackMetaDataRu extends BaseLanguagePackMetaData {
+@Registered
+public class LanguagePackMetaDataRu extends ApplicationLanguagePackMetaData {
 
     protected LanguagePackMetaDataRu() {
-        super(new Locale("ru", "RU"), new BaseLocation("ru-RU"), ConfigSyntax.JSON);
+        super(LOCALE_RU, new BaseLocation("ru-RU"), ConfigSyntax.JSON);
     }
 }

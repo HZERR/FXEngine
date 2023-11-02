@@ -7,6 +7,8 @@ import java.util.Locale;
 
 public abstract class BaseLanguagePackMetaData {
 
+    protected static final Locale LOCALE_RU = new Locale("ru", "RU");
+
     private final Locale locale;
     private final ILocation location;
     private final ConfigSyntax syntax;

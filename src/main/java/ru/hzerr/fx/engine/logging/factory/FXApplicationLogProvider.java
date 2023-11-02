@@ -11,28 +11,29 @@ import ch.qos.logback.core.rolling.RollingFileAppender;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import ru.hzerr.file.BaseFile;
 import ru.hzerr.file.SizeType;
-import ru.hzerr.fx.engine.annotation.LogProvider;
+import ru.hzerr.fx.engine.annotation.Include;
+import ru.hzerr.fx.engine.annotation.RegisteredAs;
 import ru.hzerr.fx.engine.configuration.ILoggingConfiguration;
-import ru.hzerr.fx.engine.configuration.IStructureApplicationConfiguration;
+import ru.hzerr.fx.engine.configuration.IResourceStructureConfiguration;
 import ru.hzerr.fx.engine.configuration.IStructureConfiguration;
-import ru.hzerr.fx.engine.core.language.LanguagePack;
-import ru.hzerr.fx.engine.core.language.LanguagePackLoader;
-import ru.hzerr.fx.engine.core.language.MergedLanguagePack;
+import ru.hzerr.fx.engine.core.language.Configurable;
+import ru.hzerr.fx.engine.core.language.*;
 import ru.hzerr.fx.engine.core.path.*;
 import ru.hzerr.fx.engine.logging.ConfigurableException;
 import ru.hzerr.fx.engine.logging.FactoryCloseableException;
+import ru.hzerr.fx.engine.logging.InternationalizationLogger;
 import ru.hzerr.fx.engine.logging.policy.CancelRollingPolicy;
 
 import java.io.IOException;
 
-@LogProvider("application.log.provider")
+@RegisteredAs("applicationLogProvider")
 public class FXApplicationLogProvider implements ILogProvider {
 
     private ILoggingConfiguration applicationLoggingConfiguration;
-    private IStructureApplicationConfiguration structureApplicationConfiguration;
+    private IResourceStructureConfiguration structureApplicationConfiguration;
+    private Configurable internationalizationConfiguration;
 
     private final BaseFile sessionLogFile;
     private final LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
@@ -45,14 +46,16 @@ public class FXApplicationLogProvider implements ILogProvider {
 
     private Logger log;
 
-    @Autowired
+    @Include
     public FXApplicationLogProvider(@NotNull ILoggingConfiguration applicationLoggingConfiguration,
                                     @NotNull IStructureConfiguration structureConfiguration,
-                                    @NotNull IStructureApplicationConfiguration structureApplicationConfiguration) {
+                                    @NotNull IResourceStructureConfiguration structureApplicationConfiguration,
+                                    @NotNull Configurable internationalizationConfiguration) {
 
         this.applicationLoggingConfiguration = applicationLoggingConfiguration;
         this.structureApplicationConfiguration = structureApplicationConfiguration;
-        sessionLogFile = structureConfiguration.getLoggingDirectory().getSubFile(applicationLoggingConfiguration.getNextLogFileName());
+        this.internationalizationConfiguration = internationalizationConfiguration;
+        sessionLogFile = structureConfiguration.getLoggingDirectory().getSubFile(applicationLoggingConfiguration.getLogFileName());
         consolePatternLayout = applicationLoggingConfiguration.getConsolePatternLayout();
     }
 
@@ -130,15 +133,18 @@ public class FXApplicationLogProvider implements ILogProvider {
             logbackLogger.setLevel(Level.OFF);
 
         logbackLogger.setAdditive(false);
-        Runtime.getRuntime().addShutdownHook(new Thread(this::safelyClose));
+
         // initialize target logger
         if (applicationLoggingConfiguration.isInternationalizationEnabled()) {
-            log = new ru.hzerr.fx.engine.logging.Logger(logbackLogger, new MergedLanguagePack(
+            IMergedLanguagePack loggingLanguagePack = new MergedLanguagePack(
                     getLoadedEngineLanguagePack(),
                     getLoadedApplicationLanguagePack()
-            ));
+            );
+            log = new InternationalizationLogger(logbackLogger, loggingLanguagePack);
         } else
             log = logbackLogger;
+
+        Runtime.getRuntime().addShutdownHook(new Thread(this::safelyClose));
     }
 
     private LanguagePack getLoadedEngineLanguagePack() {

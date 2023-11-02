@@ -1,13 +1,13 @@
 package ru.hzerr.fx.engine.configuration;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.hzerr.fx.engine.annotation.FXInitializer;
-import ru.hzerr.fx.engine.core.Initializer;
+import ru.hzerr.fx.engine.annotation.RegisteredAs;
 import ru.hzerr.fx.engine.core.InitializationException;
+import ru.hzerr.fx.engine.interfaces.Initializer;
 
 import java.io.IOException;
 
-@FXInitializer("structureInitializer")
+@RegisteredAs("structureInitializer")
 public class StructureInitializer implements Initializer {
 
     private IStructureConfiguration configuration;

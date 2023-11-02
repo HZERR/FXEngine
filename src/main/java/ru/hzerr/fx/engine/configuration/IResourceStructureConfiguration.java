@@ -4,7 +4,7 @@ import ru.hzerr.fx.engine.core.path.ILocation;
 
 import javax.annotation.Nullable;
 
-public interface IStructureApplicationConfiguration {
+public interface IResourceStructureConfiguration {
 
     @Nullable ILocation getFXMLPackage();
     @Nullable ILocation getThemePackage();

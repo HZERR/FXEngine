@@ -2,189 +2,166 @@ package ru.hzerr.fx.engine.configuration;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.PatternLayout;
+import org.apache.commons.configuration2.PropertiesConfiguration;
+import ru.hzerr.fx.engine.annotation.Include;
+import ru.hzerr.fx.engine.annotation.MetaData;
+import ru.hzerr.fx.engine.annotation.Registered;
+import ru.hzerr.fx.engine.configuration.hardcode.IReadOnlyLoggingConfiguration;
 import ru.hzerr.fx.engine.core.language.BaseLanguagePackMetaData;
-import ru.hzerr.fx.engine.core.language.EngineLoggingLanguagePackMetaDataEn;
-import ru.hzerr.fx.engine.logging.encoder.ColoredPatternLayoutEncoder;
 
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.Locale;
 
+@Registered
 public class BaseLoggingConfiguration implements ILoggingConfiguration {
 
-    private static final String FORMATTED_TIME = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss").format(Calendar.getInstance().getTime());
-    private PatternLayout consolePatternLayout = new ColoredPatternLayoutEncoder();
-    private String logFileName = "fx-" + FORMATTED_TIME + ".log";
-    private String consolePattern = "%classname([%thread]) | %time(" + FORMATTED_TIME + ") | %author(Created By HZERR) | - %classname(%class{0}:) %highlight(%msg) %n";
-    private String filePattern = "[%thread] %-5level | " + FORMATTED_TIME + " | - %class{0}: %msg %n";
-    private String loggerName = "FXEngine";
-    private Charset fileEncoding = StandardCharsets.UTF_8;
-    private Charset consoleEncoding = StandardCharsets.UTF_8;
-    private Level loggerLevel = Level.DEBUG;
-    private boolean internationalizationEnabled = false;
-    private boolean enabled = true;
+    protected static final Locale LOCALE_RU = new Locale("ru", "RU");
 
-    private boolean engineEnabled = true;
-    private boolean consoleEnabled = true;
-    private boolean fileLoggingEnabled = true;
+    private final PropertiesConfiguration configuration;
+    private final IReadOnlyLoggingConfiguration readOnlyLoggingConfiguration;
+    private final ILoggingConfigurationNamingStrategy namingStrategy = new LoggingConfigurationNamingStrategy();
 
-    private BaseLanguagePackMetaData applicationLoggingLanguageMetaData;
-    private BaseLanguagePackMetaData engineLoggingLanguageMetaData = new EngineLoggingLanguagePackMetaDataEn();
-    private String applicationLoggingFileName = "internationalization.json";
-
-    @Override
-    public String getNextLogFileName() {
-        return logFileName;
+    @Include
+    public BaseLoggingConfiguration(@MetaData("applicationFileBasedConfiguration") PropertiesConfiguration configuration, IReadOnlyLoggingConfiguration readOnlyLoggingConfiguration) {
+        this.readOnlyLoggingConfiguration = readOnlyLoggingConfiguration;
+        this.configuration = configuration;
     }
 
     @Override
-    public void setNextLogFileName(String logFileName) {
-        this.logFileName = logFileName;
+    public String getLogFileName() {
+        return configuration.getString(namingStrategy.fileName(), readOnlyLoggingConfiguration.getLogFileName());
+    }
+
+    @Override
+    public void setLogFileName(String logFileName) {
+         configuration.setProperty(namingStrategy.fileName(), logFileName);
     }
 
     @Override
     public String getLoggerConsolePattern() {
-        return consolePattern;
+        return configuration.getString(namingStrategy.consolePattern(), readOnlyLoggingConfiguration.getLoggerConsolePattern());
     }
 
     @Override
     public void setLoggerConsolePattern(String consolePattern) {
-        this.consolePattern = consolePattern;
+        configuration.setProperty(namingStrategy.consolePattern(), consolePattern);
     }
 
     @Override
     public String getLoggerFilePattern() {
-        return filePattern;
+        return configuration.getString(namingStrategy.filePattern(), readOnlyLoggingConfiguration.getLoggerFilePattern());
     }
 
     @Override
     public void setLoggerFilePattern(String filePattern) {
-        this.filePattern = filePattern;
+        configuration.setProperty(namingStrategy.filePattern(), filePattern);
     }
 
     @Override
     public String getLoggerName() {
-        return loggerName;
+        return configuration.getString(namingStrategy.loggerName(), readOnlyLoggingConfiguration.getLoggerName());
     }
 
     @Override
     public void setLoggerName(String loggerName) {
-        this.loggerName = loggerName;
+        configuration.setProperty(namingStrategy.loggerName(), loggerName);
     }
 
     @Override
     public Charset getFileEncoding() {
-        return fileEncoding;
+        return configuration.get(Charset.class, namingStrategy.fileEncoding(), readOnlyLoggingConfiguration.getFileEncoding());
     }
 
     @Override
     public void setFileEncoding(Charset fileEncoding) {
-        this.fileEncoding = fileEncoding;
+        configuration.setProperty(namingStrategy.fileEncoding(), fileEncoding);
     }
 
     @Override
     public Charset getConsoleEncoding() {
-        return consoleEncoding;
+        return configuration.get(Charset.class, namingStrategy.consoleEncoding(), readOnlyLoggingConfiguration.getConsoleEncoding());
     }
 
     @Override
     public void setConsoleEncoding(Charset consoleEncoding) {
-        this.consoleEncoding = consoleEncoding;
+        configuration.setProperty(namingStrategy.consoleEncoding(), consoleEncoding);
     }
 
     @Override
     public Level getLoggerLevel() {
-        return loggerLevel;
+        return configuration.get(Level.class, namingStrategy.loggerLevel(), readOnlyLoggingConfiguration.getLoggerLevel());
     }
 
     @Override
     public void setLoggerLevel(Level loggerLevel) {
-        this.loggerLevel = loggerLevel;
-    }
-
-    @Override
-    public BaseLanguagePackMetaData getApplicationLoggingLanguageMetaData() {
-        return applicationLoggingLanguageMetaData;
-    }
-
-    @Override
-    public BaseLanguagePackMetaData getEngineLoggingLanguageMetaData() {
-        return engineLoggingLanguageMetaData;
-    }
-
-    public void setEngineLoggingLanguageMetaData(BaseLanguagePackMetaData engineLoggingLanguageMetaData) {
-        this.engineLoggingLanguageMetaData = engineLoggingLanguageMetaData;
-    }
-
-    public void setApplicationLoggingLanguageMetaData(BaseLanguagePackMetaData applicationLoggingLanguageMetaData) {
-        this.applicationLoggingLanguageMetaData = applicationLoggingLanguageMetaData;
-    }
-
-    @Override
-    public String getApplicationLoggingLanguageFileName() {
-        return applicationLoggingFileName;
-    }
-
-    public void setApplicationLoggingLanguageFileName(String applicationLoggingFileName) {
-        this.applicationLoggingFileName = applicationLoggingFileName;
+        configuration.setProperty(namingStrategy.loggerLevel(), loggerLevel);
     }
 
     @Override
     public boolean isEngineLoggingEnabled() {
-        return engineEnabled;
+        return configuration.getBoolean(namingStrategy.engineLoggingEnabled(), readOnlyLoggingConfiguration.isEngineLoggingEnabled());
     }
 
     @Override
-    public void setEngineLoggingEnabled(boolean frameworkEnabled) {
-        this.engineEnabled = frameworkEnabled;
+    public void setEngineLoggingEnabled(boolean engineLoggingEnabled) {
+        configuration.setProperty(namingStrategy.engineLoggingEnabled(), engineLoggingEnabled);
     }
 
     @Override
     public boolean isEnabled() {
-        return enabled;
+        return configuration.getBoolean(namingStrategy.loggingEnabled(), readOnlyLoggingConfiguration.isEnabled());
     }
 
     @Override
     public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+        configuration.setProperty(namingStrategy.loggingEnabled(), enabled);
     }
 
     @Override
     public boolean isConsoleLoggingEnabled() {
-        return consoleEnabled;
+        return configuration.getBoolean(namingStrategy.consoleLoggingEnabled(), readOnlyLoggingConfiguration.isConsoleLoggingEnabled());
     }
 
     @Override
-    public void setEnabledConsole(boolean consoleEnabled) {
-        this.consoleEnabled = consoleEnabled;
+    public void setConsoleLoggingEnabled(boolean consoleLoggingEnabled) {
+        configuration.setProperty(namingStrategy.consoleLoggingEnabled(), consoleLoggingEnabled);
     }
 
     @Override
     public boolean isFileLoggingEnabled() {
-        return fileLoggingEnabled;
+        return configuration.getBoolean(namingStrategy.fileLoggingEnabled(), readOnlyLoggingConfiguration.isFileLoggingEnabled());
     }
 
     @Override
-    public void setEnabledFileLogging(boolean fileLoggingEnabled) {
-        this.fileLoggingEnabled = fileLoggingEnabled;
+    public void setFileLoggingEnabled(boolean fileLoggingEnabled) {
+        configuration.setProperty(namingStrategy.fileLoggingEnabled(), fileLoggingEnabled);
     }
 
     @Override
     public PatternLayout getConsolePatternLayout() {
-        return consolePatternLayout;
+        return configuration.get(PatternLayout.class, namingStrategy.consolePatternLayout(), readOnlyLoggingConfiguration.getConsolePatternLayout());
     }
 
     @Override
     public void setConsolePatternLayout(PatternLayout consolePatternLayout) {
-        this.consolePatternLayout = consolePatternLayout;
+        configuration.setProperty(namingStrategy.consolePatternLayout(), consolePatternLayout);
     }
 
     public boolean isInternationalizationEnabled() {
-        return internationalizationEnabled;
+        return configuration.getBoolean(namingStrategy.internationalizationEnabled(), readOnlyLoggingConfiguration.isInternationalizationEnabled());
     }
 
     public void setInternationalizationEnabled(boolean internationalizationEnabled) {
-        this.internationalizationEnabled = internationalizationEnabled;
+        configuration.setProperty(namingStrategy.internationalizationEnabled(), internationalizationEnabled);
+    }
+
+    @Override
+    public Locale getApplicationLocale() {
+        return LOCALE_RU;
+    }
+
+    @Override
+    public Locale getEngineLocale() {
+        return Locale.ENGLISH;
     }
 }

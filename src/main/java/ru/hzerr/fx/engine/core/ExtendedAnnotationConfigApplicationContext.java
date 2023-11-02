@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.*;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.*;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ScopeMetadataResolver;
@@ -23,10 +24,12 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.core.metrics.ApplicationStartup;
-import ru.hzerr.fx.engine.configuration.IApplicationConfiguration;
-import ru.hzerr.fx.engine.configuration.IStructureApplicationConfiguration;
-import ru.hzerr.fx.engine.configuration.IStructureConfiguration;
-import ru.hzerr.fx.engine.configuration.StructureInitializer;
+import ru.hzerr.fx.engine.configuration.*;
+import ru.hzerr.fx.engine.core.language.IMergedLanguagePack;
+import ru.hzerr.fx.engine.core.language.LanguagePack;
+import ru.hzerr.fx.engine.core.language.LanguagePackLoader;
+import ru.hzerr.fx.engine.core.language.MergedLanguagePack;
+import ru.hzerr.fx.engine.core.path.*;
 import ru.hzerr.fx.engine.logging.ConfigurableException;
 import ru.hzerr.fx.engine.logging.factory.FXApplicationLogProvider;
 import ru.hzerr.fx.engine.logging.factory.FXEngineLogProvider;
@@ -44,24 +47,28 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
     public ExtendedAnnotationConfigApplicationContext() {
         super();
         prepareStructureConfiguration();
+        prepareLoggingInternationalization();
         prepareLogProvider();
     }
 
     public ExtendedAnnotationConfigApplicationContext(DefaultListableBeanFactory beanFactory) {
         super(beanFactory);
         prepareStructureConfiguration();
+        prepareLoggingInternationalization();
         prepareLogProvider();
     }
 
     public ExtendedAnnotationConfigApplicationContext(Class<?>... componentClasses) {
         super(componentClasses);
         prepareStructureConfiguration();
+        prepareLoggingInternationalization();
         prepareLogProvider();
     }
 
     public ExtendedAnnotationConfigApplicationContext(String... basePackages) {
         super(basePackages);
         prepareStructureConfiguration();
+        prepareLoggingInternationalization();
         prepareLogProvider();
     }
 
@@ -71,6 +78,19 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
         } catch (InitializationException e) {
             throw new ApplicationContextInitializationException("Unable to create ApplicationContext. An error occurred while configuring the application structure", e);
         }
+    }
+
+    private void prepareLoggingInternationalization() {
+        IMergedLanguagePack loggingLanguagePack = new MergedLanguagePack(
+                getLoadedEngineLoggingLanguagePack(),
+                getLoadedApplicationLoggingLanguagePack()
+        );
+
+        GenericBeanDefinition loggingLanguagePackBeanDefinition = new GenericBeanDefinition();
+        loggingLanguagePackBeanDefinition.setSource(loggingLanguagePack);
+        registerBeanDefinition("dw", loggingLanguagePackBeanDefinition);
+
+//        getAutowireCapableBeanFactory().initializeBean(loggingLanguagePack, "loggingLanguagePack");
     }
 
     private void prepareLogProvider() {
@@ -85,8 +105,8 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
         return getBean(IStructureConfiguration.class);
     }
 
-    public IStructureApplicationConfiguration getStructureApplicationConfiguration() {
-        return getBean(IStructureApplicationConfiguration.class);
+    public IResourceStructureConfiguration getStructureApplicationConfiguration() {
+        return getBean(IResourceStructureConfiguration.class);
     }
 
     public ILogProvider getFXEngineLogProvider() {
@@ -96,12 +116,54 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
         return getBeanByQualifier(FXApplicationLogProvider.class);
     }
 
-    public IApplicationConfiguration getApplicationConfiguration() {
-        return getBeanByQualifier("applicationConfiguration", IApplicationConfiguration.class);
+    public ISoftwareConfiguration getApplicationConfiguration() {
+        return getBeanByQualifier("softwareConfiguration", ISoftwareConfiguration.class);
     }
 
-    public IApplicationConfiguration getBaseApplicationConfiguration() {
-        return getBeanByQualifier("baseApplicationConfiguration", IApplicationConfiguration.class);
+    public ILoggingInternationalizationConfiguration getLoggingInternationalizationConfiguration() {
+        return getBean(ILoggingInternationalizationConfiguration.class);
+    }
+
+    private LanguagePack getLoadedEngineLoggingLanguagePack() {
+        ILoggingConfiguration applicationLoggingConfiguration = getBean(ILoggingConfiguration.class);
+        LanguagePackLoader loader = new LanguagePackLoader(
+                applicationLoggingConfiguration.getEngineLoggingLanguageMetaData(),
+                applicationLoggingConfiguration.getEngineLoggingLanguageMetaData().getILocation().getLocation()
+        );
+
+        return loader.load();
+    }
+
+    private LanguagePack getLoadedApplicationLoggingLanguagePack() {
+        ILoggingConfiguration applicationLoggingConfiguration = getBean(ILoggingConfiguration.class);
+        String applicationLanguagePackageLocation = LocationTools.resolve(
+                ResolvableLocation.of(
+                        getBean(IResourceStructureConfiguration.class).getApplicationLoggingInternationalizationPackage(),
+                        NullSafeResolveLocationOptions.THROW_EXCEPTION
+                ),
+                ResolvableLocation.of(
+                        applicationLoggingConfiguration.getApplicationLoggingLanguageMetaData().getILocation(),
+                        NullSafeResolveLocationOptions.INSERT_EVERYWHERE
+                ),
+                SeparatorResolveLocationOptions.INSERT_EVERYWHERE,
+                Separator.SLASH_SEPARATOR
+        );
+
+        String applicationLanguagePackLocation = LocationTools.resolve(
+                ResolvableLocation.of(
+                        applicationLanguagePackageLocation,
+                        NullSafeResolveLocationOptions.THROW_EXCEPTION
+                ),
+                ResolvableLocation.of(
+                        applicationLoggingConfiguration.getApplicationLoggingLanguageFileName(),
+                        NullSafeResolveLocationOptions.THROW_EXCEPTION
+                ),
+                SeparatorResolveLocationOptions.INSERT_START,
+                Separator.SLASH_SEPARATOR
+        );
+
+        LanguagePackLoader loader = new LanguagePackLoader(applicationLoggingConfiguration.getApplicationLoggingLanguageMetaData(), applicationLanguagePackLocation);
+        return loader.load();
     }
 
     @Override

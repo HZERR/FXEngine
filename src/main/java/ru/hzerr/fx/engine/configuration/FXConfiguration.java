@@ -9,7 +9,6 @@ public class FXConfiguration {
     }
 
     private Stage stage;
-
     private Scene scene;
     private ClassLoader classLoader = ClassLoader.getSystemClassLoader();
     private ClassLoader resourceLoader = ClassLoader.getSystemClassLoader();

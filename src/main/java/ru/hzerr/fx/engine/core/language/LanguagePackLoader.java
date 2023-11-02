@@ -5,9 +5,8 @@ import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigParseOptions;
 import ru.hzerr.fx.engine.configuration.FXConfiguration;
 import ru.hzerr.fx.engine.core.FXEngine;
-import ru.hzerr.fx.engine.core.Loader;
+import ru.hzerr.fx.engine.interfaces.Loader;
 import ru.hzerr.fx.engine.core.path.ILocation;
-import ru.hzerr.fx.engine.core.path.ResourceLocation;
 
 public class LanguagePackLoader implements Loader<LanguagePack> {
 

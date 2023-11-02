@@ -1,12 +1,12 @@
 package ru.hzerr.fx.engine.application;
 
 import org.jetbrains.annotations.Nullable;
-import ru.hzerr.fx.engine.annotation.StructureApplicationConfiguration;
-import ru.hzerr.fx.engine.configuration.IStructureApplicationConfiguration;
+import ru.hzerr.fx.engine.annotation.Registered;
+import ru.hzerr.fx.engine.configuration.IResourceStructureConfiguration;
 import ru.hzerr.fx.engine.core.path.BaseLocation;
 
-@StructureApplicationConfiguration
-public class StructureApplicationConfig implements IStructureApplicationConfiguration {
+@Registered
+public class ResourceStructureConfiguration implements IResourceStructureConfiguration {
 
     @Override
     public BaseLocation getFXMLPackage() {

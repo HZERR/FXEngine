@@ -1,16 +1,13 @@
 package ru.hzerr.fx.engine.application;
 
-import ru.hzerr.fx.engine.annotation.LogConfiguration;
-import ru.hzerr.fx.engine.application.language.logging.LoggingLanguagePackMetaDataEn;
-import ru.hzerr.fx.engine.configuration.BaseLoggingConfiguration;
+import ru.hzerr.fx.engine.annotation.Registered;
+import ru.hzerr.fx.engine.configuration.hardcode.ReadOnlyLoggingConfiguration;
 
-@LogConfiguration
-public class LoggingConfiguration extends BaseLoggingConfiguration {
+@Registered
+public class LoggingConfiguration extends ReadOnlyLoggingConfiguration {
 
-    public LoggingConfiguration() {
-        setInternationalizationEnabled(true);
-        setEngineLoggingEnabled(true);
-        setApplicationLoggingLanguageMetaData(new LoggingLanguagePackMetaDataEn());
-        setApplicationLoggingLanguageFileName("main.json");
+    @Override
+    public boolean isInternationalizationEnabled() {
+        return true;
     }
 }

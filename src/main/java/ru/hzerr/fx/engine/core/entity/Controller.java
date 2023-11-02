@@ -44,7 +44,7 @@ public abstract class Controller {
     protected abstract void onChangeUI(Theme theme);
 
     private BaseLanguagePackMetaData getCurrentLanguageMetaData() {
-        String languageId = FXEngine.getContext().getApplicationConfiguration().getApplicationLanguageID();
+        String languageId = FXEngine.getContext().getApplicationConfiguration().getApplicationInternationalizationCountry();
         return FXEngine.getContext().getBeanByQualifier(languageId, BaseLanguagePackMetaData.class);
     }
 
