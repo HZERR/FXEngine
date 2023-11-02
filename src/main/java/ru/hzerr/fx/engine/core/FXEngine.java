@@ -4,8 +4,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import ru.hzerr.fx.engine.configuration.FXConfiguration;
-import ru.hzerr.fx.engine.configuration.IStructureConfiguration;
-import ru.hzerr.fx.engine.configuration.StructureInitializer;
+import ru.hzerr.fx.engine.configuration.interfaces.IStructureConfiguration;
 import ru.hzerr.fx.engine.core.entity.EntityLoader;
 
 import java.io.IOException;
@@ -28,7 +27,7 @@ public abstract class FXEngine extends Application {
         context = createApplicationContext();
         context.registerBean(FXConfiguration.class);
         context.getFXEngineLogProvider().getLogger().debug("Logger has been successfully configured");
-        context.getFXEngineLogProvider().getLogger().debug("Selected logging directory: {}", getContext().getBean(IStructureConfiguration.class).getLoggingDirectory().getLocation());
+        context.getFXEngineLogProvider().getLogger().debug("Selected logging directory: {}", getContext().getBean(IStructureConfiguration.class).getLogDirectory().getLocation());
         onInit();
         context.getFXEngineLogProvider().getLogger().info("FXEngine has been successfully initialized");
     }

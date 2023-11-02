@@ -1,4 +1,6 @@
-package ru.hzerr.fx.engine.configuration;
+package ru.hzerr.fx.engine.configuration.logging.naming.strategy;
+
+import ru.hzerr.fx.engine.configuration.interfaces.ILoggingConfigurationNamingStrategy;
 
 public class LoggingConfigurationNamingStrategy implements ILoggingConfigurationNamingStrategy {
 
@@ -65,5 +67,10 @@ public class LoggingConfigurationNamingStrategy implements ILoggingConfiguration
     @Override
     public String internationalizationEnabled() {
         return "logging.internationalization.enabled";
+    }
+
+    @Override
+    public String applicationLoggingInternationalizationFileName() {
+        return "logging.internationalization.file.name";
     }
 }

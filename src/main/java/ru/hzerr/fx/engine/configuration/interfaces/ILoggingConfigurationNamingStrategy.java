@@ -1,4 +1,4 @@
-package ru.hzerr.fx.engine.configuration;
+package ru.hzerr.fx.engine.configuration.interfaces;
 
 public interface ILoggingConfigurationNamingStrategy {
 
@@ -15,4 +15,5 @@ public interface ILoggingConfigurationNamingStrategy {
     String fileLoggingEnabled();
     String consolePatternLayout();
     String internationalizationEnabled();
+    String applicationLoggingInternationalizationFileName();
 }

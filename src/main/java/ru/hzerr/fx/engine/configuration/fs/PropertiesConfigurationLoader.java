@@ -1,4 +1,4 @@
-package ru.hzerr.fx.engine.configuration;
+package ru.hzerr.fx.engine.configuration.fs;
 
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
@@ -8,6 +8,7 @@ import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.springframework.context.annotation.Bean;
 import ru.hzerr.fx.engine.annotation.Include;
 import ru.hzerr.fx.engine.annotation.Registered;
+import ru.hzerr.fx.engine.configuration.interfaces.IStructureConfiguration;
 import ru.hzerr.fx.engine.interfaces.LoadException;
 import ru.hzerr.fx.engine.interfaces.Loader;
 
@@ -21,12 +22,12 @@ public class PropertiesConfigurationLoader implements Loader<PropertiesConfigura
     public PropertiesConfigurationLoader(IStructureConfiguration configuration) {
         builder = new FileBasedConfigurationBuilder<>(PropertiesConfiguration.class)
                 .configure(new Parameters().properties()
-                        .setFile(configuration.getApplicationConfigurationFile().asIOFile())
+                        .setFile(configuration.getSoftwareConfigurationFile().asIOFile())
                         .setThrowExceptionOnMissing(true)
                         .setListDelimiterHandler(new DefaultListDelimiterHandler(';'))
                         .setIncludesAllowed(true));
 
-        this.location = configuration.getApplicationConfigurationFile().getLocation();
+        this.location = configuration.getSoftwareConfigurationFile().getLocation();
     }
 
     @Bean("applicationFileBasedConfiguration")

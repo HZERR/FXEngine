@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.hzerr.fx.engine.annotation.IncludeAs;
 import ru.hzerr.fx.engine.annotation.RegisteredAs;
-import ru.hzerr.fx.engine.configuration.ILoggingConfiguration;
+import ru.hzerr.fx.engine.configuration.interfaces.ILoggingConfiguration;
 import ru.hzerr.fx.engine.logging.ConfigurableException;
 
 @RegisteredAs("engineLogProvider")

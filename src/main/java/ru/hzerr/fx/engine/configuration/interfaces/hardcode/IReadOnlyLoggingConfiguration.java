@@ -1,4 +1,4 @@
-package ru.hzerr.fx.engine.configuration.hardcode;
+package ru.hzerr.fx.engine.configuration.interfaces.hardcode;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.PatternLayout;
@@ -20,4 +20,9 @@ public interface IReadOnlyLoggingConfiguration {
     boolean isConsoleLoggingEnabled();
     boolean isFileLoggingEnabled();
     boolean isInternationalizationEnabled();
+    /**
+     * Пример: internationalization.json
+     * @return имя файла, в котором хранится информация об отладке приложения на конкретном языке
+     */
+    String getApplicationLoggingLanguageFileName();
 }

@@ -2,7 +2,7 @@ package ru.hzerr.fx.engine.application;
 
 import org.jetbrains.annotations.Nullable;
 import ru.hzerr.fx.engine.annotation.Registered;
-import ru.hzerr.fx.engine.configuration.IResourceStructureConfiguration;
+import ru.hzerr.fx.engine.configuration.interfaces.IResourceStructureConfiguration;
 import ru.hzerr.fx.engine.core.path.BaseLocation;
 
 @Registered

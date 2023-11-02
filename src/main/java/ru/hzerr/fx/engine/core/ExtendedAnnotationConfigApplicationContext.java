@@ -12,23 +12,23 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.*;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.*;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ScopeMetadataResolver;
 import org.springframework.core.ResolvableType;
-import org.springframework.core.annotation.*;
+import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.ProtocolResolver;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.core.metrics.ApplicationStartup;
-import ru.hzerr.fx.engine.configuration.*;
-import ru.hzerr.fx.engine.core.language.IMergedLanguagePack;
-import ru.hzerr.fx.engine.core.language.LanguagePack;
-import ru.hzerr.fx.engine.core.language.LanguagePackLoader;
-import ru.hzerr.fx.engine.core.language.MergedLanguagePack;
+import ru.hzerr.fx.engine.configuration.StructureInitializer;
+import ru.hzerr.fx.engine.configuration.interfaces.*;
+import ru.hzerr.fx.engine.configuration.interfaces.hardcode.IReadOnlyLoggingLanguageConfiguration;
+import ru.hzerr.fx.engine.core.language.*;
 import ru.hzerr.fx.engine.core.path.*;
 import ru.hzerr.fx.engine.logging.ConfigurableException;
 import ru.hzerr.fx.engine.logging.factory.FXApplicationLogProvider;
@@ -81,16 +81,12 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
     }
 
     private void prepareLoggingInternationalization() {
-        IMergedLanguagePack loggingLanguagePack = new MergedLanguagePack(
-                getLoadedEngineLoggingLanguagePack(),
-                getLoadedApplicationLoggingLanguagePack()
-        );
-
-        GenericBeanDefinition loggingLanguagePackBeanDefinition = new GenericBeanDefinition();
-        loggingLanguagePackBeanDefinition.setSource(loggingLanguagePack);
-        registerBeanDefinition("dw", loggingLanguagePackBeanDefinition);
-
-//        getAutowireCapableBeanFactory().initializeBean(loggingLanguagePack, "loggingLanguagePack");
+        try {
+            prepareEngineLoggingLanguagePack();
+            prepareApplicationLoggingLanguagePack();
+        } catch (ApplicationLoggingLanguageMetaDataNotFoundException | EngineLoggingLanguageMetaDataNotFoundException e) {
+            throw new ApplicationContextInitializationException("Unable to create ApplicationContext. An error occurred while configuring the internationalization of the application", e);
+        }
     }
 
     private void prepareLogProvider() {
@@ -120,21 +116,20 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
         return getBeanByQualifier("softwareConfiguration", ISoftwareConfiguration.class);
     }
 
-    public ILoggingInternationalizationConfiguration getLoggingInternationalizationConfiguration() {
-        return getBean(ILoggingInternationalizationConfiguration.class);
+    public IReadOnlyLoggingLanguageConfiguration getLoggingInternationalizationConfiguration() {
+        return getBean(ILoggingLanguageConfiguration.class).getReadOnlyConfiguration();
     }
 
-    private LanguagePack getLoadedEngineLoggingLanguagePack() {
-        ILoggingConfiguration applicationLoggingConfiguration = getBean(ILoggingConfiguration.class);
-        LanguagePackLoader loader = new LanguagePackLoader(
-                applicationLoggingConfiguration.getEngineLoggingLanguageMetaData(),
-                applicationLoggingConfiguration.getEngineLoggingLanguageMetaData().getILocation().getLocation()
-        );
+    private void prepareEngineLoggingLanguagePack() throws EngineLoggingLanguageMetaDataNotFoundException {
+        LanguagePack engineLanguagePack = new LanguagePackLoader(
+                getEngineLoggingLanguageMetaData(),
+                getEngineLoggingLanguageMetaData().getILocation().getLocation()
+        ).load();
 
-        return loader.load();
+        getBean(ILoggingLanguageConfiguration.class).setEngineLanguagePack(engineLanguagePack);
     }
 
-    private LanguagePack getLoadedApplicationLoggingLanguagePack() {
+    private void prepareApplicationLoggingLanguagePack() throws ApplicationLoggingLanguageMetaDataNotFoundException {
         ILoggingConfiguration applicationLoggingConfiguration = getBean(ILoggingConfiguration.class);
         String applicationLanguagePackageLocation = LocationTools.resolve(
                 ResolvableLocation.of(
@@ -142,7 +137,7 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
                         NullSafeResolveLocationOptions.THROW_EXCEPTION
                 ),
                 ResolvableLocation.of(
-                        applicationLoggingConfiguration.getApplicationLoggingLanguageMetaData().getILocation(),
+                        getApplicationLoggingLanguageMetaData().getILocation(),
                         NullSafeResolveLocationOptions.INSERT_EVERYWHERE
                 ),
                 SeparatorResolveLocationOptions.INSERT_EVERYWHERE,
@@ -162,8 +157,42 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
                 Separator.SLASH_SEPARATOR
         );
 
-        LanguagePackLoader loader = new LanguagePackLoader(applicationLoggingConfiguration.getApplicationLoggingLanguageMetaData(), applicationLanguagePackLocation);
-        return loader.load();
+        LanguagePack engineLanguagePack = new LanguagePackLoader(
+                getApplicationLoggingLanguageMetaData(),
+                applicationLanguagePackLocation
+        ).load();
+
+        getBean(ILoggingLanguageConfiguration.class).setEngineLanguagePack(engineLanguagePack);
+    }
+
+    private EngineLoggingLanguagePackMetaData getEngineLoggingLanguageMetaData() throws EngineLoggingLanguageMetaDataNotFoundException {
+        if (containsBean("engineLoggingLanguageMetaData"))
+            return getBean("engineLoggingLanguageMetaData", EngineLoggingLanguagePackMetaData.class);
+
+        ILoggingConfiguration configuration = getBean(ILoggingConfiguration.class);
+        for(EngineLoggingLanguagePackMetaData metaData: getBeansOfType(EngineLoggingLanguagePackMetaData.class).values()) {
+            if (metaData.getLocale().equals(configuration.getEngineLocale())) {
+                registerBean("engineLoggingLanguageMetaData", EngineLoggingLanguagePackMetaData.class, () -> metaData);
+                return metaData;
+            }
+        }
+
+        throw new EngineLoggingLanguageMetaDataNotFoundException("The metadata of the language pack of the engine with the locale \"" + configuration.getEngineLocale().toString() + "\" was not found");
+    }
+
+    private LoggingLanguagePackMetaData getApplicationLoggingLanguageMetaData() throws ApplicationLoggingLanguageMetaDataNotFoundException {
+        if (containsBean("applicationLoggingLanguageMetaData"))
+            return getBean("applicationLoggingLanguageMetaData", LoggingLanguagePackMetaData.class);
+
+        ILoggingConfiguration configuration = getBean(ILoggingConfiguration.class);
+        for(LoggingLanguagePackMetaData metaData: getBeansOfType(LoggingLanguagePackMetaData.class).values()) {
+            if (metaData.getLocale().equals(configuration.getEngineLocale())) {
+                registerBean("applicationLoggingLanguageMetaData", LoggingLanguagePackMetaData.class, () -> metaData);
+                return metaData;
+            }
+        }
+
+        throw new ApplicationLoggingLanguageMetaDataNotFoundException("The metadata of the language pack for debugging the application with the language locale \"" + configuration.getEngineLocale().toString() + "\" was not found");
     }
 
     @Override

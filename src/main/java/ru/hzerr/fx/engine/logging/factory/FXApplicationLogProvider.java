@@ -15,12 +15,11 @@ import ru.hzerr.file.BaseFile;
 import ru.hzerr.file.SizeType;
 import ru.hzerr.fx.engine.annotation.Include;
 import ru.hzerr.fx.engine.annotation.RegisteredAs;
-import ru.hzerr.fx.engine.configuration.ILoggingConfiguration;
-import ru.hzerr.fx.engine.configuration.IResourceStructureConfiguration;
-import ru.hzerr.fx.engine.configuration.IStructureConfiguration;
-import ru.hzerr.fx.engine.core.language.Configurable;
-import ru.hzerr.fx.engine.core.language.*;
-import ru.hzerr.fx.engine.core.path.*;
+import ru.hzerr.fx.engine.configuration.interfaces.ILoggingConfiguration;
+import ru.hzerr.fx.engine.configuration.interfaces.IResourceStructureConfiguration;
+import ru.hzerr.fx.engine.configuration.interfaces.IStructureConfiguration;
+import ru.hzerr.fx.engine.core.language.IMergedLanguagePack;
+import ru.hzerr.fx.engine.core.language.MergedLanguagePack;
 import ru.hzerr.fx.engine.logging.ConfigurableException;
 import ru.hzerr.fx.engine.logging.FactoryCloseableException;
 import ru.hzerr.fx.engine.logging.InternationalizationLogger;
@@ -55,7 +54,7 @@ public class FXApplicationLogProvider implements ILogProvider {
         this.applicationLoggingConfiguration = applicationLoggingConfiguration;
         this.structureApplicationConfiguration = structureApplicationConfiguration;
         this.internationalizationConfiguration = internationalizationConfiguration;
-        sessionLogFile = structureConfiguration.getLoggingDirectory().getSubFile(applicationLoggingConfiguration.getLogFileName());
+        sessionLogFile = structureConfiguration.getLogDirectory().getSubFile(applicationLoggingConfiguration.getLogFileName());
         consolePatternLayout = applicationLoggingConfiguration.getConsolePatternLayout();
     }
 
@@ -145,46 +144,6 @@ public class FXApplicationLogProvider implements ILogProvider {
             log = logbackLogger;
 
         Runtime.getRuntime().addShutdownHook(new Thread(this::safelyClose));
-    }
-
-    private LanguagePack getLoadedEngineLanguagePack() {
-        LanguagePackLoader loader = new LanguagePackLoader(
-                applicationLoggingConfiguration.getEngineLoggingLanguageMetaData(),
-                applicationLoggingConfiguration.getEngineLoggingLanguageMetaData().getILocation().getLocation()
-        );
-
-        return loader.load();
-    }
-
-    private LanguagePack getLoadedApplicationLanguagePack() {
-        String applicationLanguagePackageLocation = LocationTools.resolve(
-                ResolvableLocation.of(
-                        structureApplicationConfiguration.getApplicationLoggingInternationalizationPackage(),
-                        NullSafeResolveLocationOptions.THROW_EXCEPTION
-                ),
-                ResolvableLocation.of(
-                        applicationLoggingConfiguration.getApplicationLoggingLanguageMetaData().getILocation(),
-                        NullSafeResolveLocationOptions.INSERT_EVERYWHERE
-                ),
-                SeparatorResolveLocationOptions.INSERT_EVERYWHERE,
-                Separator.SLASH_SEPARATOR
-        );
-
-        String applicationLanguagePackLocation = LocationTools.resolve(
-                ResolvableLocation.of(
-                        applicationLanguagePackageLocation,
-                        NullSafeResolveLocationOptions.THROW_EXCEPTION
-                ),
-                ResolvableLocation.of(
-                        applicationLoggingConfiguration.getApplicationLoggingLanguageFileName(),
-                        NullSafeResolveLocationOptions.THROW_EXCEPTION
-                ),
-                SeparatorResolveLocationOptions.INSERT_START,
-                Separator.SLASH_SEPARATOR
-        );
-
-        LanguagePackLoader loader = new LanguagePackLoader(applicationLoggingConfiguration.getApplicationLoggingLanguageMetaData(), applicationLanguagePackLocation);
-        return loader.load();
     }
 
     private void safelyClose() {
