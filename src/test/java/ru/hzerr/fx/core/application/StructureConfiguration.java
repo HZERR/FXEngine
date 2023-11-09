@@ -1,4 +1,4 @@
-package ru.hzerr.fx.engine.application;
+package ru.hzerr.fx.core.application;
 
 import ru.hzerr.file.BaseDirectory;
 import ru.hzerr.file.BaseFile;

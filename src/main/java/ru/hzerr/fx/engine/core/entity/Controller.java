@@ -2,6 +2,7 @@ package ru.hzerr.fx.engine.core.entity;
 
 import ru.hzerr.fx.engine.annotation.FXEntity;
 import ru.hzerr.fx.engine.core.FXEngine;
+import ru.hzerr.fx.engine.core.language.ApplicationLanguagePackMetaData;
 import ru.hzerr.fx.engine.core.language.BaseLanguagePackMetaData;
 import ru.hzerr.fx.engine.core.language.LanguagePack;
 import ru.hzerr.fx.engine.core.language.LanguagePackLoader;
@@ -12,7 +13,7 @@ public abstract class Controller {
 
     public void initialize() {
         onInit();
-        BaseLanguagePackMetaData currentLanguageMetaData = getCurrentLanguageMetaData();
+        BaseLanguagePackMetaData currentLanguageMetaData = getApplicationLanguageMetaData();
         String currentLanguagePackageLocation = LocationTools.resolve(
                 ResolvableLocation.of(
                     FXEngine.getContext().getStructureApplicationConfiguration().getApplicationInternationalizationPackage(),
@@ -43,9 +44,11 @@ public abstract class Controller {
     protected abstract void onChangeLanguage(LanguagePack languagePack);
     protected abstract void onChangeUI(Theme theme);
 
-    private BaseLanguagePackMetaData getCurrentLanguageMetaData() {
-        String languageId = FXEngine.getContext().getApplicationConfiguration().getApplicationInternationalizationCountry();
-        return FXEngine.getContext().getBeanByQualifier(languageId, BaseLanguagePackMetaData.class);
+    private BaseLanguagePackMetaData getApplicationLanguageMetaData() {
+        // todo change it
+        return FXEngine.getContext().getBeansOfType(ApplicationLanguagePackMetaData.class).values().iterator().next();
+//        String languageId = FXEngine.getContext().getApplicationConfiguration();
+//        return FXEngine.getContext().getBeanByQualifier(languageId, BaseLanguagePackMetaData.class);
     }
 
     public FXEntity getMetaData() {

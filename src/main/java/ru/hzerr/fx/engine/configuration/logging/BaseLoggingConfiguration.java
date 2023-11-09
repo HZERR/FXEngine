@@ -17,8 +17,6 @@ import java.util.Locale;
 @Registered
 public class BaseLoggingConfiguration implements ILoggingConfiguration {
 
-    protected static final Locale LOCALE_RU = new Locale("ru", "RU");
-
     private final PropertiesConfiguration configuration;
     private final IReadOnlyLoggingConfiguration readOnlyLoggingConfiguration;
     private final ILoggingConfigurationNamingStrategy namingStrategy = new LoggingConfigurationNamingStrategy();
@@ -169,11 +167,21 @@ public class BaseLoggingConfiguration implements ILoggingConfiguration {
 
     @Override
     public Locale getApplicationLocale() {
-        return LOCALE_RU;
+        return configuration.get(Locale.class, namingStrategy.applicationLocale(), readOnlyLoggingConfiguration.getApplicationLocale());
+    }
+
+    @Override
+    public void setApplicationLocale(Locale applicationLocale) {
+        configuration.setProperty(namingStrategy.applicationLocale(), applicationLocale);
     }
 
     @Override
     public Locale getEngineLocale() {
-        return Locale.ENGLISH;
+        return configuration.get(Locale.class, namingStrategy.engineLocale(), readOnlyLoggingConfiguration.getEngineLocale());
+    }
+
+    @Override
+    public void setEngineLocale(Locale engineLocale) {
+        configuration.setProperty(namingStrategy.engineLocale(), engineLocale);
     }
 }

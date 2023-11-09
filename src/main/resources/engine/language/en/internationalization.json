@@ -7,8 +7,18 @@
           "continuationSearchInChildAnnotation": "The class '{}' does not have an annotation {} directly. Searches for 'child' annotations..."
         },
         "getByNameOrQualifier": "Getting the bean '{}' by name/qualifier '{}'",
-        "getByQualifier": "Getting the bean '{}' by qualifier '{}'"
+        "getByQualifier": "Getting the bean '{}' by qualifier '{}'",
+        "qualifierValueIsEmptyException": "The required 'Qualifier' annotation is present in the {} class. However, it has an empty value, and the engine cannot find a child annotation relative to the qualifier annotation",
+        "qualifierAnnotationNotFoundException": "The required 'Qualifier' annotation is missing in class '{}'"
       }
+    },
+    "init": {
+      "loggerSuccessfullyConfigured": "Logger has been successfully configured",
+      "selectedLoggingDirectory": "Selected logging directory: '{}'",
+      "engineSuccessfullyInitialized": "FXEngine has been successfully initialized"
+    },
+    "start": {
+      "engineSuccessfullyStarted": "Engine has been successfully started"
     }
   }
 }

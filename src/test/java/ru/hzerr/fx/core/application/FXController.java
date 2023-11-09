@@ -1,4 +1,4 @@
-package ru.hzerr.fx.engine.application;
+package ru.hzerr.fx.core.application;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;

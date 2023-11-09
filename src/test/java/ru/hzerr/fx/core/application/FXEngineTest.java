@@ -1,4 +1,4 @@
-package ru.hzerr.fx.engine.application;
+package ru.hzerr.fx.core.application;
 
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -16,7 +16,7 @@ public class FXEngineTest extends FXEngine {
 
     @Override
     protected ExtendedAnnotationConfigApplicationContext createApplicationContext() {
-        return applicationContextProvider(new String[] {"ru.hzerr.fx.engine.application"}).getApplicationContext();
+        return applicationContextProvider(new String[] {"ru.hzerr.fx.core.application"}).getApplicationContext();
     }
 
     @Override

@@ -15,14 +15,14 @@ import ru.hzerr.file.BaseFile;
 import ru.hzerr.file.SizeType;
 import ru.hzerr.fx.engine.annotation.Include;
 import ru.hzerr.fx.engine.annotation.RegisteredAs;
-import ru.hzerr.fx.engine.configuration.interfaces.ILoggingConfiguration;
-import ru.hzerr.fx.engine.configuration.interfaces.IResourceStructureConfiguration;
+import ru.hzerr.fx.engine.configuration.interfaces.ILoggingLanguageConfiguration;
 import ru.hzerr.fx.engine.configuration.interfaces.IStructureConfiguration;
-import ru.hzerr.fx.engine.core.language.IMergedLanguagePack;
+import ru.hzerr.fx.engine.configuration.interfaces.hardcode.IReadOnlyLoggingConfiguration;
 import ru.hzerr.fx.engine.core.language.MergedLanguagePack;
 import ru.hzerr.fx.engine.logging.ConfigurableException;
 import ru.hzerr.fx.engine.logging.FactoryCloseableException;
-import ru.hzerr.fx.engine.logging.InternationalizationLogger;
+import ru.hzerr.fx.engine.logging.decorator.MultiLanguageLogger;
+import ru.hzerr.fx.engine.logging.decorator.PlainLogger;
 import ru.hzerr.fx.engine.logging.policy.CancelRollingPolicy;
 
 import java.io.IOException;
@@ -30,9 +30,8 @@ import java.io.IOException;
 @RegisteredAs("applicationLogProvider")
 public class FXApplicationLogProvider implements ILogProvider {
 
-    private ILoggingConfiguration applicationLoggingConfiguration;
-    private IResourceStructureConfiguration structureApplicationConfiguration;
-    private Configurable internationalizationConfiguration;
+    private IReadOnlyLoggingConfiguration readOnlyLoggingConfiguration;
+    private ILoggingLanguageConfiguration languageConfiguration;
 
     private final BaseFile sessionLogFile;
     private final LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
@@ -46,16 +45,14 @@ public class FXApplicationLogProvider implements ILogProvider {
     private Logger log;
 
     @Include
-    public FXApplicationLogProvider(@NotNull ILoggingConfiguration applicationLoggingConfiguration,
-                                    @NotNull IStructureConfiguration structureConfiguration,
-                                    @NotNull IResourceStructureConfiguration structureApplicationConfiguration,
-                                    @NotNull Configurable internationalizationConfiguration) {
+    public FXApplicationLogProvider(@NotNull IReadOnlyLoggingConfiguration readOnlyLoggingConfiguration,
+                                    @NotNull ILoggingLanguageConfiguration languageConfiguration,
+                                    @NotNull IStructureConfiguration structureConfiguration) {
 
-        this.applicationLoggingConfiguration = applicationLoggingConfiguration;
-        this.structureApplicationConfiguration = structureApplicationConfiguration;
-        this.internationalizationConfiguration = internationalizationConfiguration;
-        sessionLogFile = structureConfiguration.getLogDirectory().getSubFile(applicationLoggingConfiguration.getLogFileName());
-        consolePatternLayout = applicationLoggingConfiguration.getConsolePatternLayout();
+        this.readOnlyLoggingConfiguration = readOnlyLoggingConfiguration;
+        this.languageConfiguration = languageConfiguration;
+        sessionLogFile = structureConfiguration.getLogDirectory().getSubFile(readOnlyLoggingConfiguration.getLogFileName());
+        consolePatternLayout = readOnlyLoggingConfiguration.getConsolePatternLayout();
     }
 
     @Override
@@ -81,15 +78,15 @@ public class FXApplicationLogProvider implements ILogProvider {
 
     @Override
     public void configure() throws ConfigurableException {
-        ch.qos.logback.classic.Logger logbackLogger = lc.getLogger(applicationLoggingConfiguration.getLoggerName());
-        if (applicationLoggingConfiguration.isEnabled()) {
-            if (applicationLoggingConfiguration.isConsoleLoggingEnabled()) {
+        ch.qos.logback.classic.Logger logbackLogger = lc.getLogger(readOnlyLoggingConfiguration.getLoggerName());
+        if (readOnlyLoggingConfiguration.isEnabled()) {
+            if (readOnlyLoggingConfiguration.isConsoleLoggingEnabled()) {
                 consolePatternLayout.setContext(lc);
-                consolePatternLayout.setPattern(applicationLoggingConfiguration.getLoggerConsolePattern());
+                consolePatternLayout.setPattern(readOnlyLoggingConfiguration.getLoggerConsolePattern());
                 consolePatternLayout.start();
 
                 consoleEncoder.setLayout(consolePatternLayout);
-                consoleEncoder.setCharset(applicationLoggingConfiguration.getConsoleEncoding());
+                consoleEncoder.setCharset(readOnlyLoggingConfiguration.getConsoleEncoding());
 
                 consoleAppender.setContext(lc);
                 consoleAppender.setEncoder(consoleEncoder);
@@ -98,7 +95,7 @@ public class FXApplicationLogProvider implements ILogProvider {
                 logbackLogger.addAppender(consoleAppender);
             }
 
-            if (applicationLoggingConfiguration.isFileLoggingEnabled()) {
+            if (readOnlyLoggingConfiguration.isFileLoggingEnabled()) {
                 if (sessionLogFile.notExists()) {
                     try {
                         sessionLogFile.create();
@@ -113,8 +110,8 @@ public class FXApplicationLogProvider implements ILogProvider {
                 filePolicy.start();
 
                 fileEncoder.setContext(lc);
-                fileEncoder.setCharset(applicationLoggingConfiguration.getFileEncoding());
-                fileEncoder.setPattern(applicationLoggingConfiguration.getLoggerFilePattern());
+                fileEncoder.setCharset(readOnlyLoggingConfiguration.getFileEncoding());
+                fileEncoder.setPattern(readOnlyLoggingConfiguration.getLoggerFilePattern());
                 fileEncoder.start();
 
                 fileAppender.setContext(lc);
@@ -127,26 +124,30 @@ public class FXApplicationLogProvider implements ILogProvider {
                 logbackLogger.addAppender(fileAppender);
             }
 
-            logbackLogger.setLevel(applicationLoggingConfiguration.getLoggerLevel());
+            logbackLogger.setLevel(readOnlyLoggingConfiguration.getLoggerLevel());
         } else
             logbackLogger.setLevel(Level.OFF);
 
         logbackLogger.setAdditive(false);
 
-        // initialize target logger
-        if (applicationLoggingConfiguration.isInternationalizationEnabled()) {
-            IMergedLanguagePack loggingLanguagePack = new MergedLanguagePack(
-                    getLoadedEngineLanguagePack(),
-                    getLoadedApplicationLanguagePack()
-            );
-            log = new InternationalizationLogger(logbackLogger, loggingLanguagePack);
-        } else
-            log = logbackLogger;
+        /**
+         * internationalization -> engine + languagePack | application + languagePack
+         * not internationalization -> engine + languagePack | PLAINTEXT
+         */
 
-        Runtime.getRuntime().addShutdownHook(new Thread(this::safelyClose));
+        // initialize target logger
+        if (readOnlyLoggingConfiguration.isInternationalizationEnabled()) {
+            log = new MultiLanguageLogger(logbackLogger, new MergedLanguagePack(
+                    languageConfiguration.getReadOnlyConfiguration().getEngineLanguagePack(),
+                    languageConfiguration.getReadOnlyConfiguration().getApplicationLanguagePack()
+            ));
+        } else
+            log = new PlainLogger(logbackLogger, languageConfiguration.getReadOnlyConfiguration().getEngineLanguagePack());
+
+        Runtime.getRuntime().addShutdownHook(new Thread(this::closeQuietly));
     }
 
-    private void safelyClose() {
+    private void closeQuietly() {
         try {
             close();
         } catch (IOException io) {
@@ -155,7 +156,7 @@ public class FXApplicationLogProvider implements ILogProvider {
     }
 
     @Override
-    public ILoggingConfiguration getConfiguration() {
-        return applicationLoggingConfiguration;
+    public IReadOnlyLoggingConfiguration getConfiguration() {
+        return readOnlyLoggingConfiguration;
     }
 }

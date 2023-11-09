@@ -26,10 +26,10 @@ public abstract class FXEngine extends Application {
     public void init() throws Exception {
         context = createApplicationContext();
         context.registerBean(FXConfiguration.class);
-        context.getFXEngineLogProvider().getLogger().debug("Logger has been successfully configured");
-        context.getFXEngineLogProvider().getLogger().debug("Selected logging directory: {}", getContext().getBean(IStructureConfiguration.class).getLogDirectory().getLocation());
+        context.getFXEngineLogProvider().getLogger().info("fxEngine.init.loggerSuccessfullyConfigured");
+        context.getFXEngineLogProvider().getLogger().info("fxEngine.init.selectedLoggingDirectory", getContext().getBean(IStructureConfiguration.class).getLogDirectory().getLocation());
         onInit();
-        context.getFXEngineLogProvider().getLogger().info("FXEngine has been successfully initialized");
+        context.getFXEngineLogProvider().getLogger().info("fxEngine.init.engineSuccessfullyInitialized");
     }
 
     @Override
@@ -39,7 +39,7 @@ public abstract class FXEngine extends Application {
         context.getBean(FXConfiguration.class).setScene(scene);
         context.getBean(FXConfiguration.class).setStage(stage);
         context.getBean(FXConfiguration.class).getStage().show();
-        context.getFXEngineLogProvider().getLogger().info("FXEngine has been successfully started");
+        context.getFXEngineLogProvider().getLogger().info("fxEngine.start.engineSuccessfullyStarted");
     }
 
     @Override

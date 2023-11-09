@@ -4,6 +4,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.PatternLayout;
 
 import java.nio.charset.Charset;
+import java.util.Locale;
 
 public interface IReadOnlyLoggingConfiguration {
 
@@ -25,4 +26,6 @@ public interface IReadOnlyLoggingConfiguration {
      * @return имя файла, в котором хранится информация об отладке приложения на конкретном языке
      */
     String getApplicationLoggingLanguageFileName();
+    Locale getApplicationLocale();
+    Locale getEngineLocale();
 }

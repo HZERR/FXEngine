@@ -73,4 +73,14 @@ public class LoggingConfigurationNamingStrategy implements ILoggingConfiguration
     public String applicationLoggingInternationalizationFileName() {
         return "logging.internationalization.file.name";
     }
+
+    @Override
+    public String applicationLocale() {
+        return "logging.application.locale";
+    }
+
+    @Override
+    public String engineLocale() {
+        return "logging.engine.locale";
+    }
 }

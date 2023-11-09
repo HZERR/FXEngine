@@ -16,4 +16,6 @@ public interface ILoggingConfigurationNamingStrategy {
     String consolePatternLayout();
     String internationalizationEnabled();
     String applicationLoggingInternationalizationFileName();
+    String applicationLocale();
+    String engineLocale();
 }

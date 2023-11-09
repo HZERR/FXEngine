@@ -1,10 +1,7 @@
 package ru.hzerr.fx.engine.logging.encoder;
 
 import ch.qos.logback.classic.PatternLayout;
-import ru.hzerr.fx.engine.logging.converter.AuthorConverter;
-import ru.hzerr.fx.engine.logging.converter.ClassNameConverter;
-import ru.hzerr.fx.engine.logging.converter.ColoredConverter;
-import ru.hzerr.fx.engine.logging.converter.TimeConverter;
+import ru.hzerr.fx.engine.logging.converter.*;
 
 public class ColoredPatternLayoutEncoder extends PatternLayout {
 
@@ -23,5 +20,6 @@ public class ColoredPatternLayoutEncoder extends PatternLayout {
         DEFAULT_CONVERTER_MAP.put("time", TimeConverter.class.getName());
         DEFAULT_CONVERTER_MAP.put("classname", ClassNameConverter.class.getName());
         DEFAULT_CONVERTER_MAP.put("author", AuthorConverter.class.getName());
+        DEFAULT_CONVERTER_MAP.put("caller", CallerConverter.class.getName());
     }
 }

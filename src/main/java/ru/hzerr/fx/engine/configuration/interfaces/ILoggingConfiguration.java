@@ -68,5 +68,7 @@ public interface ILoggingConfiguration {
     void setInternationalizationEnabled(boolean internationalizationEnabled);
 
     Locale getApplicationLocale();
+    void setApplicationLocale(Locale applicationLocale);
     Locale getEngineLocale();
+    void setEngineLocale(Locale engineLocale);
 }

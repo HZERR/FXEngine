@@ -1,25 +1,22 @@
-package ru.hzerr.fx.engine.logging;
+package ru.hzerr.fx.engine.logging.decorator;
 
+import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
-import ch.qos.logback.core.spi.AppenderAttachable;
 import org.slf4j.Marker;
 import org.slf4j.event.Level;
 import org.slf4j.event.LoggingEvent;
-import org.slf4j.spi.LocationAwareLogger;
-import org.slf4j.spi.LoggingEventAware;
 import org.slf4j.spi.LoggingEventBuilder;
 import ru.hzerr.fx.engine.core.language.Configurable;
 
-import java.io.Serializable;
 import java.util.Iterator;
 
-public class InternationalizationLogger implements org.slf4j.Logger, LocationAwareLogger, LoggingEventAware, AppenderAttachable<ILoggingEvent>, Serializable {
+public class MultiLanguageLogger implements ILogger {
 
-    private final ch.qos.logback.classic.Logger logger;
+    private final Logger logger;
     private final Configurable config;
 
-    public InternationalizationLogger(ch.qos.logback.classic.Logger logger, Configurable config) {
+    public MultiLanguageLogger(ch.qos.logback.classic.Logger logger, Configurable config) {
         this.logger = logger;
         this.config = config;
     }

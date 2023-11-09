@@ -1,4 +1,4 @@
-package ru.hzerr.fx.engine.application;
+package ru.hzerr.fx.core.application;
 
 import org.jetbrains.annotations.Nullable;
 import ru.hzerr.fx.engine.annotation.Registered;

@@ -28,6 +28,7 @@ import org.springframework.core.metrics.ApplicationStartup;
 import ru.hzerr.fx.engine.configuration.StructureInitializer;
 import ru.hzerr.fx.engine.configuration.interfaces.*;
 import ru.hzerr.fx.engine.configuration.interfaces.hardcode.IReadOnlyLoggingLanguageConfiguration;
+import ru.hzerr.fx.engine.configuration.typesafe.IFormattedConfiguration;
 import ru.hzerr.fx.engine.core.language.*;
 import ru.hzerr.fx.engine.core.path.*;
 import ru.hzerr.fx.engine.logging.ConfigurableException;
@@ -120,6 +121,10 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
         return getBean(ILoggingLanguageConfiguration.class).getReadOnlyConfiguration();
     }
 
+    private IFormattedConfiguration getEngineLanguageConfiguration() {
+        return getLoggingInternationalizationConfiguration().getEngineLanguagePack().getConfiguration();
+    }
+
     private void prepareEngineLoggingLanguagePack() throws EngineLoggingLanguageMetaDataNotFoundException {
         LanguagePack engineLanguagePack = new LanguagePackLoader(
                 getEngineLoggingLanguageMetaData(),
@@ -157,12 +162,12 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
                 Separator.SLASH_SEPARATOR
         );
 
-        LanguagePack engineLanguagePack = new LanguagePackLoader(
+        LanguagePack applicationLanguagePack = new LanguagePackLoader(
                 getApplicationLoggingLanguageMetaData(),
                 applicationLanguagePackLocation
         ).load();
 
-        getBean(ILoggingLanguageConfiguration.class).setEngineLanguagePack(engineLanguagePack);
+        getBean(ILoggingLanguageConfiguration.class).setApplicationLanguagePack(applicationLanguagePack);
     }
 
     private EngineLoggingLanguagePackMetaData getEngineLoggingLanguageMetaData() throws EngineLoggingLanguageMetaDataNotFoundException {
@@ -581,12 +586,11 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
                     }
                 }
 
-                throw new IllegalArgumentException("Необходимая аннотация 'Qualifier' присутствует в классе " + requiredType.getSimpleName() + ". " +
-                        "Однако она имеет пустое значение и движок не может найти 'Child' аннотацию по отношению к Qualifier аннотации");
+                throw new IllegalArgumentException(getEngineLanguageConfiguration().getString("fxEngine.applicationContext.getBeanByQualifier.qualifierValueIsEmptyException", requiredType.getSimpleName()));
             } else
                 return getBeanByQualifier(metaData.value(), requiredType);
         } else
-            throw new IllegalArgumentException("Необходимая аннотация 'Qualifier' отсутствует в классе " + requiredType.getSimpleName());
+            throw new IllegalArgumentException(getEngineLanguageConfiguration().getString("fxEngine.applicationContext.getBeanByQualifier.qualifierAnnotationNotFoundException", requiredType.getSimpleName()));
     }
 
     public <T> T getBeanByQualifier(String qualifier, Class<T> requiredType) throws BeansException {

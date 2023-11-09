@@ -1,4 +1,4 @@
-package ru.hzerr.fx.engine.application.language;
+package ru.hzerr.fx.core.application.language;
 
 import com.typesafe.config.ConfigSyntax;
 import ru.hzerr.fx.engine.annotation.Registered;

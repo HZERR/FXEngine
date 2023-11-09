@@ -1,15 +1,17 @@
 package ru.hzerr.fx.engine.core.language;
 
 import com.typesafe.config.Config;
+import ru.hzerr.fx.engine.configuration.typesafe.FormattedConfiguration;
+import ru.hzerr.fx.engine.configuration.typesafe.IFormattedConfiguration;
 
 public class LanguagePack implements ILanguagePack {
 
     private BaseLanguagePackMetaData metaData;
-    private Config configuration;
+    private IFormattedConfiguration configuration;
 
     protected LanguagePack(BaseLanguagePackMetaData metaData, Config configuration) {
         this.metaData = metaData;
-        this.configuration = configuration;
+        this.configuration = new FormattedConfiguration(configuration);
     }
 
     @Override
@@ -17,12 +19,12 @@ public class LanguagePack implements ILanguagePack {
         return metaData;
     }
 
-    public void setConfiguration(Config configuration) {
+    public void setConfiguration(IFormattedConfiguration configuration) {
         this.configuration = configuration;
     }
 
     @Override
-    public Config getConfiguration() {
+    public IFormattedConfiguration getConfiguration() {
         return configuration;
     }
 }
