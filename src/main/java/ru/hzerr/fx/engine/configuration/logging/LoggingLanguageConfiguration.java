@@ -1,23 +1,21 @@
 package ru.hzerr.fx.engine.configuration.logging;
 
 import ru.hzerr.fx.engine.annotation.Registered;
-import ru.hzerr.fx.engine.configuration.interfaces.ILoggingLanguageConfiguration;
-import ru.hzerr.fx.engine.configuration.interfaces.hardcode.IReadOnlyLoggingLanguageConfiguration;
-import ru.hzerr.fx.engine.core.language.LanguagePack;
+import ru.hzerr.fx.engine.core.language.Localization;
 
 @Registered
 public class LoggingLanguageConfiguration implements ILoggingLanguageConfiguration {
 
-    private LanguagePack engineLanguagePack;
-    private LanguagePack applicationLanguagePack;
+    private Localization engineLanguagePack;
+    private Localization applicationLanguagePack;
 
     @Override
-    public void setEngineLanguagePack(LanguagePack engineLanguagePack) {
+    public void setEngineLanguagePack(Localization engineLanguagePack) {
         this.engineLanguagePack = engineLanguagePack;
     }
 
     @Override
-    public void setApplicationLanguagePack(LanguagePack applicationLanguagePack) {
+    public void setApplicationLanguagePack(Localization applicationLanguagePack) {
         this.applicationLanguagePack = applicationLanguagePack;
     }
 

@@ -1,7 +1,5 @@
 package ru.hzerr.fx.engine.configuration.logging.naming.strategy;
 
-import ru.hzerr.fx.engine.configuration.interfaces.ILoggingConfigurationNamingStrategy;
-
 public class LoggingConfigurationNamingStrategy implements ILoggingConfigurationNamingStrategy {
 
     @Override

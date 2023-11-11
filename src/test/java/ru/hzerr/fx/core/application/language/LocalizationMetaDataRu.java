@@ -1,0 +1,14 @@
+package ru.hzerr.fx.core.application.language;
+
+import com.typesafe.config.ConfigSyntax;
+import ru.hzerr.fx.engine.annotation.Registered;
+import ru.hzerr.fx.engine.core.language.ApplicationLocalizationMetaData;
+import ru.hzerr.fx.engine.core.path.BaseLocation;
+
+@Registered
+public class LocalizationMetaDataRu extends ApplicationLocalizationMetaData {
+
+    protected LocalizationMetaDataRu() {
+        super(LOCALE_RU, new BaseLocation("ru-RU"), ConfigSyntax.JSON);
+    }
+}

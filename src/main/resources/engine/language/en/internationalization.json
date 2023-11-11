@@ -19,6 +19,13 @@
     },
     "start": {
       "engineSuccessfullyStarted": "Engine has been successfully started"
+    },
+    "controller": {
+      "getApplicationLanguageMetaData": {
+        "languageMetaDataNotFoundException": "Unable to find metadata with locale '{}'"
+      },
+      "initialize": "'{}' has been successfully initialized",
+      "onDestroy": "'{}' has been successfully destroyed"
     }
   }
 }

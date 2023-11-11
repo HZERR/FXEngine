@@ -8,7 +8,7 @@ import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.springframework.context.annotation.Bean;
 import ru.hzerr.fx.engine.annotation.Include;
 import ru.hzerr.fx.engine.annotation.Registered;
-import ru.hzerr.fx.engine.configuration.interfaces.IStructureConfiguration;
+import ru.hzerr.fx.engine.configuration.IStructureConfiguration;
 import ru.hzerr.fx.engine.interfaces.LoadException;
 import ru.hzerr.fx.engine.interfaces.Loader;
 

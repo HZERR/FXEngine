@@ -19,6 +19,13 @@
     },
     "start": {
       "engineSuccessfullyStarted": "FXEngine был успешно запущен"
+    },
+    "controller": {
+      "getApplicationLanguageMetaData": {
+        "languageMetaDataNotFoundException": "Невозможно найти метаданные с локалью '{}'"
+      },
+      "initialize": "'{}' был успешно инициализирован",
+      "onDestroy": "'{}' был успешно уничтожен"
     }
   }
 }

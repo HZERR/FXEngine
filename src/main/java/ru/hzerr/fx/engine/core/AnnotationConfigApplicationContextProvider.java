@@ -1,7 +1,5 @@
 package ru.hzerr.fx.engine.core;
 
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-
 import java.util.Arrays;
 
 public class AnnotationConfigApplicationContextProvider implements IApplicationContextProvider<ExtendedAnnotationConfigApplicationContext> {

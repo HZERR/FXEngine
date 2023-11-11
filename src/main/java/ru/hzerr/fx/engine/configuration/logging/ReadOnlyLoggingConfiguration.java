@@ -2,7 +2,6 @@ package ru.hzerr.fx.engine.configuration.logging;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.PatternLayout;
-import ru.hzerr.fx.engine.configuration.interfaces.hardcode.IReadOnlyLoggingConfiguration;
 import ru.hzerr.fx.engine.logging.encoder.ColoredPatternLayoutEncoder;
 
 import java.nio.charset.Charset;

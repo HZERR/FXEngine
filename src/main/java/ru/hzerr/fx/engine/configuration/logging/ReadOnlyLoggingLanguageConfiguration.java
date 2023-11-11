@@ -1,25 +1,24 @@
 package ru.hzerr.fx.engine.configuration.logging;
 
-import ru.hzerr.fx.engine.configuration.interfaces.hardcode.IReadOnlyLoggingLanguageConfiguration;
-import ru.hzerr.fx.engine.core.language.LanguagePack;
+import ru.hzerr.fx.engine.core.language.Localization;
 
 public class ReadOnlyLoggingLanguageConfiguration implements IReadOnlyLoggingLanguageConfiguration {
 
-    private LanguagePack engineLanguagePack;
-    private LanguagePack applicationLanguagePack;
+    private Localization engineLanguagePack;
+    private Localization applicationLanguagePack;
 
-    public ReadOnlyLoggingLanguageConfiguration(LanguagePack engineLanguagePack, LanguagePack applicationLanguagePack) {
+    public ReadOnlyLoggingLanguageConfiguration(Localization engineLanguagePack, Localization applicationLanguagePack) {
         this.engineLanguagePack = engineLanguagePack;
         this.applicationLanguagePack = applicationLanguagePack;
     }
 
     @Override
-    public LanguagePack getEngineLanguagePack() {
+    public Localization getEngineLanguagePack() {
         return engineLanguagePack;
     }
 
     @Override
-    public LanguagePack getApplicationLanguagePack() {
+    public Localization getApplicationLanguagePack() {
         return applicationLanguagePack;
     }
 }

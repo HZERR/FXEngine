@@ -7,18 +7,19 @@ import org.slf4j.Marker;
 import org.slf4j.event.Level;
 import org.slf4j.event.LoggingEvent;
 import org.slf4j.spi.LoggingEventBuilder;
-import ru.hzerr.fx.engine.core.language.Configurable;
+import ru.hzerr.fx.engine.configuration.typesafe.IFormattedConfiguration;
+import ru.hzerr.fx.engine.core.language.ICombineLocalization;
 
 import java.util.Iterator;
 
 public class MultiLanguageLogger implements ILogger {
 
     private final Logger logger;
-    private final Configurable config;
+    private final transient IFormattedConfiguration config;
 
-    public MultiLanguageLogger(ch.qos.logback.classic.Logger logger, Configurable config) {
+    public MultiLanguageLogger(ch.qos.logback.classic.Logger logger, ICombineLocalization combineLocalization) {
         this.logger = logger;
-        this.config = config;
+        this.config = combineLocalization.getConfiguration();
     }
 
     @Override
@@ -58,7 +59,7 @@ public class MultiLanguageLogger implements ILogger {
 
     @Override
     public void log(Marker marker, String s, int i, String s1, Object[] objects, Throwable throwable) {
-        logger.log(marker, s, i, config.getConfiguration().getString(s), objects, throwable);
+        logger.log(marker, s, i, config.getString(s), objects, throwable);
     }
 
     @Override
@@ -88,27 +89,27 @@ public class MultiLanguageLogger implements ILogger {
 
     @Override
     public void trace(String s) {
-        logger.trace(config.getConfiguration().getString(s));
+        logger.trace(config.getString(s));
     }
 
     @Override
     public void trace(String s, Object o) {
-        logger.trace(config.getConfiguration().getString(s), o);
+        logger.trace(config.getString(s), o);
     }
 
     @Override
     public void trace(String s, Object o, Object o1) {
-        logger.trace(config.getConfiguration().getString(s), o, o1);
+        logger.trace(config.getString(s), o, o1);
     }
 
     @Override
     public void trace(String s, Object... objects) {
-        logger.trace(config.getConfiguration().getString(s), objects);
+        logger.trace(config.getString(s), objects);
     }
 
     @Override
     public void trace(String s, Throwable throwable) {
-        logger.trace(config.getConfiguration().getString(s), throwable);
+        logger.trace(config.getString(s), throwable);
     }
 
     @Override
@@ -123,27 +124,27 @@ public class MultiLanguageLogger implements ILogger {
 
     @Override
     public void trace(Marker marker, String s) {
-        logger.trace(marker, config.getConfiguration().getString(s));
+        logger.trace(marker, config.getString(s));
     }
 
     @Override
     public void trace(Marker marker, String s, Object o) {
-        logger.trace(marker, config.getConfiguration().getString(s), o);
+        logger.trace(marker, config.getString(s), o);
     }
 
     @Override
     public void trace(Marker marker, String s, Object o, Object o1) {
-        logger.trace(marker, config.getConfiguration().getString(s), o, o1);
+        logger.trace(marker, config.getString(s), o, o1);
     }
 
     @Override
     public void trace(Marker marker, String s, Object... objects) {
-        logger.trace(marker, config.getConfiguration().getString(s), objects);
+        logger.trace(marker, config.getString(s), objects);
     }
 
     @Override
     public void trace(Marker marker, String s, Throwable throwable) {
-        logger.trace(marker, config.getConfiguration().getString(s), throwable);
+        logger.trace(marker, config.getString(s), throwable);
     }
 
     @Override
@@ -153,27 +154,27 @@ public class MultiLanguageLogger implements ILogger {
 
     @Override
     public void debug(String s) {
-        logger.debug(config.getConfiguration().getString(s));
+        logger.debug(config.getString(s));
     }
 
     @Override
     public void debug(String s, Object o) {
-        logger.debug(config.getConfiguration().getString(s), o);
+        logger.debug(config.getString(s), o);
     }
 
     @Override
     public void debug(String s, Object o, Object o1) {
-        logger.debug(config.getConfiguration().getString(s), o, o1);
+        logger.debug(config.getString(s), o, o1);
     }
 
     @Override
     public void debug(String s, Object... objects) {
-        logger.debug(config.getConfiguration().getString(s), objects);
+        logger.debug(config.getString(s), objects);
     }
 
     @Override
     public void debug(String s, Throwable throwable) {
-        logger.debug(config.getConfiguration().getString(s), throwable);
+        logger.debug(config.getString(s), throwable);
     }
 
     @Override
@@ -183,27 +184,27 @@ public class MultiLanguageLogger implements ILogger {
 
     @Override
     public void debug(Marker marker, String s) {
-        logger.debug(marker, config.getConfiguration().getString(s));
+        logger.debug(marker, config.getString(s));
     }
 
     @Override
     public void debug(Marker marker, String s, Object o) {
-        logger.debug(marker, config.getConfiguration().getString(s), o);
+        logger.debug(marker, config.getString(s), o);
     }
 
     @Override
     public void debug(Marker marker, String s, Object o, Object o1) {
-        logger.debug(marker, config.getConfiguration().getString(s), o, o1);
+        logger.debug(marker, config.getString(s), o, o1);
     }
 
     @Override
     public void debug(Marker marker, String s, Object... objects) {
-        logger.debug(marker, config.getConfiguration().getString(s), objects);
+        logger.debug(marker, config.getString(s), objects);
     }
 
     @Override
     public void debug(Marker marker, String s, Throwable throwable) {
-        logger.debug(marker, config.getConfiguration().getString(s), throwable);
+        logger.debug(marker, config.getString(s), throwable);
     }
 
     @Override
@@ -218,27 +219,27 @@ public class MultiLanguageLogger implements ILogger {
 
     @Override
     public void info(String s) {
-        logger.info(config.getConfiguration().getString(s));
+        logger.info(config.getString(s));
     }
 
     @Override
     public void info(String s, Object o) {
-        logger.info(config.getConfiguration().getString(s), o);
+        logger.info(config.getString(s), o);
     }
 
     @Override
     public void info(String s, Object o, Object o1) {
-        logger.info(config.getConfiguration().getString(s), o, o1);
+        logger.info(config.getString(s), o, o1);
     }
 
     @Override
     public void info(String s, Object... objects) {
-        logger.info(config.getConfiguration().getString(s), objects);
+        logger.info(config.getString(s), objects);
     }
 
     @Override
     public void info(String s, Throwable throwable) {
-        logger.info(config.getConfiguration().getString(s), throwable);
+        logger.info(config.getString(s), throwable);
     }
 
     @Override
@@ -248,27 +249,27 @@ public class MultiLanguageLogger implements ILogger {
 
     @Override
     public void info(Marker marker, String s) {
-        logger.info(marker, config.getConfiguration().getString(s));
+        logger.info(marker, config.getString(s));
     }
 
     @Override
     public void info(Marker marker, String s, Object o) {
-        logger.info(marker, config.getConfiguration().getString(s), o);
+        logger.info(marker, config.getString(s), o);
     }
 
     @Override
     public void info(Marker marker, String s, Object o, Object o1) {
-        logger.info(marker, config.getConfiguration().getString(s), o, o1);
+        logger.info(marker, config.getString(s), o, o1);
     }
 
     @Override
     public void info(Marker marker, String s, Object... objects) {
-        logger.info(marker, config.getConfiguration().getString(s), objects);
+        logger.info(marker, config.getString(s), objects);
     }
 
     @Override
     public void info(Marker marker, String s, Throwable throwable) {
-        logger.info(marker, config.getConfiguration().getString(s), throwable);
+        logger.info(marker, config.getString(s), throwable);
     }
 
     @Override
@@ -283,27 +284,27 @@ public class MultiLanguageLogger implements ILogger {
 
     @Override
     public void warn(String s) {
-        logger.warn(config.getConfiguration().getString(s));
+        logger.warn(config.getString(s));
     }
 
     @Override
     public void warn(String s, Object o) {
-        logger.warn(config.getConfiguration().getString(s), o);
+        logger.warn(config.getString(s), o);
     }
 
     @Override
     public void warn(String s, Object... objects) {
-        logger.warn(config.getConfiguration().getString(s), objects);
+        logger.warn(config.getString(s), objects);
     }
 
     @Override
     public void warn(String s, Object o, Object o1) {
-        logger.warn(config.getConfiguration().getString(s), o, o1);
+        logger.warn(config.getString(s), o, o1);
     }
 
     @Override
     public void warn(String s, Throwable throwable) {
-        logger.warn(config.getConfiguration().getString(s), throwable);
+        logger.warn(config.getString(s), throwable);
     }
 
     @Override
@@ -313,27 +314,27 @@ public class MultiLanguageLogger implements ILogger {
 
     @Override
     public void warn(Marker marker, String s) {
-        logger.warn(marker, config.getConfiguration().getString(s));
+        logger.warn(marker, config.getString(s));
     }
 
     @Override
     public void warn(Marker marker, String s, Object o) {
-        logger.warn(marker, config.getConfiguration().getString(s), o);
+        logger.warn(marker, config.getString(s), o);
     }
 
     @Override
     public void warn(Marker marker, String s, Object o, Object o1) {
-        logger.warn(marker, config.getConfiguration().getString(s), o, o1);
+        logger.warn(marker, config.getString(s), o, o1);
     }
 
     @Override
     public void warn(Marker marker, String s, Object... objects) {
-        logger.warn(marker, config.getConfiguration().getString(s), objects);
+        logger.warn(marker, config.getString(s), objects);
     }
 
     @Override
     public void warn(Marker marker, String s, Throwable throwable) {
-        logger.warn(marker, config.getConfiguration().getString(s), throwable);
+        logger.warn(marker, config.getString(s), throwable);
     }
 
     @Override
@@ -348,27 +349,27 @@ public class MultiLanguageLogger implements ILogger {
 
     @Override
     public void error(String s) {
-        logger.error(config.getConfiguration().getString(s));
+        logger.error(config.getString(s));
     }
 
     @Override
     public void error(String s, Object o) {
-        logger.error(config.getConfiguration().getString(s), o);
+        logger.error(config.getString(s), o);
     }
 
     @Override
     public void error(String s, Object o, Object o1) {
-        logger.error(config.getConfiguration().getString(s), o, o1);
+        logger.error(config.getString(s), o, o1);
     }
 
     @Override
     public void error(String s, Object... objects) {
-        logger.error(config.getConfiguration().getString(s), objects);
+        logger.error(config.getString(s), objects);
     }
 
     @Override
     public void error(String s, Throwable throwable) {
-        logger.error(config.getConfiguration().getString(s), throwable);
+        logger.error(config.getString(s), throwable);
     }
 
     @Override
@@ -378,27 +379,27 @@ public class MultiLanguageLogger implements ILogger {
 
     @Override
     public void error(Marker marker, String s) {
-        logger.error(marker, config.getConfiguration().getString(s));
+        logger.error(marker, config.getString(s));
     }
 
     @Override
     public void error(Marker marker, String s, Object o) {
-        logger.error(marker, config.getConfiguration().getString(s), o);
+        logger.error(marker, config.getString(s), o);
     }
 
     @Override
     public void error(Marker marker, String s, Object o, Object o1) {
-        logger.error(marker, config.getConfiguration().getString(s), o, o1);
+        logger.error(marker, config.getString(s), o, o1);
     }
 
     @Override
     public void error(Marker marker, String s, Object... objects) {
-        logger.error(marker, config.getConfiguration().getString(s), objects);
+        logger.error(marker, config.getString(s), objects);
     }
 
     @Override
     public void error(Marker marker, String s, Throwable throwable) {
-        logger.error(marker, config.getConfiguration().getString(s), throwable);
+        logger.error(marker, config.getString(s), throwable);
     }
 
     @Override

@@ -14,11 +14,11 @@ import org.slf4j.LoggerFactory;
 import ru.hzerr.file.BaseFile;
 import ru.hzerr.file.SizeType;
 import ru.hzerr.fx.engine.annotation.Include;
-import ru.hzerr.fx.engine.annotation.RegisteredAs;
-import ru.hzerr.fx.engine.configuration.interfaces.ILoggingLanguageConfiguration;
-import ru.hzerr.fx.engine.configuration.interfaces.IStructureConfiguration;
-import ru.hzerr.fx.engine.configuration.interfaces.hardcode.IReadOnlyLoggingConfiguration;
-import ru.hzerr.fx.engine.core.language.MergedLanguagePack;
+import ru.hzerr.fx.engine.annotation.MetaData;
+import ru.hzerr.fx.engine.configuration.IStructureConfiguration;
+import ru.hzerr.fx.engine.configuration.logging.IReadOnlyLoggingConfiguration;
+import ru.hzerr.fx.engine.core.language.CombineLocalization;
+import ru.hzerr.fx.engine.core.language.localization.ILocalizationProvider;
 import ru.hzerr.fx.engine.logging.ConfigurableException;
 import ru.hzerr.fx.engine.logging.FactoryCloseableException;
 import ru.hzerr.fx.engine.logging.decorator.MultiLanguageLogger;
@@ -27,11 +27,11 @@ import ru.hzerr.fx.engine.logging.policy.CancelRollingPolicy;
 
 import java.io.IOException;
 
-@RegisteredAs("applicationLogProvider")
 public class FXApplicationLogProvider implements ILogProvider {
 
-    private IReadOnlyLoggingConfiguration readOnlyLoggingConfiguration;
-    private ILoggingLanguageConfiguration languageConfiguration;
+    private final IReadOnlyLoggingConfiguration readOnlyLoggingConfiguration;
+    private final ILocalizationProvider engineLocalizationProvider;
+    private final ILocalizationProvider applicationLocalizationProvider;
 
     private final BaseFile sessionLogFile;
     private final LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
@@ -46,11 +46,13 @@ public class FXApplicationLogProvider implements ILogProvider {
 
     @Include
     public FXApplicationLogProvider(@NotNull IReadOnlyLoggingConfiguration readOnlyLoggingConfiguration,
-                                    @NotNull ILoggingLanguageConfiguration languageConfiguration,
-                                    @NotNull IStructureConfiguration structureConfiguration) {
+                                    @NotNull IStructureConfiguration structureConfiguration,
+                                    @NotNull @MetaData("engineLoggingLocalizationProvider") ILocalizationProvider engineLocalizationProvider,
+                                    @NotNull @MetaData("applicationLoggingLocalizationProvider") ILocalizationProvider applicationLocalizationProvider) {
 
         this.readOnlyLoggingConfiguration = readOnlyLoggingConfiguration;
-        this.languageConfiguration = languageConfiguration;
+        this.engineLocalizationProvider = engineLocalizationProvider;
+        this.applicationLocalizationProvider = applicationLocalizationProvider;
         sessionLogFile = structureConfiguration.getLogDirectory().getSubFile(readOnlyLoggingConfiguration.getLogFileName());
         consolePatternLayout = readOnlyLoggingConfiguration.getConsolePatternLayout();
     }
@@ -137,12 +139,12 @@ public class FXApplicationLogProvider implements ILogProvider {
 
         // initialize target logger
         if (readOnlyLoggingConfiguration.isInternationalizationEnabled()) {
-            log = new MultiLanguageLogger(logbackLogger, new MergedLanguagePack(
-                    languageConfiguration.getReadOnlyConfiguration().getEngineLanguagePack(),
-                    languageConfiguration.getReadOnlyConfiguration().getApplicationLanguagePack()
+            log = new MultiLanguageLogger(logbackLogger, new CombineLocalization(
+                    engineLocalizationProvider.getLocalization(),
+                    applicationLocalizationProvider.getLocalization()
             ));
         } else
-            log = new PlainLogger(logbackLogger, languageConfiguration.getReadOnlyConfiguration().getEngineLanguagePack());
+            log = new PlainLogger(logbackLogger, engineLocalizationProvider.getLocalization());
 
         Runtime.getRuntime().addShutdownHook(new Thread(this::closeQuietly));
     }

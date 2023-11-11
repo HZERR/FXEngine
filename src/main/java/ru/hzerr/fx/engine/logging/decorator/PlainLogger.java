@@ -6,18 +6,19 @@ import ch.qos.logback.core.Appender;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Marker;
 import org.slf4j.event.LoggingEvent;
-import ru.hzerr.fx.engine.core.language.Configurable;
+import ru.hzerr.fx.engine.configuration.typesafe.IFormattedConfiguration;
+import ru.hzerr.fx.engine.core.language.ILocalization;
 
 import java.util.Iterator;
 
 public class PlainLogger implements ILogger {
 
     private Logger logger;
-    private Configurable configuration;
+    private IFormattedConfiguration configuration;
 
-    public PlainLogger(Logger logger, Configurable configurable) {
+    public PlainLogger(Logger logger, ILocalization configuration) {
         this.logger = logger;
-        this.configuration = configurable;
+        this.configuration = configuration.getConfiguration();
     }
 
     @Override
@@ -32,27 +33,27 @@ public class PlainLogger implements ILogger {
 
     @Override
     public void trace(String s) {
-        logger.trace(isEngineCaller() ? configuration.getConfiguration().getString(s) : s);
+        logger.trace(isEngineCaller() ? configuration.getString(s) : s);
     }
 
     @Override
     public void trace(String s, Object o) {
-        logger.trace(isEngineCaller() ? configuration.getConfiguration().getString(s) : s, o);
+        logger.trace(isEngineCaller() ? configuration.getString(s) : s, o);
     }
 
     @Override
     public void trace(String s, Object o, Object o1) {
-        logger.trace(isEngineCaller() ? configuration.getConfiguration().getString(s) : s, o, o1);
+        logger.trace(isEngineCaller() ? configuration.getString(s) : s, o, o1);
     }
 
     @Override
     public void trace(String s, Object... objects) {
-        logger.trace(isEngineCaller() ? configuration.getConfiguration().getString(s) : s, objects);
+        logger.trace(isEngineCaller() ? configuration.getString(s) : s, objects);
     }
 
     @Override
     public void trace(String s, Throwable throwable) {
-        logger.trace(isEngineCaller() ? configuration.getConfiguration().getString(s) : s, throwable);
+        logger.trace(isEngineCaller() ? configuration.getString(s) : s, throwable);
     }
 
     @Override
@@ -62,27 +63,27 @@ public class PlainLogger implements ILogger {
 
     @Override
     public void trace(Marker marker, String s) {
-        logger.trace(marker, isEngineCaller() ? configuration.getConfiguration().getString(s) : s);
+        logger.trace(marker, isEngineCaller() ? configuration.getString(s) : s);
     }
 
     @Override
     public void trace(Marker marker, String s, Object o) {
-        logger.trace(marker, isEngineCaller() ? configuration.getConfiguration().getString(s) : s, o);
+        logger.trace(marker, isEngineCaller() ? configuration.getString(s) : s, o);
     }
 
     @Override
     public void trace(Marker marker, String s, Object o, Object o1) {
-        logger.trace(marker, isEngineCaller() ? configuration.getConfiguration().getString(s) : s, o, o1);
+        logger.trace(marker, isEngineCaller() ? configuration.getString(s) : s, o, o1);
     }
 
     @Override
     public void trace(Marker marker, String s, Object... objects) {
-        logger.trace(marker, isEngineCaller() ? configuration.getConfiguration().getString(s) : s, objects);
+        logger.trace(marker, isEngineCaller() ? configuration.getString(s) : s, objects);
     }
 
     @Override
     public void trace(Marker marker, String s, Throwable throwable) {
-        logger.trace(marker, isEngineCaller() ? configuration.getConfiguration().getString(s) : s, throwable);
+        logger.trace(marker, isEngineCaller() ? configuration.getString(s) : s, throwable);
     }
 
     @Override
@@ -92,28 +93,28 @@ public class PlainLogger implements ILogger {
 
     @Override
     public void debug(String s) {
-        logger.debug(isEngineCaller() ? configuration.getConfiguration().getString(s) : s);
+        logger.debug(isEngineCaller() ? configuration.getString(s) : s);
     }
 
     @Override
     public void debug(String s, Object o) {
-        logger.debug(isEngineCaller() ? configuration.getConfiguration().getString(s) : s, o);
+        logger.debug(isEngineCaller() ? configuration.getString(s) : s, o);
     }
 
     @Override
     public void debug(String s, Object o, Object o1) {
-        logger.debug(isEngineCaller() ? configuration.getConfiguration().getString(s) : s, o, o1);
+        logger.debug(isEngineCaller() ? configuration.getString(s) : s, o, o1);
     }
 
     @Override
     public void debug(String s, Object... objects) {
-        logger.debug(isEngineCaller() ? configuration.getConfiguration().getString(s) : s, objects);
+        logger.debug(isEngineCaller() ? configuration.getString(s) : s, objects);
 
     }
 
     @Override
     public void debug(String s, Throwable throwable) {
-        logger.debug(isEngineCaller() ? configuration.getConfiguration().getString(s) : s, throwable);
+        logger.debug(isEngineCaller() ? configuration.getString(s) : s, throwable);
     }
 
     @Override
@@ -123,27 +124,27 @@ public class PlainLogger implements ILogger {
 
     @Override
     public void debug(Marker marker, String s) {
-        logger.debug(marker, isEngineCaller() ? configuration.getConfiguration().getString(s) : s);
+        logger.debug(marker, isEngineCaller() ? configuration.getString(s) : s);
     }
 
     @Override
     public void debug(Marker marker, String s, Object o) {
-        logger.debug(marker, isEngineCaller() ? configuration.getConfiguration().getString(s) : s, o);
+        logger.debug(marker, isEngineCaller() ? configuration.getString(s) : s, o);
     }
 
     @Override
     public void debug(Marker marker, String s, Object o, Object o1) {
-        logger.debug(marker, isEngineCaller() ? configuration.getConfiguration().getString(s) : s, o, o1);
+        logger.debug(marker, isEngineCaller() ? configuration.getString(s) : s, o, o1);
     }
 
     @Override
     public void debug(Marker marker, String s, Object... objects) {
-        logger.debug(marker, isEngineCaller() ? configuration.getConfiguration().getString(s) : s, objects);
+        logger.debug(marker, isEngineCaller() ? configuration.getString(s) : s, objects);
     }
 
     @Override
     public void debug(Marker marker, String s, Throwable throwable) {
-        logger.debug(marker, isEngineCaller() ? configuration.getConfiguration().getString(s) : s, throwable);
+        logger.debug(marker, isEngineCaller() ? configuration.getString(s) : s, throwable);
     }
 
     @Override
@@ -153,27 +154,27 @@ public class PlainLogger implements ILogger {
 
     @Override
     public void info(String s) {
-        logger.info(isEngineCaller() ? configuration.getConfiguration().getString(s) : s);
+        logger.info(isEngineCaller() ? configuration.getString(s) : s);
     }
 
     @Override
     public void info(String s, Object o) {
-        logger.info(isEngineCaller() ? configuration.getConfiguration().getString(s) : s, o);
+        logger.info(isEngineCaller() ? configuration.getString(s) : s, o);
     }
 
     @Override
     public void info(String s, Object o, Object o1) {
-        logger.info(isEngineCaller() ? configuration.getConfiguration().getString(s) : s, o, o1);
+        logger.info(isEngineCaller() ? configuration.getString(s) : s, o, o1);
     }
 
     @Override
     public void info(String s, Object... objects) {
-        logger.info(isEngineCaller() ? configuration.getConfiguration().getString(s) : s, objects);
+        logger.info(isEngineCaller() ? configuration.getString(s) : s, objects);
     }
 
     @Override
     public void info(String s, Throwable throwable) {
-        logger.info(isEngineCaller() ? configuration.getConfiguration().getString(s) : s, throwable);
+        logger.info(isEngineCaller() ? configuration.getString(s) : s, throwable);
     }
 
     @Override
@@ -183,27 +184,27 @@ public class PlainLogger implements ILogger {
 
     @Override
     public void info(Marker marker, String s) {
-        logger.info(marker, isEngineCaller() ? configuration.getConfiguration().getString(s) : s);
+        logger.info(marker, isEngineCaller() ? configuration.getString(s) : s);
     }
 
     @Override
     public void info(Marker marker, String s, Object o) {
-        logger.info(marker, isEngineCaller() ? configuration.getConfiguration().getString(s) : s, o);
+        logger.info(marker, isEngineCaller() ? configuration.getString(s) : s, o);
     }
 
     @Override
     public void info(Marker marker, String s, Object o, Object o1) {
-        logger.info(marker, isEngineCaller() ? configuration.getConfiguration().getString(s) : s, o, o1);
+        logger.info(marker, isEngineCaller() ? configuration.getString(s) : s, o, o1);
     }
 
     @Override
     public void info(Marker marker, String s, Object... objects) {
-        logger.info(marker, isEngineCaller() ? configuration.getConfiguration().getString(s) : s, objects);
+        logger.info(marker, isEngineCaller() ? configuration.getString(s) : s, objects);
     }
 
     @Override
     public void info(Marker marker, String s, Throwable throwable) {
-        logger.info(marker, isEngineCaller() ? configuration.getConfiguration().getString(s) : s, throwable);
+        logger.info(marker, isEngineCaller() ? configuration.getString(s) : s, throwable);
     }
 
     @Override
@@ -213,27 +214,27 @@ public class PlainLogger implements ILogger {
 
     @Override
     public void warn(String s) {
-        logger.warn(isEngineCaller() ? configuration.getConfiguration().getString(s) : s);
+        logger.warn(isEngineCaller() ? configuration.getString(s) : s);
     }
 
     @Override
     public void warn(String s, Object o) {
-        logger.warn(isEngineCaller() ? configuration.getConfiguration().getString(s) : s, o);
+        logger.warn(isEngineCaller() ? configuration.getString(s) : s, o);
     }
 
     @Override
     public void warn(String s, Object... objects) {
-        logger.warn(isEngineCaller() ? configuration.getConfiguration().getString(s) : s, objects);
+        logger.warn(isEngineCaller() ? configuration.getString(s) : s, objects);
     }
 
     @Override
     public void warn(String s, Object o, Object o1) {
-        logger.warn(isEngineCaller() ? configuration.getConfiguration().getString(s) : s, o, o1);
+        logger.warn(isEngineCaller() ? configuration.getString(s) : s, o, o1);
     }
 
     @Override
     public void warn(String s, Throwable throwable) {
-        logger.warn(isEngineCaller() ? configuration.getConfiguration().getString(s) : s, throwable);
+        logger.warn(isEngineCaller() ? configuration.getString(s) : s, throwable);
     }
 
     @Override
@@ -243,27 +244,27 @@ public class PlainLogger implements ILogger {
 
     @Override
     public void warn(Marker marker, String s) {
-        logger.warn(marker, isEngineCaller() ? configuration.getConfiguration().getString(s) : s);
+        logger.warn(marker, isEngineCaller() ? configuration.getString(s) : s);
     }
 
     @Override
     public void warn(Marker marker, String s, Object o) {
-        logger.warn(marker, isEngineCaller() ? configuration.getConfiguration().getString(s) : s, o);
+        logger.warn(marker, isEngineCaller() ? configuration.getString(s) : s, o);
     }
 
     @Override
     public void warn(Marker marker, String s, Object o, Object o1) {
-        logger.warn(marker, isEngineCaller() ? configuration.getConfiguration().getString(s) : s, o, o1);
+        logger.warn(marker, isEngineCaller() ? configuration.getString(s) : s, o, o1);
     }
 
     @Override
     public void warn(Marker marker, String s, Object... objects) {
-        logger.warn(marker, isEngineCaller() ? configuration.getConfiguration().getString(s) : s, objects);
+        logger.warn(marker, isEngineCaller() ? configuration.getString(s) : s, objects);
     }
 
     @Override
     public void warn(Marker marker, String s, Throwable throwable) {
-        logger.warn(marker, isEngineCaller() ? configuration.getConfiguration().getString(s) : s, throwable);
+        logger.warn(marker, isEngineCaller() ? configuration.getString(s) : s, throwable);
     }
 
     @Override
@@ -273,27 +274,27 @@ public class PlainLogger implements ILogger {
 
     @Override
     public void error(String s) {
-        logger.error(isEngineCaller() ? configuration.getConfiguration().getString(s) : s);
+        logger.error(isEngineCaller() ? configuration.getString(s) : s);
     }
 
     @Override
     public void error(String s, Object o) {
-        logger.error(isEngineCaller() ? configuration.getConfiguration().getString(s) : s, o);
+        logger.error(isEngineCaller() ? configuration.getString(s) : s, o);
     }
 
     @Override
     public void error(String s, Object o, Object o1) {
-        logger.error(isEngineCaller() ? configuration.getConfiguration().getString(s) : s, o, o1);
+        logger.error(isEngineCaller() ? configuration.getString(s) : s, o, o1);
     }
 
     @Override
     public void error(String s, Object... objects) {
-        logger.error(isEngineCaller() ? configuration.getConfiguration().getString(s) : s, objects);
+        logger.error(isEngineCaller() ? configuration.getString(s) : s, objects);
     }
 
     @Override
     public void error(String s, Throwable throwable) {
-        logger.error(isEngineCaller() ? configuration.getConfiguration().getString(s) : s, throwable);
+        logger.error(isEngineCaller() ? configuration.getString(s) : s, throwable);
     }
 
     @Override
@@ -303,27 +304,27 @@ public class PlainLogger implements ILogger {
 
     @Override
     public void error(Marker marker, String s) {
-        logger.error(marker, isEngineCaller() ? configuration.getConfiguration().getString(s) : s);
+        logger.error(marker, isEngineCaller() ? configuration.getString(s) : s);
     }
 
     @Override
     public void error(Marker marker, String s, Object o) {
-        logger.error(marker, isEngineCaller() ? configuration.getConfiguration().getString(s) : s, o);
+        logger.error(marker, isEngineCaller() ? configuration.getString(s) : s, o);
     }
 
     @Override
     public void error(Marker marker, String s, Object o, Object o1) {
-        logger.error(marker, isEngineCaller() ? configuration.getConfiguration().getString(s) : s, o, o1);
+        logger.error(marker, isEngineCaller() ? configuration.getString(s) : s, o, o1);
     }
 
     @Override
     public void error(Marker marker, String s, Object... objects) {
-        logger.error(marker, isEngineCaller() ? configuration.getConfiguration().getString(s) : s, objects);
+        logger.error(marker, isEngineCaller() ? configuration.getString(s) : s, objects);
     }
 
     @Override
     public void error(Marker marker, String s, Throwable throwable) {
-        logger.error(marker, isEngineCaller() ? configuration.getConfiguration().getString(s) : s, throwable);
+        logger.error(marker, isEngineCaller() ? configuration.getString(s) : s, throwable);
     }
 
     @Override
@@ -363,7 +364,7 @@ public class PlainLogger implements ILogger {
 
     @Override
     public void log(Marker marker, String fqcn, int levelInt, String message, Object[] argArray, Throwable throwable) {
-        logger.log(marker, fqcn, levelInt, isEngineCaller() ? configuration.getConfiguration().getString(message) : message, argArray, throwable);
+        logger.log(marker, fqcn, levelInt, isEngineCaller() ? configuration.getString(message) : message, argArray, throwable);
     }
 
     @Override

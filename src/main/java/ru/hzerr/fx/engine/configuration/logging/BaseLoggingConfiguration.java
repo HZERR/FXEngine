@@ -6,10 +6,8 @@ import org.apache.commons.configuration2.PropertiesConfiguration;
 import ru.hzerr.fx.engine.annotation.Include;
 import ru.hzerr.fx.engine.annotation.MetaData;
 import ru.hzerr.fx.engine.annotation.Registered;
+import ru.hzerr.fx.engine.configuration.logging.naming.strategy.ILoggingConfigurationNamingStrategy;
 import ru.hzerr.fx.engine.configuration.logging.naming.strategy.LoggingConfigurationNamingStrategy;
-import ru.hzerr.fx.engine.configuration.interfaces.hardcode.IReadOnlyLoggingConfiguration;
-import ru.hzerr.fx.engine.configuration.interfaces.ILoggingConfiguration;
-import ru.hzerr.fx.engine.configuration.interfaces.ILoggingConfigurationNamingStrategy;
 
 import java.nio.charset.Charset;
 import java.util.Locale;

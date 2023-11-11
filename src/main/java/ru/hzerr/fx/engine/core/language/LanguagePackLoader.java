@@ -8,28 +8,28 @@ import ru.hzerr.fx.engine.core.FXEngine;
 import ru.hzerr.fx.engine.interfaces.Loader;
 import ru.hzerr.fx.engine.core.path.ILocation;
 
-public class LanguagePackLoader implements Loader<LanguagePack> {
+public class LanguagePackLoader implements Loader<Localization> {
 
-    private final BaseLanguagePackMetaData metaData;
+    private final BaseLocalizationMetaData metaData;
     private final String location;
 
     private final ClassLoader resourceClassLoader = FXEngine.getContext() != null ?
             FXEngine.getContext().getBean(FXConfiguration.class).getResourceLoader() :
             ClassLoader.getSystemClassLoader();
 
-    public LanguagePackLoader(BaseLanguagePackMetaData metaData, ILocation location) {
+    public LanguagePackLoader(BaseLocalizationMetaData metaData, ILocation location) {
         this.metaData = metaData;
         this.location = location.getLocation();
     }
 
-    public LanguagePackLoader(BaseLanguagePackMetaData metaData, String location) {
+    public LanguagePackLoader(BaseLocalizationMetaData metaData, String location) {
         this.metaData = metaData;
         this.location = location;
     }
 
     @Override
-    public LanguagePack load() {
+    public Localization load() {
         Config config = ConfigFactory.parseResourcesAnySyntax(resourceClassLoader, location, ConfigParseOptions.defaults().setSyntax(metaData.getSyntax()));
-        return new LanguagePack(metaData, config);
+        return new Localization(metaData, config);
     }
 }
