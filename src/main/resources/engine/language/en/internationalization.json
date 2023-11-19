@@ -1,6 +1,9 @@
 {
   "fxEngine": {
     "applicationContext": {
+      "register": {
+        "beanAlreadyExistsException": "Instance of class '{}' already exists and can't be redefined"
+      },
       "getBeanByQualifier": {
         "started": "Search for bean '{}' by qualifier is performed",
         "annotationWasNotFound": {
@@ -10,12 +13,16 @@
         "getByQualifier": "Getting the bean '{}' by qualifier '{}'",
         "qualifierValueIsEmptyException": "The required 'Qualifier' annotation is present in the {} class. However, it has an empty value, and the engine cannot find a child annotation relative to the qualifier annotation",
         "qualifierAnnotationNotFoundException": "The required 'Qualifier' annotation is missing in class '{}'"
+      },
+      "registerControllers": {
+        "controllerSuccessfullyRegistered": "'{}' was successfully registered in system"
       }
     },
     "init": {
       "loggerSuccessfullyConfigured": "Logger has been successfully configured",
       "selectedLoggingDirectory": "Selected logging directory: '{}'",
-      "engineSuccessfullyInitialized": "FXEngine has been successfully initialized"
+      "engineSuccessfullyInitialized": "FXEngine has been successfully initialized",
+      "closedException": "An error occurred stopping the application"
     },
     "start": {
       "engineSuccessfullyStarted": "Engine has been successfully started"
@@ -26,6 +33,16 @@
       },
       "initialize": "'{}' has been successfully initialized",
       "onDestroy": "'{}' has been successfully destroyed"
+    },
+    "stylesheetLoader": {
+      "stylesheetLocationNotFoundException": "Unable to find stylesheet on path '{}'"
+    },
+    "themeLoader": {
+      "loadingTheme": "Loading '{}' theme...",
+      "targetThemeFileLocationNotFoundException": "The '{}' theme file for the '{}' was not found",
+      "skippingUseThemeOnTargetController": "Skipping the use of the '{}' theme on the '{}'...",
+      "themeOnTargetControllerSuccessfullySettingUp": "Setting up the '{}' theme for the '{}' has been successfully completed",
+      "themeSuccessfullySettingUp": "Setting up the '{}' theme has been successfully completed"
     }
   }
 }

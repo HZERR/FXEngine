@@ -1,8 +1,8 @@
 package ru.hzerr.fx.engine.core.language;
 
 import com.typesafe.config.Config;
-import ru.hzerr.fx.engine.configuration.typesafe.FormattedConfiguration;
-import ru.hzerr.fx.engine.configuration.typesafe.IFormattedConfiguration;
+import ru.hzerr.fx.engine.configuration.fs.typesafe.FormattedConfiguration;
+import ru.hzerr.fx.engine.configuration.fs.typesafe.IFormattedConfiguration;
 
 public class Localization implements ILocalization {
 

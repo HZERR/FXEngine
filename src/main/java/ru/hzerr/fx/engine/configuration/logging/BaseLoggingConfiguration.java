@@ -3,9 +3,9 @@ package ru.hzerr.fx.engine.configuration.logging;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.PatternLayout;
 import org.apache.commons.configuration2.PropertiesConfiguration;
-import ru.hzerr.fx.engine.annotation.Include;
-import ru.hzerr.fx.engine.annotation.MetaData;
-import ru.hzerr.fx.engine.annotation.Registered;
+import ru.hzerr.fx.engine.core.annotation.Include;
+import ru.hzerr.fx.engine.core.annotation.MetaData;
+import ru.hzerr.fx.engine.core.annotation.Registered;
 import ru.hzerr.fx.engine.configuration.logging.naming.strategy.ILoggingConfigurationNamingStrategy;
 import ru.hzerr.fx.engine.configuration.logging.naming.strategy.LoggingConfigurationNamingStrategy;
 

@@ -17,7 +17,7 @@ public class ReadOnlyLoggingConfiguration implements IReadOnlyLoggingConfigurati
     private static final String FORMATTED_TIME = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss").format(Calendar.getInstance().getTime());
     private static final PatternLayout consolePatternLayout = new ColoredPatternLayoutEncoder();
     private static final String LOG_FILE_NAME = "fx-" + FORMATTED_TIME + ".log";
-    private static final String CONSOLE_PATTERN = "%classname([%thread]) | %time(" + FORMATTED_TIME + ") | %author(Created By HZERR) | - %classname(%caller:) %highlight(%msg) %n";
+    private static final String CONSOLE_PATTERN = "%classname([%thread]) | %time(" + FORMATTED_TIME + ") | %author(Created By HZERR) | - %classname(%caller:) %highlight(%msg)\n";
     private static final String FILE_PATTERN = "[%thread] %-5level | " + FORMATTED_TIME + " | - %class{0}: %msg %n";
 
     @Override

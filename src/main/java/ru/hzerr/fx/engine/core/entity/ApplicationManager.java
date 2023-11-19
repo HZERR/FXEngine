@@ -1,31 +1,41 @@
 package ru.hzerr.fx.engine.core.entity;
 
-import ru.hzerr.fx.engine.annotation.Include;
-import ru.hzerr.fx.engine.annotation.IncludeAs;
-import ru.hzerr.fx.engine.configuration.IResourceStructureConfiguration;
+import ru.hzerr.collections.list.HList;
+import ru.hzerr.collections.list.SynchronizedHList;
+import ru.hzerr.fx.engine.configuration.application.IResourceStructureConfiguration;
 import ru.hzerr.fx.engine.core.FXEngine;
+import ru.hzerr.fx.engine.core.annotation.Include;
+import ru.hzerr.fx.engine.core.annotation.IncludeAs;
+import ru.hzerr.fx.engine.core.annotation.Multithreaded;
+import ru.hzerr.fx.engine.core.annotation.Redefinition;
 import ru.hzerr.fx.engine.core.entity.exception.LanguagePackMetaDataNotFoundException;
 import ru.hzerr.fx.engine.core.language.ApplicationLocalizationMetaData;
 import ru.hzerr.fx.engine.core.language.BaseLocalizationMetaData;
-import ru.hzerr.fx.engine.core.language.LanguagePackLoader;
+import ru.hzerr.fx.engine.core.language.LocalizationLoader;
 import ru.hzerr.fx.engine.core.language.Localization;
 import ru.hzerr.fx.engine.core.language.localization.ILocalizationProvider;
 import ru.hzerr.fx.engine.core.path.*;
 import ru.hzerr.fx.engine.core.theme.Theme;
+import ru.hzerr.fx.engine.core.theme.ThemeMetaData;
+import ru.hzerr.fx.engine.core.theme.ThemeNotFoundException;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
+@Multithreaded
+@Redefinition(isRedefined = false)
 public class ApplicationManager implements IApplicationManager {
 
-    protected final Map<String, Controller> controllers = new ConcurrentHashMap<>();
+    private final Map<String, Controller> controllers = Collections.synchronizedMap(new HashMap<>());
+    private final HList<Theme> themes = new SynchronizedHList<>();
 
     @IncludeAs("engineLoggingLocalizationProvider")
-    protected ILocalizationProvider localizationProvider;
+    private ILocalizationProvider localizationProvider;
 
     @Include
-    protected IResourceStructureConfiguration resourceStructureConfiguration;
+    private IResourceStructureConfiguration resourceStructureConfiguration;
 
     @Override
     public void register(String id, Controller controller) {
@@ -38,13 +48,50 @@ public class ApplicationManager implements IApplicationManager {
     }
 
     @Override
-    public void setLanguage(Locale locale) {
-        controllers.forEach((id, controller) -> controller.onChangeLanguage(getControllerInternationalizationFile(controller, locale)));
+    public void register(Theme theme) {
+        themes.add(theme);
     }
 
     @Override
-    public void setTheme(Theme theme) {
+    public void setLanguage(Locale locale) {
+        controllers.forEach((id, controller) -> controller.onChangeLanguage(getControllerInternationalizationFile(controller, locale)));
+        FXEngine.getContext().getApplicationConfiguration().setLocale(locale);
+    }
+
+    @Override
+    public void setTheme(Class<? extends ThemeMetaData> themeMetaDataClass) {
+        Theme theme = getThemeByMetaData(themeMetaDataClass);
         controllers.forEach((id, controller) -> controller.onChangeUI(theme));
+        FXEngine.getContext().getApplicationConfiguration().setThemeName(theme.getMetaData().getName());
+    }
+
+    @Override
+    public void setTheme(String themeName) {
+        Theme theme = getThemeByName(themeName);
+        controllers.forEach((id, controller) -> controller.onChangeUI(theme));
+        FXEngine.getContext().getApplicationConfiguration().setThemeName(theme.getMetaData().getName());
+    }
+
+    @Override
+    public Theme getTheme() {
+        return getThemeByName(FXEngine.getContext().getApplicationConfiguration().getThemeName());
+    }
+
+    @Override
+    public Class<? extends ThemeMetaData> getThemeMetaDataClass() {
+        return getThemeByName(FXEngine.getContext().getApplicationConfiguration().getThemeName()).getMetaData().getClass();
+    }
+
+    private Theme getThemeByName(String themeName) {
+        return themes
+                .find(theme -> themeName.equals(theme.getMetaData().getName()))
+                .orElseThrow(() -> new ThemeNotFoundException("Theme '" + themeName + "' can't be found"));
+    }
+
+    private Theme getThemeByMetaData(Class<? extends ThemeMetaData> themeMetaDataClass) {
+        return themes
+                .find(theme -> theme.getMetaData().getClass().isAssignableFrom(themeMetaDataClass))
+                .orElseThrow(() -> new ThemeNotFoundException("Theme '" + themeMetaDataClass.getSimpleName() + "' can't be found"));
     }
 
     private Localization getControllerInternationalizationFile(Controller controller, Locale locale) {
@@ -69,8 +116,8 @@ public class ApplicationManager implements IApplicationManager {
                 Separator.SLASH_SEPARATOR
         );
 
-        LanguagePackLoader languagePackLoader = new LanguagePackLoader(currentLanguageMetaData, currentLanguagePackLocation);
-        return languagePackLoader.load();
+        LocalizationLoader localizationLoader = LocalizationLoader.from(currentLanguageMetaData, currentLanguagePackLocation);
+        return localizationLoader.load();
     }
 
     private BaseLocalizationMetaData getApplicationLanguageMetaData(Locale locale) {

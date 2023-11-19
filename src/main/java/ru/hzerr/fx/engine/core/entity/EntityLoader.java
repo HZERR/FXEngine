@@ -3,8 +3,7 @@ package ru.hzerr.fx.engine.core.entity;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import org.jetbrains.annotations.NotNull;
-import ru.hzerr.fx.engine.core.async.Handler;
-import ru.hzerr.fx.engine.annotation.FXEntity;
+import ru.hzerr.fx.engine.core.annotation.FXEntity;
 import ru.hzerr.fx.engine.core.entity.exception.*;
 
 import java.io.IOException;
@@ -20,6 +19,10 @@ import java.util.stream.Collectors;
 public final class EntityLoader {
 
     private static final ExecutorService service = Executors.newCachedThreadPool();
+
+    static {
+        Runtime.getRuntime().addShutdownHook(new Thread(service::shutdown));
+    }
 
     private static final AtomicReference<ClassLoader> classLoader = new AtomicReference<>(ClassLoader.getSystemClassLoader());
 

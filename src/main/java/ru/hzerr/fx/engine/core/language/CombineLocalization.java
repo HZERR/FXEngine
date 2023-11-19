@@ -1,7 +1,7 @@
 package ru.hzerr.fx.engine.core.language;
 
 import ru.hzerr.collections.list.HList;
-import ru.hzerr.fx.engine.configuration.typesafe.IFormattedConfiguration;
+import ru.hzerr.fx.engine.configuration.fs.typesafe.IFormattedConfiguration;
 
 public class CombineLocalization implements ICombineLocalization {
 

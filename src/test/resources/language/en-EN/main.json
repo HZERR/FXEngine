@@ -1,5 +1,11 @@
 {
   "button": {
-    "click": "CLICK ME"
+    "destroy": {
+      "parent": "DESTROY CURRENT ROOT"
+    },
+    "change": {
+      "localization": "CHANGE LOCALIZATION",
+      "theme": "CHANGE THEME"
+    }
   }
 }

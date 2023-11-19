@@ -22,6 +22,14 @@ public class FXEngineTest extends FXEngine {
     @Override
     protected void onInit() throws Exception {
         EntityLoader.setClassLoader(ClassLoader.getSystemClassLoader());
+//        context.registerBean("example1", Example.class);
+//        context.getBean("example1", Example.class).setName("example1");
+//        context.registerBean("example2", Example.class);
+//        context.getBean("example2", Example.class).setName("example2");
+//        context.registerBean(Example.class);
+//        context.registerBean(Example.class);
+//        System.out.println(context.getBeansOfType(Example.class).size());
+//        System.out.println(context.getBean(Example.class));
     }
 
     @Override

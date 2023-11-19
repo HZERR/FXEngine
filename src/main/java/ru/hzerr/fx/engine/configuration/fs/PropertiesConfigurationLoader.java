@@ -6,11 +6,11 @@ import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.convert.DefaultListDelimiterHandler;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.springframework.context.annotation.Bean;
-import ru.hzerr.fx.engine.annotation.Include;
-import ru.hzerr.fx.engine.annotation.Registered;
-import ru.hzerr.fx.engine.configuration.IStructureConfiguration;
-import ru.hzerr.fx.engine.interfaces.LoadException;
-import ru.hzerr.fx.engine.interfaces.Loader;
+import ru.hzerr.fx.engine.core.annotation.Include;
+import ru.hzerr.fx.engine.core.annotation.Registered;
+import ru.hzerr.fx.engine.configuration.application.IStructureConfiguration;
+import ru.hzerr.fx.engine.core.LoadException;
+import ru.hzerr.fx.engine.core.Loader;
 
 @Registered
 public class PropertiesConfigurationLoader implements Loader<PropertiesConfiguration> {

@@ -1,7 +1,7 @@
 package ru.hzerr.fx.core.application;
 
 import ch.qos.logback.classic.Level;
-import ru.hzerr.fx.engine.annotation.Registered;
+import ru.hzerr.fx.engine.core.annotation.Registered;
 import ru.hzerr.fx.engine.configuration.logging.ReadOnlyLoggingConfiguration;
 
 import java.util.Locale;
@@ -16,7 +16,7 @@ public class BaseReadOnlyLoggingConfiguration extends ReadOnlyLoggingConfigurati
 
     @Override
     public Level getLoggerLevel() {
-        return Level.ALL;
+        return Level.DEBUG;
     }
 
     @Override

@@ -1,6 +1,6 @@
 package ru.hzerr.fx.engine.configuration.logging;
 
-import ru.hzerr.fx.engine.annotation.Registered;
+import ru.hzerr.fx.engine.core.annotation.Registered;
 import ru.hzerr.fx.engine.core.language.Localization;
 
 @Registered

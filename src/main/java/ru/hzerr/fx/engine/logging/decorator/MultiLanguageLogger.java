@@ -7,7 +7,7 @@ import org.slf4j.Marker;
 import org.slf4j.event.Level;
 import org.slf4j.event.LoggingEvent;
 import org.slf4j.spi.LoggingEventBuilder;
-import ru.hzerr.fx.engine.configuration.typesafe.IFormattedConfiguration;
+import ru.hzerr.fx.engine.configuration.fs.typesafe.IFormattedConfiguration;
 import ru.hzerr.fx.engine.core.language.ICombineLocalization;
 
 import java.util.Iterator;

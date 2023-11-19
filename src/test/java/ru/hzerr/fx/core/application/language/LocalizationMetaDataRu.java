@@ -1,7 +1,7 @@
 package ru.hzerr.fx.core.application.language;
 
 import com.typesafe.config.ConfigSyntax;
-import ru.hzerr.fx.engine.annotation.Registered;
+import ru.hzerr.fx.engine.core.annotation.Registered;
 import ru.hzerr.fx.engine.core.language.ApplicationLocalizationMetaData;
 import ru.hzerr.fx.engine.core.path.BaseLocation;
 

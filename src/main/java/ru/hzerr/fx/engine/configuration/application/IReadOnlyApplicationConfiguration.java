@@ -7,4 +7,5 @@ import java.util.Locale;
 public interface IReadOnlyApplicationConfiguration extends IReadOnlyConfiguration {
 
     Locale getLocale();
+    String getThemeName();
 }

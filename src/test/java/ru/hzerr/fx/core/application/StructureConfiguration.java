@@ -3,8 +3,8 @@ package ru.hzerr.fx.core.application;
 import ru.hzerr.file.BaseDirectory;
 import ru.hzerr.file.BaseFile;
 import ru.hzerr.file.HDirectory;
-import ru.hzerr.fx.engine.annotation.Registered;
-import ru.hzerr.fx.engine.configuration.IStructureConfiguration;
+import ru.hzerr.fx.engine.core.annotation.Registered;
+import ru.hzerr.fx.engine.configuration.application.IStructureConfiguration;
 import ru.hzerr.util.SystemInfo;
 
 import java.io.File;

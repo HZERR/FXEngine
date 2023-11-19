@@ -1,7 +1,7 @@
 package ru.hzerr.fx.core.formatted;
 
 import org.junit.jupiter.api.Test;
-import ru.hzerr.fx.engine.configuration.typesafe.FormatException;
+import ru.hzerr.fx.engine.configuration.fs.typesafe.FormatException;
 
 public class FormatTest {
 
