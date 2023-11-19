@@ -5,6 +5,8 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import ru.hzerr.fx.engine.configuration.application.FXRuntime;
 import ru.hzerr.fx.engine.configuration.application.IStructureConfiguration;
+import ru.hzerr.fx.engine.core.context.ExtendedAnnotationConfigApplicationContextProvider;
+import ru.hzerr.fx.engine.core.context.IExtendedAnnotationConfigApplicationContext;
 import ru.hzerr.fx.engine.core.entity.EntityLoader;
 
 import java.io.IOException;
@@ -12,7 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class FXEngine extends Application {
 
-    protected static ExtendedAnnotationConfigApplicationContext context;
+    protected static IExtendedAnnotationConfigApplicationContext context;
     private final AtomicBoolean CLOSED = new AtomicBoolean(false);
 
     /**
@@ -58,16 +60,16 @@ public abstract class FXEngine extends Application {
         }
     }
 
-    protected abstract ExtendedAnnotationConfigApplicationContext createApplicationContext();
+    protected abstract IExtendedAnnotationConfigApplicationContext createApplicationContext();
     protected abstract void onInit() throws Exception;
     protected abstract Scene onStart(Stage stage) throws Exception;
     protected abstract void onClose() throws IOException;
 
-    protected final IApplicationContextProvider<ExtendedAnnotationConfigApplicationContext> applicationContextProvider(String[] basePackages) {
-        return new AnnotationConfigApplicationContextProvider(basePackages, true);
+    protected final IApplicationContextProvider<IExtendedAnnotationConfigApplicationContext> applicationContextProvider(String[] basePackages) {
+        return new ExtendedAnnotationConfigApplicationContextProvider(basePackages, true);
     }
 
-    public static ExtendedAnnotationConfigApplicationContext getContext() {
+    public static IExtendedAnnotationConfigApplicationContext getContext() {
         return context;
     }
 }

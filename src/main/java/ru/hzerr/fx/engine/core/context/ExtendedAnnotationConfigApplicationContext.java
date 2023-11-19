@@ -1,4 +1,4 @@
-package ru.hzerr.fx.engine.core;
+package ru.hzerr.fx.engine.core.context;
 
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -15,22 +15,25 @@ import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import ru.hzerr.collections.list.ArrayHList;
 import ru.hzerr.collections.list.HList;
-import ru.hzerr.fx.engine.configuration.application.*;
-import ru.hzerr.fx.engine.configuration.logging.ILoggingConfiguration;
+import ru.hzerr.fx.engine.configuration.application.IApplicationConfiguration;
+import ru.hzerr.fx.engine.configuration.application.IResourceStructureConfiguration;
+import ru.hzerr.fx.engine.configuration.application.ISoftwareConfiguration;
+import ru.hzerr.fx.engine.configuration.application.IStructureConfiguration;
+import ru.hzerr.fx.engine.core.ApplicationContextInitializationException;
+import ru.hzerr.fx.engine.core.BeanAlreadyExistsException;
+import ru.hzerr.fx.engine.core.LoadException;
 import ru.hzerr.fx.engine.core.annotation.FXEntity;
 import ru.hzerr.fx.engine.core.annotation.Redefinition;
+import ru.hzerr.fx.engine.core.context.initializer.ExtendedAnnotationConfigApplicationContextLogProviderInitializer;
+import ru.hzerr.fx.engine.core.context.initializer.ExtendedAnnotationConfigApplicationContextLoggingLocalizationInitializer;
+import ru.hzerr.fx.engine.core.context.initializer.ExtendedAnnotationConfigApplicationContextStructureInitializer;
 import ru.hzerr.fx.engine.core.entity.ApplicationManager;
 import ru.hzerr.fx.engine.core.entity.Controller;
 import ru.hzerr.fx.engine.core.entity.IApplicationManager;
-import ru.hzerr.fx.engine.core.language.*;
 import ru.hzerr.fx.engine.core.language.localization.ILocalizationProvider;
-import ru.hzerr.fx.engine.core.language.localization.LocalizationProvider;
-import ru.hzerr.fx.engine.core.path.resolver.ApplicationLoggingLocalizationResolver;
-import ru.hzerr.fx.engine.core.path.resolver.Resolver;
 import ru.hzerr.fx.engine.core.theme.Theme;
 import ru.hzerr.fx.engine.core.theme.ThemeLoader;
 import ru.hzerr.fx.engine.core.theme.ThemeMetaData;
-import ru.hzerr.fx.engine.logging.ConfigurableException;
 import ru.hzerr.fx.engine.logging.factory.FXApplicationLogProvider;
 import ru.hzerr.fx.engine.logging.factory.FXEngineLogProvider;
 import ru.hzerr.fx.engine.logging.factory.ILogProvider;
@@ -38,7 +41,7 @@ import ru.hzerr.fx.engine.logging.factory.ILogProvider;
 import java.lang.annotation.Annotation;
 import java.util.function.Supplier;
 
-public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfigApplicationContext {
+public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfigApplicationContext implements IExtendedAnnotationConfigApplicationContext {
 
     public static final String APPLICATION_LOGGING_LOCALIZATION_META_DATA_BEAN_NAME = "applicationLoggingLocalizationMetaData";
     public static final String ENGINE_LOGGING_LOCALIZATION_META_DATA_BEAN_NAME = "engineLoggingLocalizationMetaData";
@@ -57,10 +60,12 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
 
     public ExtendedAnnotationConfigApplicationContext(String... basePackages) {
         super(basePackages);
-        prepareStructureConfiguration();
-        prepareLoggingInternationalization();
-        prepareLogProvider();
         this.basePackages = HList.of(basePackages);
+        getBean(ExtendedAnnotationConfigApplicationContextStructureInitializer.class).initialize();
+        getBean(ExtendedAnnotationConfigApplicationContextLoggingLocalizationInitializer.class).initialize();
+        engineLocalizationProvider = getEngineLocalizationProvider();
+        getBean(ExtendedAnnotationConfigApplicationContextLogProviderInitializer.class).initialize();
+        engineLogProvider = getFXEngineLogProvider();
         registerControllers();
         prepareThemes();
     }
@@ -94,35 +99,6 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
                 controllers.add(controllerClass);
                 engineLogProvider.getLogger().debug("fxEngine.applicationContext.registerControllers.controllerSuccessfullyRegistered", controllerClass.getSimpleName());
             }
-        }
-    }
-
-    private void prepareStructureConfiguration() {
-        try {
-            getBean(StructureInitializer.class).initialize();
-        } catch (InitializationException e) {
-            throw new ApplicationContextInitializationException("Unable to create ApplicationContext. An error occurred while configuring the application structure", e);
-        }
-    }
-
-    private void prepareLoggingInternationalization() {
-        try {
-            prepareEngineLoggingLocalization();
-            prepareApplicationLoggingLocalization();
-            engineLocalizationProvider = super.getBean(ENGINE_LOGGING_LOCALIZATION_PROVIDER_BEAN_NAME, LocalizationProvider.class);
-        } catch (ApplicationLoggingLanguageMetaDataNotFoundException | EngineLoggingLanguageMetaDataNotFoundException e) {
-            throw new ApplicationContextInitializationException("Unable to create ApplicationContext. An error occurred while configuring the internationalization of the application", e);
-        }
-    }
-
-    private void prepareLogProvider() {
-        try {
-            registerBean(APPLICATION_LOG_PROVIDER_BEAN_NAME, FXApplicationLogProvider.class);
-            registerBean(ENGINE_LOG_PROVIDER_BEAN_NAME, FXEngineLogProvider.class);
-            engineLogProvider = getBean(ENGINE_LOG_PROVIDER_BEAN_NAME, FXEngineLogProvider.class);
-            engineLogProvider.configure();
-        } catch (ConfigurableException e) {
-            throw new ApplicationContextInitializationException("Unable to create ApplicationContext. A logger configuration error has occurred", e);
         }
     }
 
@@ -168,51 +144,6 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
         }
 
         return getBean(APPLICATION_MANAGER_BEAN_NAME, IApplicationManager.class);
-    }
-
-    private void prepareEngineLoggingLocalization() throws EngineLoggingLanguageMetaDataNotFoundException {
-        Localization engineLoggingLocalization = LocalizationLoader.from(getEngineLoggingLanguageMetaData(), getEngineLoggingLanguageMetaData().getILocation().getLocation()).load();
-
-        registerBean(ENGINE_LOGGING_LOCALIZATION_PROVIDER_BEAN_NAME, LocalizationProvider.class, engineLoggingLocalization);
-    }
-
-    private void prepareApplicationLoggingLocalization() throws ApplicationLoggingLanguageMetaDataNotFoundException {
-        super.register(ApplicationLoggingLocalizationResolver.class);
-        Resolver applicationLocalizationResolver = getBean(ApplicationLoggingLocalizationResolver.class);
-
-        Localization applicationLoggingLocalization = LocalizationLoader.from(getApplicationLoggingLanguageMetaData(), applicationLocalizationResolver.resolve()).load();
-
-        registerBean(APPLICATION_LOGGING_LOCALIZATION_PROVIDER_BEAN_NAME, LocalizationProvider.class, applicationLoggingLocalization);
-    }
-
-    private EngineLoggingLocalizationMetaData getEngineLoggingLanguageMetaData() throws EngineLoggingLanguageMetaDataNotFoundException {
-        if (containsBean(ENGINE_LOGGING_LOCALIZATION_META_DATA_BEAN_NAME))
-            return getBean(ENGINE_LOGGING_LOCALIZATION_META_DATA_BEAN_NAME, EngineLoggingLocalizationMetaData.class);
-
-        ILoggingConfiguration configuration = getBean(ILoggingConfiguration.class);
-        for (EngineLoggingLocalizationMetaData metaData : getBeansOfType(EngineLoggingLocalizationMetaData.class).values()) {
-            if (metaData.getLocale().equals(configuration.getEngineLocale())) {
-                registerBean(ENGINE_LOGGING_LOCALIZATION_META_DATA_BEAN_NAME, EngineLoggingLocalizationMetaData.class, () -> metaData);
-                return metaData;
-            }
-        }
-
-        throw new EngineLoggingLanguageMetaDataNotFoundException("The metadata of the language pack of the engine with the locale '" + configuration.getEngineLocale().toString() + "' was not found");
-    }
-
-    private LoggingLocalizationMetaData getApplicationLoggingLanguageMetaData() throws ApplicationLoggingLanguageMetaDataNotFoundException {
-        if (containsBean(APPLICATION_LOGGING_LOCALIZATION_META_DATA_BEAN_NAME))
-            return getBean(APPLICATION_LOGGING_LOCALIZATION_META_DATA_BEAN_NAME, LoggingLocalizationMetaData.class);
-
-        ILoggingConfiguration configuration = getBean(ILoggingConfiguration.class);
-        for (LoggingLocalizationMetaData metaData : getBeansOfType(LoggingLocalizationMetaData.class).values()) {
-            if (metaData.getLocale().equals(configuration.getEngineLocale())) {
-                registerBean(APPLICATION_LOGGING_LOCALIZATION_META_DATA_BEAN_NAME, LoggingLocalizationMetaData.class, () -> metaData);
-                return metaData;
-            }
-        }
-
-        throw new ApplicationLoggingLanguageMetaDataNotFoundException("The metadata of the language pack for debugging the application with the language locale \"" + configuration.getEngineLocale().toString() + "\" was not found");
     }
 
     public boolean containsBean(Class<?> beanClass) {
