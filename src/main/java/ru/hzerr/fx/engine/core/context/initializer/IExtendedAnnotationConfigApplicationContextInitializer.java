@@ -4,5 +4,5 @@ import ru.hzerr.fx.engine.core.ApplicationContextInitializationException;
 
 public interface IExtendedAnnotationConfigApplicationContextInitializer {
 
-    void initialize() throws ApplicationContextInitializationException;
+    void onInitialize() throws ApplicationContextInitializationException;
 }

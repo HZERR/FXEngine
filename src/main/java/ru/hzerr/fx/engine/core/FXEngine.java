@@ -54,6 +54,7 @@ public abstract class FXEngine extends Application {
 
     @Override
     public void stop() throws IOException {
+        context.close();
         if (CLOSED.compareAndSet(false, true)) {
             EntityLoader.close();
             onClose();

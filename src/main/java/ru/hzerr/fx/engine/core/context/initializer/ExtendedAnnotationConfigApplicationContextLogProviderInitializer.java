@@ -4,6 +4,7 @@ import ru.hzerr.fx.engine.core.ApplicationContextInitializationException;
 import ru.hzerr.fx.engine.core.annotation.Include;
 import ru.hzerr.fx.engine.core.annotation.Registered;
 import ru.hzerr.fx.engine.core.context.IExtendedAnnotationConfigApplicationContext;
+import ru.hzerr.fx.engine.core.context.InitializedBean;
 import ru.hzerr.fx.engine.logging.ConfigurableException;
 import ru.hzerr.fx.engine.logging.factory.FXApplicationLogProvider;
 import ru.hzerr.fx.engine.logging.factory.FXEngineLogProvider;
@@ -12,7 +13,7 @@ import static ru.hzerr.fx.engine.core.context.ExtendedAnnotationConfigApplicatio
 import static ru.hzerr.fx.engine.core.context.ExtendedAnnotationConfigApplicationContext.ENGINE_LOG_PROVIDER_BEAN_NAME;
 
 @Registered
-public class ExtendedAnnotationConfigApplicationContextLogProviderInitializer implements IExtendedAnnotationConfigApplicationContextInitializer {
+public class ExtendedAnnotationConfigApplicationContextLogProviderInitializer implements IExtendedAnnotationConfigApplicationContextInitializer, InitializedBean {
 
     private IExtendedAnnotationConfigApplicationContext context;
 
@@ -22,7 +23,7 @@ public class ExtendedAnnotationConfigApplicationContextLogProviderInitializer im
     }
 
     @Override
-    public void initialize() throws ApplicationContextInitializationException {
+    public void onInitialize() throws ApplicationContextInitializationException {
         context.registerBean(APPLICATION_LOG_PROVIDER_BEAN_NAME, FXApplicationLogProvider.class);
         context.registerBean(ENGINE_LOG_PROVIDER_BEAN_NAME, FXEngineLogProvider.class);
 

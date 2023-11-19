@@ -24,9 +24,6 @@ import ru.hzerr.fx.engine.core.BeanAlreadyExistsException;
 import ru.hzerr.fx.engine.core.LoadException;
 import ru.hzerr.fx.engine.core.annotation.FXEntity;
 import ru.hzerr.fx.engine.core.annotation.Redefinition;
-import ru.hzerr.fx.engine.core.context.initializer.ExtendedAnnotationConfigApplicationContextLogProviderInitializer;
-import ru.hzerr.fx.engine.core.context.initializer.ExtendedAnnotationConfigApplicationContextLoggingLocalizationInitializer;
-import ru.hzerr.fx.engine.core.context.initializer.ExtendedAnnotationConfigApplicationContextStructureInitializer;
 import ru.hzerr.fx.engine.core.entity.ApplicationManager;
 import ru.hzerr.fx.engine.core.entity.Controller;
 import ru.hzerr.fx.engine.core.entity.IApplicationManager;
@@ -61,10 +58,7 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
     public ExtendedAnnotationConfigApplicationContext(String... basePackages) {
         super(basePackages);
         this.basePackages = HList.of(basePackages);
-        getBean(ExtendedAnnotationConfigApplicationContextStructureInitializer.class).initialize();
-        getBean(ExtendedAnnotationConfigApplicationContextLoggingLocalizationInitializer.class).initialize();
         engineLocalizationProvider = getEngineLocalizationProvider();
-        getBean(ExtendedAnnotationConfigApplicationContextLogProviderInitializer.class).initialize();
         engineLogProvider = getFXEngineLogProvider();
         registerControllers();
         prepareThemes();

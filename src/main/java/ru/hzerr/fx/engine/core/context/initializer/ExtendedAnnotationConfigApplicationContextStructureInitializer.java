@@ -6,9 +6,10 @@ import ru.hzerr.fx.engine.core.InitializationException;
 import ru.hzerr.fx.engine.core.annotation.Include;
 import ru.hzerr.fx.engine.core.annotation.Registered;
 import ru.hzerr.fx.engine.core.context.IExtendedAnnotationConfigApplicationContext;
+import ru.hzerr.fx.engine.core.context.InitializedBean;
 
 @Registered
-public class ExtendedAnnotationConfigApplicationContextStructureInitializer implements IExtendedAnnotationConfigApplicationContextInitializer {
+public class ExtendedAnnotationConfigApplicationContextStructureInitializer implements IExtendedAnnotationConfigApplicationContextInitializer, InitializedBean {
 
     private IExtendedAnnotationConfigApplicationContext context;
 
@@ -18,7 +19,7 @@ public class ExtendedAnnotationConfigApplicationContextStructureInitializer impl
     }
 
     @Override
-    public void initialize() throws ApplicationContextInitializationException {
+    public void onInitialize() throws ApplicationContextInitializationException {
         try {
             context.getBean(StructureInitializer.class).initialize();
         } catch (InitializationException e) {

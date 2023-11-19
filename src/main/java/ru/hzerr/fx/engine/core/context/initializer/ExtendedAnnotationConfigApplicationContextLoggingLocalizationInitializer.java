@@ -5,6 +5,7 @@ import ru.hzerr.fx.engine.core.ApplicationContextInitializationException;
 import ru.hzerr.fx.engine.core.annotation.Include;
 import ru.hzerr.fx.engine.core.annotation.Registered;
 import ru.hzerr.fx.engine.core.context.IExtendedAnnotationConfigApplicationContext;
+import ru.hzerr.fx.engine.core.context.InitializedBean;
 import ru.hzerr.fx.engine.core.language.*;
 import ru.hzerr.fx.engine.core.language.localization.LocalizationProvider;
 import ru.hzerr.fx.engine.core.path.resolver.ApplicationLoggingLocalizationResolver;
@@ -13,7 +14,7 @@ import ru.hzerr.fx.engine.core.path.resolver.Resolver;
 import static ru.hzerr.fx.engine.core.context.ExtendedAnnotationConfigApplicationContext.*;
 
 @Registered
-public class ExtendedAnnotationConfigApplicationContextLoggingLocalizationInitializer implements IExtendedAnnotationConfigApplicationContextInitializer {
+public class ExtendedAnnotationConfigApplicationContextLoggingLocalizationInitializer implements IExtendedAnnotationConfigApplicationContextInitializer, InitializedBean {
 
     private IExtendedAnnotationConfigApplicationContext context;
 
@@ -23,7 +24,7 @@ public class ExtendedAnnotationConfigApplicationContextLoggingLocalizationInitia
     }
 
     @Override
-    public void initialize() throws ApplicationContextInitializationException {
+    public void onInitialize() throws ApplicationContextInitializationException {
         try {
             // register application & engine logging localization meta data
             registerEngineLoggingLocalizationMetaData();
