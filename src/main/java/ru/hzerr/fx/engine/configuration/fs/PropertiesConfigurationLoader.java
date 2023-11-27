@@ -6,11 +6,11 @@ import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.convert.DefaultListDelimiterHandler;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.springframework.context.annotation.Bean;
-import ru.hzerr.fx.engine.core.annotation.Include;
-import ru.hzerr.fx.engine.core.annotation.Registered;
 import ru.hzerr.fx.engine.configuration.application.IStructureConfiguration;
 import ru.hzerr.fx.engine.core.LoadException;
 import ru.hzerr.fx.engine.core.Loader;
+import ru.hzerr.fx.engine.core.annotation.Include;
+import ru.hzerr.fx.engine.core.annotation.Registered;
 
 @Registered
 public class PropertiesConfigurationLoader implements Loader<PropertiesConfiguration> {
@@ -30,9 +30,9 @@ public class PropertiesConfigurationLoader implements Loader<PropertiesConfigura
         this.location = configuration.getSoftwareConfigurationFile().getLocation();
     }
 
-    @Bean("applicationFileBasedConfiguration")
     @Override
-    public PropertiesConfiguration resolve() throws LoadException {
+    @Bean("applicationFileBasedConfiguration")
+    public PropertiesConfiguration load() throws LoadException {
         builder.setAutoSave(true);
         try {
             return builder.getConfiguration();

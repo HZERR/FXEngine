@@ -118,7 +118,7 @@ public class ApplicationManager implements IApplicationManager {
         );
 
         LocalizationLoader localizationLoader = LocalizationLoader.from(currentLanguageMetaData, currentLanguagePackLocation);
-        return localizationLoader.resolve();
+        return localizationLoader.load();
     }
 
     private BaseLocalizationMetaData getApplicationLanguageMetaData(Locale locale) {

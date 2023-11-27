@@ -1,44 +1,40 @@
 package ru.hzerr.fx.engine.configuration.application;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import ru.hzerr.fx.engine.core.annotation.Redefinition;
-import ru.hzerr.fx.engine.core.annotation.RegisteredAs;
+import ru.hzerr.file.BaseDirectory;
+import ru.hzerr.file.BaseFile;
 import ru.hzerr.fx.engine.core.InitializationException;
 
 import java.io.IOException;
 
-@RegisteredAs("structureInitializer")
-@Redefinition(isRedefined = false)
 public class StructureInitializer implements Initializer {
 
     private IStructureConfiguration configuration;
 
-    @Autowired
     public StructureInitializer(IStructureConfiguration configuration) {
         this.configuration = configuration;
     }
 
     @Override
     public void initialize() throws InitializationException {
+        initializeDirectory(configuration.getProgramDirectory(), "program");
+        initializeDirectory(configuration.getLogDirectory(), "log");
+        initializeDirectory(configuration.getConfigDirectory(), "config");
+        initializeFile(configuration.getSoftwareConfigurationFile(), "software configuration");
+    }
+
+    private void initializeDirectory(BaseDirectory directory, String purposeDirectory) throws InitializationException {
         try {
-            configuration.getProgramDirectory().create();
-        } catch (IOException e) {
-            throw new InitializationException(String.format("It is not possible to create a directory on the path '%s'", configuration.getProgramDirectory().getLocation()), e);
+            directory.create();
+        } catch (IOException | NullPointerException e) {
+            throw new InitializationException(String.format("It is not possible to create a %s directory on the path '%s'", purposeDirectory, directory != null ? directory.getLocation() : null), e);
         }
+    }
+
+    private void initializeFile(BaseFile file, String purposeFile) throws InitializationException {
         try {
-            configuration.getLogDirectory().create();
-        } catch (IOException e) {
-            throw new InitializationException(String.format("It is not possible to create a directory on the path '%s'", configuration.getLogDirectory().getLocation()), e);
-        }
-        try {
-            configuration.getConfigDirectory().create();
-        } catch (IOException e) {
-            throw new InitializationException(String.format("It is not possible to create a directory on the path '%s'", configuration.getConfigDirectory().getLocation()), e);
-        }
-        try {
-            configuration.getSoftwareConfigurationFile().create();
-        } catch (IOException e) {
-            throw new InitializationException(String.format("It is not possible to create a file on the path '%s'", configuration.getSoftwareConfigurationFile().getLocation()), e);
+            file.create();
+        } catch (IOException | NullPointerException e) {
+            throw new InitializationException(String.format("It is not possible to create a %s file on the path '%s'",  purposeFile, file != null ? file.getLocation() : null), e);
         }
     }
 }

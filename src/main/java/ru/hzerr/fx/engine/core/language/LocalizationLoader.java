@@ -27,7 +27,7 @@ public class LocalizationLoader implements Loader<Localization> {
     }
 
     @Override
-    public Localization resolve() {
+    public Localization load() {
         Config config = ConfigFactory.parseResourcesAnySyntax(resourceClassLoader, location, ConfigParseOptions.defaults().setSyntax(metaData.getSyntax()));
         return new Localization(metaData, config);
     }
