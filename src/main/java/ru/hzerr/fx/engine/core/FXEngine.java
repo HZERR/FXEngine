@@ -7,7 +7,7 @@ import ru.hzerr.fx.engine.configuration.application.FXRuntime;
 import ru.hzerr.fx.engine.configuration.application.IStructureConfiguration;
 import ru.hzerr.fx.engine.core.context.ExtendedAnnotationConfigApplicationContextProvider;
 import ru.hzerr.fx.engine.core.context.IExtendedAnnotationConfigApplicationContext;
-import ru.hzerr.fx.engine.core.entity.EntityLoader;
+import ru.hzerr.fx.engine.core.theme.ThemeMetaData;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -29,6 +29,10 @@ public abstract class FXEngine extends Application {
     @Override
     public void init() throws Exception {
         context = createApplicationContext();
+        for (ThemeMetaData themeMetaData : context.getBeansOfType(ThemeMetaData.class).values()) {
+            context.getFXEngineLogProvider().getLogger().info("fxEngine.init.registrationThemeInSystem", themeMetaData.getName());
+            context.getApplicationManager().register(themeMetaData);
+        }
         context.registerBean(FXRuntime.class);
         context.getFXEngineLogProvider().getLogger().info("fxEngine.init.loggerSuccessfullyConfigured");
         context.getFXEngineLogProvider().getLogger().info("fxEngine.init.selectedLoggingDirectory", getContext().getBean(IStructureConfiguration.class).getLogDirectory().getLocation());
@@ -56,7 +60,6 @@ public abstract class FXEngine extends Application {
     public void stop() throws IOException {
         context.close();
         if (CLOSED.compareAndSet(false, true)) {
-            EntityLoader.close();
             onClose();
         }
     }

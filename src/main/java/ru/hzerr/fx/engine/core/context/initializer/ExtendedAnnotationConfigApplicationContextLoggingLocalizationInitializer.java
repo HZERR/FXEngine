@@ -31,13 +31,13 @@ public class ExtendedAnnotationConfigApplicationContextLoggingLocalizationInitia
             registerApplicationLoggingLocalizationMetaData();
 
             // register engine logging localization
-            Localization engineLoggingLocalization = LocalizationLoader.from(getEngineLoggingLocalizationMetaData(), getEngineLoggingLocalizationMetaData().getILocation().getLocation()).load();
+            Localization engineLoggingLocalization = LocalizationLoader.from(getEngineLoggingLocalizationMetaData(), getEngineLoggingLocalizationMetaData().getILocation().getLocation()).resolve();
             context.registerBean(ENGINE_LOGGING_LOCALIZATION_PROVIDER_BEAN_NAME, LocalizationProvider.class, engineLoggingLocalization);
 
             // register application logging localization
             context.register(ApplicationLoggingLocalizationResolver.class);
             Resolver applicationLocalizationResolver = context.getBean(ApplicationLoggingLocalizationResolver.class);
-            Localization applicationLoggingLocalization = LocalizationLoader.from(getApplicationLoggingLocalizationMetaData(), applicationLocalizationResolver.resolve()).load();
+            Localization applicationLoggingLocalization = LocalizationLoader.from(getApplicationLoggingLocalizationMetaData(), applicationLocalizationResolver.resolve()).resolve();
             context.registerBean(APPLICATION_LOGGING_LOCALIZATION_PROVIDER_BEAN_NAME, LocalizationProvider.class, applicationLoggingLocalization);
         } catch (ApplicationLoggingLanguageMetaDataNotFoundException | EngineLoggingLanguageMetaDataNotFoundException e) {
             throw new ApplicationContextInitializationException("Unable to create ApplicationContext. An error occurred while configuring the internationalization of the application", e);

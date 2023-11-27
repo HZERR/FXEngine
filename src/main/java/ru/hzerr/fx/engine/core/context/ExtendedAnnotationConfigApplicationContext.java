@@ -3,8 +3,6 @@ package ru.hzerr.fx.engine.core.context;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
-import org.reflections.Reflections;
-import org.reflections.util.ConfigurationBuilder;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.BeanFactoryAnnotationUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -13,24 +11,17 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
-import ru.hzerr.collections.list.ArrayHList;
 import ru.hzerr.collections.list.HList;
 import ru.hzerr.fx.engine.configuration.application.IApplicationConfiguration;
 import ru.hzerr.fx.engine.configuration.application.IResourceStructureConfiguration;
 import ru.hzerr.fx.engine.configuration.application.ISoftwareConfiguration;
 import ru.hzerr.fx.engine.configuration.application.IStructureConfiguration;
-import ru.hzerr.fx.engine.core.ApplicationContextInitializationException;
+import ru.hzerr.fx.engine.core.ApplicationManager;
 import ru.hzerr.fx.engine.core.BeanAlreadyExistsException;
-import ru.hzerr.fx.engine.core.LoadException;
-import ru.hzerr.fx.engine.core.annotation.FXEntity;
 import ru.hzerr.fx.engine.core.annotation.Redefinition;
-import ru.hzerr.fx.engine.core.entity.ApplicationManager;
-import ru.hzerr.fx.engine.core.entity.Controller;
+import ru.hzerr.fx.engine.core.entity.EntityLoader;
 import ru.hzerr.fx.engine.core.entity.IApplicationManager;
 import ru.hzerr.fx.engine.core.language.localization.ILocalizationProvider;
-import ru.hzerr.fx.engine.core.theme.Theme;
-import ru.hzerr.fx.engine.core.theme.ThemeLoader;
-import ru.hzerr.fx.engine.core.theme.ThemeMetaData;
 import ru.hzerr.fx.engine.logging.factory.FXApplicationLogProvider;
 import ru.hzerr.fx.engine.logging.factory.FXEngineLogProvider;
 import ru.hzerr.fx.engine.logging.factory.ILogProvider;
@@ -52,51 +43,28 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
     private ILocalizationProvider engineLocalizationProvider;
     private Stage stage;
 
-    private final HList<Class<? extends Controller>> controllers = ArrayHList.create();
     private final HList<String> basePackages;
 
     public ExtendedAnnotationConfigApplicationContext(String... basePackages) {
-        super(basePackages);
+        super();
+        scan(basePackages);
+        refresh();
         this.basePackages = HList.of(basePackages);
-        engineLocalizationProvider = getEngineLocalizationProvider();
-        engineLogProvider = getFXEngineLogProvider();
-        registerControllers();
-        prepareThemes();
     }
-
-    public HList<Class<? extends Controller>> getRegisteredControllers() {
-        return controllers;
-    }
-
-    private void prepareThemes() {
-        for (ThemeMetaData themeMetaData : getBeansOfType(ThemeMetaData.class).values()) {
-            try {
-                registerBean(ThemeLoader.class, themeMetaData, getRegisteredControllers());
-                ThemeLoader themeLoader = getBean(ThemeLoader.class);
-                themeLoader.setResourceLoader(getClassLoader());
-                themeLoader.setInitialLocation(getResourceStructureConfiguration().getThemePackage());
-                Theme theme = themeLoader.load();
-                getApplicationManager().register(theme);
-            } catch (LoadException le) {
-                throw new ApplicationContextInitializationException("Unable to create ApplicationContext. An error occurred while loading the '" + themeMetaData.getName() + "' theme", le);
-            }
-        }
-    }
-
-    private void registerControllers() {
-        Reflections reflections = new Reflections(new ConfigurationBuilder()
-                .setParallel(true)
-                .forPackages(basePackages.toArray(String.class)));
-
-        for (Class<? extends Controller> controllerClass : reflections.getSubTypesOf(Controller.class)) {
-            if (controllerClass.isAnnotationPresent(FXEntity.class)) {
-                controllers.add(controllerClass);
-                engineLogProvider.getLogger().debug("fxEngine.applicationContext.registerControllers.controllerSuccessfullyRegistered", controllerClass.getSimpleName());
-            }
-        }
-    }
-
     // ======================================== BEGIN FLAT ACCESS ========================================
+
+
+    public void setEngineLocalizationProvider(ILocalizationProvider engineLocalizationProvider) {
+        this.engineLocalizationProvider = engineLocalizationProvider;
+    }
+
+    public void setEngineLogProvider(ILogProvider engineLogProvider) {
+        this.engineLogProvider = engineLogProvider;
+    }
+
+    public EntityLoader getEntityLoader() {
+        return getBean(EntityLoader.class);
+    }
 
     public IStructureConfiguration getStructureConfiguration() {
         return getBean(IStructureConfiguration.class);

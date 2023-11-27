@@ -27,6 +27,7 @@ public class ExtendedAnnotationConfigApplicationContextLogProviderInitializer im
         context.registerBean(APPLICATION_LOG_PROVIDER_BEAN_NAME, FXApplicationLogProvider.class);
         context.registerBean(ENGINE_LOG_PROVIDER_BEAN_NAME, FXEngineLogProvider.class);
 
+
         try {
             context.getFXEngineLogProvider().configure();
         } catch (ConfigurableException e) {

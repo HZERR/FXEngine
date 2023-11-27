@@ -9,6 +9,7 @@ import ru.hzerr.fx.engine.core.FXEngine;
 import ru.hzerr.fx.engine.core.annotation.FXEntity;
 import ru.hzerr.fx.engine.core.entity.Controller;
 import ru.hzerr.fx.engine.core.language.Localization;
+import ru.hzerr.fx.engine.core.theme.ResolveThemeException;
 import ru.hzerr.fx.engine.logging.factory.ILogProvider;
 
 import java.util.Locale;
@@ -43,14 +44,23 @@ public class FXController extends Controller {
         changeTheme.setOnAction((e) -> {
             // TODO: 12.11.2023 ДОПИСАТь
             if (FXEngine.getContext().getApplicationConfiguration().getThemeName().equals("White")) {
-                FXEngine.getContext().getApplicationManager().setTheme(DarkThemeMetaData.class);
-            } else
-                FXEngine.getContext().getApplicationManager().setTheme(WhiteThemeMetaData.class);
+                try {
+                    FXEngine.getContext().getApplicationManager().changeTheme(DarkThemeMetaData.class);
+                } catch (ResolveThemeException ex) {
+                    throw new RuntimeException(ex);
+                }
+            } else {
+                try {
+                    FXEngine.getContext().getApplicationManager().changeTheme(WhiteThemeMetaData.class);
+                } catch (ResolveThemeException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
         });
     }
 
     @Override
-    protected void onChangeLanguage(Localization languagePack) {
+    public void onChangeLanguage(Localization languagePack) {
         destroy.setText(languagePack.getConfiguration().getString("button.destroy.parent"));
         changeLocalization.setText(languagePack.getConfiguration().getString("button.change.localization"));
         changeTheme.setText(languagePack.getConfiguration().getString("button.change.theme"));

@@ -13,13 +13,11 @@
         "getByQualifier": "Получение бина '{}' по квалификатору '{}'",
         "qualifierValueIsEmptyException": "Необходимая аннотация 'Qualifier' присутствует в классе '{}'. Однако она имеет пустое значение и движок не может найти дочернюю аннотацию по отношению к Qualifier аннотации",
         "qualifierAnnotationNotFoundException": "Необходимая аннотация 'Qualifier' отсутствует в классе '{}'"
-      },
-      "registerControllers": {
-        "controllerSuccessfullyRegistered": "'{}' успешно зарегистрирован в системе"
       }
     },
     "init": {
-      "loggerSuccessfullyConfigured": "Регистратор был успешно сконфигурирован",
+      "registrationThemeInSystem": "Регистрация '{}' темы в системе...",
+      "loggerSuccessfullyConfigured": "Отладчик был успешно сконфигурирован",
       "selectedLoggingDirectory": "Выбранная директория отладки: '{}'",
       "engineSuccessfullyInitialized": "FXEngine был успешно инициализирован",
       "closedException": "Произошла ошибка при завершении работы приложения"
@@ -31,18 +29,26 @@
       "getApplicationLanguageMetaData": {
         "languageMetaDataNotFoundException": "Невозможно найти метаданные с локалью '{}'"
       },
-      "initialize": "'{}' был успешно инициализирован",
+      "initialize": {
+        "success": "'{}' был успешно инициализирован",
+        "controllerSuccessfullyRegistered": "'{}' успешно зарегистрирован в системе"
+      },
       "onDestroy": "'{}' был успешно уничтожен"
     },
     "stylesheetLoader": {
       "stylesheetLocationNotFoundException": "Невозможно найти stylesheet по пути '{}'"
     },
     "themeLoader": {
-      "loadingTheme": "Загрузка '{}' темы...",
+      "prepareTheme": "Подготовка '{}' темы для контроллера '{}'",
       "targetThemeFileLocationNotFoundException": "Файл '{}' темы для '{}' не найден",
       "skippingUseThemeOnTargetController": "Пропуск использования '{}' темы на '{}'...",
       "themeOnTargetControllerSuccessfullySettingUp": "Настройка '{}' темы на '{}' успешно завершена",
       "themeSuccessfullySettingUp": "Настройка '{}' темы успешно завершена"
+    },
+    "entityLoader": {
+      "loadEntity": {
+        "entitySuccessfullyLoaded": "Сущность '{}' была успешно загружена"
+      }
     }
   }
 }

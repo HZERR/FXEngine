@@ -25,7 +25,7 @@
         <dependency>
             <groupId>com.github.HZERR</groupId>
             <artifactId>CommonInstruments-JDK17</artifactId>
-            <version>master-4669888a6d-1</version>
+            <version>1.4.2</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->

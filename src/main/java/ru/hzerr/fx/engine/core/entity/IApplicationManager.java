@@ -1,6 +1,7 @@
 package ru.hzerr.fx.engine.core.entity;
 
-import ru.hzerr.fx.engine.core.theme.Theme;
+import ru.hzerr.fx.engine.core.theme.ResolveThemeException;
+import ru.hzerr.fx.engine.core.theme.ResolvedThemeLocation;
 import ru.hzerr.fx.engine.core.theme.ThemeMetaData;
 
 import java.util.Locale;
@@ -10,14 +11,15 @@ public interface IApplicationManager {
 
     void unregister(String id);
 
-    void register(Theme theme);
+    void register(ThemeMetaData themeMetaData);
 
     void setLanguage(Locale locale);
 
-    void setTheme(Class<? extends ThemeMetaData> themeMetaDataClass);
-    void setTheme(String themeName);
+    void changeTheme(Class<? extends ThemeMetaData> themeMetaDataClass) throws ResolveThemeException;
+    void changeTheme(String themeName) throws ResolveThemeException;
 
-    Theme getTheme();
+    ThemeMetaData getThemeMetaData();
 
-    Class<? extends ThemeMetaData> getThemeMetaDataClass();
+    <C extends Controller> ResolvedThemeLocation resolve(ThemeMetaData themeMetaData, C controller) throws ResolveThemeException;
+    <C extends Controller> ResolvedThemeLocation resolve(C controller) throws ResolveThemeException;
 }

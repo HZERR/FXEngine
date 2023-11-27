@@ -4,8 +4,8 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.hzerr.fx.engine.core.annotation.IncludeAs;
 import ru.hzerr.fx.engine.configuration.logging.IReadOnlyLoggingConfiguration;
+import ru.hzerr.fx.engine.core.annotation.IncludeAs;
 import ru.hzerr.fx.engine.logging.ConfigurableException;
 
 public class FXEngineLogProvider implements ILogProvider {
@@ -24,7 +24,7 @@ public class FXEngineLogProvider implements ILogProvider {
 
     @Override
     public void close() {
-        throw new UnsupportedOperationException();
+        // ¯\_(ツ)_/¯
     }
 
     @Override

@@ -3,8 +3,8 @@ package ru.hzerr.fx.core.application;
 import ru.hzerr.file.BaseDirectory;
 import ru.hzerr.file.BaseFile;
 import ru.hzerr.file.HDirectory;
-import ru.hzerr.fx.engine.core.annotation.Registered;
 import ru.hzerr.fx.engine.configuration.application.IStructureConfiguration;
+import ru.hzerr.fx.engine.core.annotation.Registered;
 import ru.hzerr.util.SystemInfo;
 
 import java.io.File;
@@ -12,25 +12,23 @@ import java.io.File;
 @Registered
 public class StructureConfiguration implements IStructureConfiguration {
 
-    private final HDirectory applicationDirectory = new HDirectory(SystemInfo.getUserHome() + File.separator + "FXEngine Inspection");
-
     @Override
     public BaseDirectory getProgramDirectory() {
-        return applicationDirectory;
+        return new HDirectory(SystemInfo.getUserHome() + File.separator + "FXEngine Program Directory");
     }
 
     @Override
     public BaseDirectory getLogDirectory() {
-        return applicationDirectory.getSubDirectory("logging");
+        return getProgramDirectory().getSubDirectory("log");
     }
 
     @Override
     public BaseDirectory getConfigDirectory() {
-        return applicationDirectory.getSubDirectory("configuration");
+        return getProgramDirectory().getSubDirectory("config");
     }
 
     @Override
     public BaseFile getSoftwareConfigurationFile() {
-        return getConfigDirectory().getSubFile("application.json");
+        return getConfigDirectory().getSubFile("configurable.json");
     }
 }

@@ -2,10 +2,11 @@ package ru.hzerr.fx.engine.core.entity;
 
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
-import ru.hzerr.fx.engine.core.annotation.FXEntity;
 import ru.hzerr.fx.engine.core.FXEngine;
+import ru.hzerr.fx.engine.core.annotation.FXEntity;
 import ru.hzerr.fx.engine.core.language.Localization;
-import ru.hzerr.fx.engine.core.theme.Theme;
+import ru.hzerr.fx.engine.core.theme.ResolveThemeException;
+import ru.hzerr.fx.engine.core.theme.ResolvedThemeLocation;
 import ru.hzerr.fx.engine.logging.factory.ILogProvider;
 
 public abstract class Controller {
@@ -13,15 +14,16 @@ public abstract class Controller {
     @FXML
     private Parent root;
 
-    private ILogProvider logProvider = FXEngine.getContext().getFXEngineLogProvider();
+    private ILogProvider engineLogProvider = FXEngine.getContext().getFXEngineLogProvider();
 
-    public final void initialize() {
+    public final void initialize() throws ResolveThemeException {
         onConnectDestroyEvent();
         FXEngine.getContext().getApplicationManager().register(id(), this);
-        logProvider.getLogger().debug("fxEngine.controller.initialize", getClass().getSimpleName());
+        engineLogProvider.getLogger().debug("fxEngine.controller.initialize.controllerSuccessfullyRegistered", this.getClass().getSimpleName());
+        engineLogProvider.getLogger().debug("fxEngine.controller.initialize.success", getClass().getSimpleName());
         FXEngine.getContext().getApplicationManager().setLanguage(FXEngine.getContext().getApplicationConfiguration().getLocale());
         onInit();
-        onChangeUI(FXEngine.getContext().getApplicationManager().getTheme());
+        changeTheme(FXEngine.getContext().getApplicationManager().resolve(this));
     }
 
     protected abstract void onInit();
@@ -36,15 +38,15 @@ public abstract class Controller {
 
     protected void onDestroy() {
         FXEngine.getContext().getApplicationManager().unregister(id());
-        logProvider.getLogger().debug("fxEngine.controller.onDestroy", getClass().getSimpleName());
+        engineLogProvider.getLogger().debug("fxEngine.controller.onDestroy", getClass().getSimpleName());
     }
 
-    protected final void onChangeUI(Theme theme) {
+    public final void changeTheme(ResolvedThemeLocation theme) {
         getRootAsParent().getStylesheets().clear();
-        getRootAsParent().getStylesheets().add(0, theme.getStylesheet(getClass()));
+        getRootAsParent().getStylesheets().add(0, theme.getStylesheet());
     }
 
-    protected abstract void onChangeLanguage(Localization languagePack);
+    public abstract void onChangeLanguage(Localization languagePack);
 
     protected abstract String id();
 

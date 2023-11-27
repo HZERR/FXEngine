@@ -20,7 +20,7 @@ public class StylesheetLoader implements Loader<String> {
     }
 
     @Override
-    public String load() throws LoadException {
+    public String resolve() throws LoadException {
 //        String currentThemeLocation = LocationTools.resolve(
 //                ResolvableLocation.of(
 //                        initialPackage,

@@ -15,6 +15,7 @@ import ru.hzerr.fx.engine.configuration.application.IApplicationConfiguration;
 import ru.hzerr.fx.engine.configuration.application.IResourceStructureConfiguration;
 import ru.hzerr.fx.engine.configuration.application.ISoftwareConfiguration;
 import ru.hzerr.fx.engine.configuration.application.IStructureConfiguration;
+import ru.hzerr.fx.engine.core.entity.EntityLoader;
 import ru.hzerr.fx.engine.core.entity.IApplicationManager;
 import ru.hzerr.fx.engine.core.language.localization.ILocalizationProvider;
 import ru.hzerr.fx.engine.logging.factory.ILogProvider;
@@ -24,6 +25,7 @@ import java.util.function.Supplier;
 public interface IExtendedAnnotationConfigApplicationContext extends AnnotationConfigRegistry, BeanDefinitionRegistry, ConfigurableApplicationContext, ResourceLoader {
 
     // BEGIN FLAT
+    EntityLoader getEntityLoader();
     IStructureConfiguration getStructureConfiguration();
     IResourceStructureConfiguration getResourceStructureConfiguration();
     ILogProvider getFXEngineLogProvider();
@@ -67,5 +69,6 @@ public interface IExtendedAnnotationConfigApplicationContext extends AnnotationC
     default <T> void registerBean(Class<T> beanClass, Supplier<T> supplier, BeanDefinitionCustomizer... customizers) {
         registerBean(null, beanClass, supplier, customizers);
     }
+
     // END GENERIC CONTEXT
 }

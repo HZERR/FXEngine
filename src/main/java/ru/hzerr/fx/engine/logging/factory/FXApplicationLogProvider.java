@@ -72,8 +72,10 @@ public class FXApplicationLogProvider implements ILogProvider {
         consoleAppender.stop();
         lc.stop();
         if (sessionLogFile != null) {
-            if (sessionLogFile.sizeOf(SizeType.BYTE) == 0D) {
-                sessionLogFile.delete();
+            if (sessionLogFile.exists()) {
+                if (sessionLogFile.sizeOf(SizeType.BYTE) == 0D) {
+                    sessionLogFile.delete();
+                }
             }
         }
     }

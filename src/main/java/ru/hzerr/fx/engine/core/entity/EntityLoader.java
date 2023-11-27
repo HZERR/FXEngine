@@ -1,11 +1,16 @@
 package ru.hzerr.fx.engine.core.entity;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import org.jetbrains.annotations.NotNull;
 import ru.hzerr.fx.engine.core.annotation.FXEntity;
+import ru.hzerr.fx.engine.core.annotation.IncludeAs;
+import ru.hzerr.fx.engine.core.annotation.Registered;
 import ru.hzerr.fx.engine.core.entity.exception.*;
+import ru.hzerr.fx.engine.logging.factory.ILogProvider;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -16,37 +21,43 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-public final class EntityLoader {
+@Registered
+public class EntityLoader implements Closeable {
 
-    private static final ExecutorService service = Executors.newCachedThreadPool();
+    private static final ExecutorService service = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setDaemon(true).setNameFormat("EntityLoader %d").build());
+
+    @IncludeAs("engineLogProvider")
+    private ILogProvider engineLogProvider;
 
     static {
         Runtime.getRuntime().addShutdownHook(new Thread(service::shutdown));
     }
 
-    private static final AtomicReference<ClassLoader> classLoader = new AtomicReference<>(ClassLoader.getSystemClassLoader());
+    private final AtomicReference<ClassLoader> classLoader = new AtomicReference<>(ClassLoader.getSystemClassLoader());
 
-    public static void setClassLoader(ClassLoader classLoader) {
-         EntityLoader.classLoader.set(classLoader);
+    public void setClassLoader(ClassLoader classLoader) {
+         this.classLoader.set(classLoader);
     }
 
-    public static <C extends Controller, P extends Parent> CompletableFuture<Entity<C, P>>
+    public <C extends Controller, P extends Parent> CompletableFuture<Entity<C, P>>
     load(String id, ControllerLoadData<C> loadData, Class<P> parent) {
         return CompletableFuture.supplyAsync((Handler<Entity<C, P>>) () -> load0(id, loadData, parent), service);
     }
 
-    private static <C extends Controller, P extends Parent> Entity<C, P>
+    private <C extends Controller, P extends Parent> Entity<C, P>
     load0(String id, ControllerLoadData<C> loadData, Class<P> parent) throws LoadControllerException, IOException {
         FXMLLoader loader = new FXMLLoader();
         C controller = loadController(loadData);
         loader.setController(controller);
         FXEntity controllerMetaData = loadData.getControllerClass().getAnnotation(FXEntity.class);
         loader.setLocation(classLoader.get().getResource(controllerMetaData.fxml()));
-        return new Entity<>(controller, loader.load());
+        P root = loader.load();
+        engineLogProvider.getLogger().info("fxEngine.entityLoader.loadEntity.entitySuccessfullyLoaded", controllerMetaData.fxml());
+        return new Entity<>(controller, root);
     }
 
     @NotNull
-    private static <C extends Controller>
+    private <C extends Controller>
     C loadController(@NotNull ControllerLoadData<C> loadData) throws ProcessingConstructorException, ConstructorNotFoundException, LoadAbstractClassException {
         Constructor<C> constructor;
         boolean withArgs = loadData.getParameterTypes() != null;
@@ -88,26 +99,27 @@ public final class EntityLoader {
         }
     }
 
-    public static void close() {
+    @Override
+    public void close() {
         service.shutdown();
     }
 
-    public static class ControllerLoadData<CONTROLLER extends Controller> {
+    public static class ControllerLoadData<C extends Controller> {
 
-        private Class<CONTROLLER> controllerClass;
+        private Class<C> controllerClass;
 
         private Class<?>[] parameterTypes;
         private Object[] arguments;
 
-        private ControllerLoadData(Class<CONTROLLER> controllerClass) {
+        private ControllerLoadData(Class<C> controllerClass) {
             this.controllerClass = controllerClass;
         }
 
-        public Class<CONTROLLER> getControllerClass() {
+        public Class<C> getControllerClass() {
             return controllerClass;
         }
 
-        public void setControllerClass(Class<CONTROLLER> controllerClass) {
+        public void setControllerClass(Class<C> controllerClass) {
             this.controllerClass = controllerClass;
         }
 
@@ -127,8 +139,8 @@ public final class EntityLoader {
             this.arguments = arguments;
         }
 
-        public static <CONTROLLER extends Controller>
-        ControllerLoadData<CONTROLLER> from(Class<CONTROLLER> controllerClass) {
+        public static <C extends Controller>
+        ControllerLoadData<C> from(Class<C> controllerClass) {
             return new ControllerLoadData<>(controllerClass);
         }
     }

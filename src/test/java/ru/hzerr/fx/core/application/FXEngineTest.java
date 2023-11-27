@@ -3,11 +3,10 @@ package ru.hzerr.fx.core.application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import ru.hzerr.fx.engine.core.context.IExtendedAnnotationConfigApplicationContext;
-import ru.hzerr.fx.engine.core.entity.EntityLoader;
-import ru.hzerr.fx.engine.core.entity.EntityLoader.ControllerLoadData;
 import ru.hzerr.fx.engine.core.FXEngine;
+import ru.hzerr.fx.engine.core.context.IExtendedAnnotationConfigApplicationContext;
 import ru.hzerr.fx.engine.core.entity.Entity;
+import ru.hzerr.fx.engine.core.entity.EntityLoader.ControllerLoadData;
 
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
@@ -21,7 +20,7 @@ public class FXEngineTest extends FXEngine {
 
     @Override
     protected void onInit() throws Exception {
-        EntityLoader.setClassLoader(ClassLoader.getSystemClassLoader());
+        context.getEntityLoader().setClassLoader(ClassLoader.getSystemClassLoader());
 //        context.registerBean("example1", Example.class);
 //        context.getBean("example1", Example.class).setName("example1");
 //        context.registerBean("example2", Example.class);
@@ -34,7 +33,7 @@ public class FXEngineTest extends FXEngine {
 
     @Override
     protected Scene onStart(Stage stage) {
-        CompletableFuture<Entity<FXController, Parent>> mainFuture = EntityLoader.load("main", ControllerLoadData.from(FXController.class), Parent.class);
+        CompletableFuture<Entity<FXController, Parent>> mainFuture = context.getEntityLoader().load("main", ControllerLoadData.from(FXController.class), Parent.class);
 
         Entity<FXController, Parent> mainEntity = mainFuture.join();
         context.getApplicationLogProvider().getLogger().info("Entity '{}' has been successfully loaded", mainEntity.getController().getMetaData().fxml());

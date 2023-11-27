@@ -32,7 +32,7 @@ public class PropertiesConfigurationLoader implements Loader<PropertiesConfigura
 
     @Bean("applicationFileBasedConfiguration")
     @Override
-    public PropertiesConfiguration load() throws LoadException {
+    public PropertiesConfiguration resolve() throws LoadException {
         builder.setAutoSave(true);
         try {
             return builder.getConfiguration();

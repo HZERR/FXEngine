@@ -19,6 +19,7 @@
       }
     },
     "init": {
+      "registrationThemeInSystem": "Registering the '{}' theme in the system...",
       "loggerSuccessfullyConfigured": "Logger has been successfully configured",
       "selectedLoggingDirectory": "Selected logging directory: '{}'",
       "engineSuccessfullyInitialized": "FXEngine has been successfully initialized",
@@ -43,6 +44,11 @@
       "skippingUseThemeOnTargetController": "Skipping the use of the '{}' theme on the '{}'...",
       "themeOnTargetControllerSuccessfullySettingUp": "Setting up the '{}' theme for the '{}' has been successfully completed",
       "themeSuccessfullySettingUp": "Setting up the '{}' theme has been successfully completed"
+    },
+    "entityLoader": {
+      "loadEntity": {
+        "entitySuccessfullyLoaded": "The '{}' entity has been successfully loaded"
+      }
     }
   }
 }
