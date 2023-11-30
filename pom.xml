@@ -93,7 +93,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.4.10</version>
+            <version>1.4.12</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-core -->
         <dependency>
