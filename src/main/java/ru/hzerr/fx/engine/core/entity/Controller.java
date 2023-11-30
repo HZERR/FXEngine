@@ -12,7 +12,7 @@ import ru.hzerr.fx.engine.logging.factory.ILogProvider;
 public abstract class Controller {
 
     @FXML
-    private Parent root;
+    private Parent content;
 
     private ILogProvider engineLogProvider = FXEngine.getContext().getFXEngineLogProvider();
 
@@ -29,7 +29,7 @@ public abstract class Controller {
     protected abstract void onInit();
 
     protected void onConnectDestroyEvent() {
-        root.sceneProperty().addListener((observable, oldValue, newValue) -> {
+        content.sceneProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == null) {
                 onDestroy();
             }
@@ -42,8 +42,8 @@ public abstract class Controller {
     }
 
     public final void changeTheme(ResolvedThemeLocation theme) {
-        getRootAsParent().getStylesheets().clear();
-        getRootAsParent().getStylesheets().add(0, theme.getStylesheet());
+        getContentAsParent().getStylesheets().clear();
+        getContentAsParent().getStylesheets().add(0, theme.getStylesheet());
     }
 
     public abstract void onChangeLanguage(Localization languagePack);
@@ -54,11 +54,11 @@ public abstract class Controller {
         return this.getClass().getAnnotation(FXEntity.class);
     }
 
-    public <T extends Parent> T getRoot(Class<T> cls) {
-        return (T) root;
+    public <T extends Parent> T getContent(Class<T> cls) {
+        return (T) content;
     }
 
-    public Parent getRootAsParent() {
-        return root;
+    public Parent getContentAsParent() {
+        return content;
     }
 }

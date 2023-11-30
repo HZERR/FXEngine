@@ -4,16 +4,20 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import org.jetbrains.annotations.NotNull;
+import ru.hzerr.fx.engine.configuration.application.IResourceStructureConfiguration;
 import ru.hzerr.fx.engine.core.annotation.FXEntity;
+import ru.hzerr.fx.engine.core.annotation.Include;
 import ru.hzerr.fx.engine.core.annotation.IncludeAs;
 import ru.hzerr.fx.engine.core.annotation.Registered;
 import ru.hzerr.fx.engine.core.entity.exception.*;
+import ru.hzerr.fx.engine.core.path.resolver.EntityLocationResolver;
 import ru.hzerr.fx.engine.logging.factory.ILogProvider;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -29,6 +33,9 @@ public class EntityLoader implements Closeable {
     @IncludeAs("engineLogProvider")
     private ILogProvider engineLogProvider;
 
+    @Include
+    private IResourceStructureConfiguration resourceStructureConfiguration;
+
     static {
         Runtime.getRuntime().addShutdownHook(new Thread(service::shutdown));
     }
@@ -40,20 +47,25 @@ public class EntityLoader implements Closeable {
     }
 
     public <C extends Controller, P extends Parent> CompletableFuture<Entity<C, P>>
-    load(String id, ControllerLoadData<C> loadData, Class<P> parent) {
-        return CompletableFuture.supplyAsync((Handler<Entity<C, P>>) () -> load0(id, loadData, parent), service);
+    load(ControllerLoadData<C> loadData, Class<P> parent) {
+        return CompletableFuture.supplyAsync((Handler<Entity<C, P>>) () -> load0(loadData, parent), service);
     }
 
     private <C extends Controller, P extends Parent> Entity<C, P>
-    load0(String id, ControllerLoadData<C> loadData, Class<P> parent) throws LoadControllerException, IOException {
+    load0(ControllerLoadData<C> loadData, Class<P> parent) throws LoadControllerException, IOException {
         FXMLLoader loader = new FXMLLoader();
         C controller = loadController(loadData);
         loader.setController(controller);
         FXEntity controllerMetaData = loadData.getControllerClass().getAnnotation(FXEntity.class);
-        loader.setLocation(classLoader.get().getResource(controllerMetaData.fxml()));
-        P root = loader.load();
-        engineLogProvider.getLogger().info("fxEngine.entityLoader.loadEntity.entitySuccessfullyLoaded", controllerMetaData.fxml());
-        return new Entity<>(controller, root);
+        String location = new EntityLocationResolver(resourceStructureConfiguration, controllerMetaData.fxml()).resolve();
+        URL locationAsURL = classLoader.get().getResource(location);
+        if (locationAsURL != null) {
+            loader.setLocation(locationAsURL);
+            P root = loader.load();
+            engineLogProvider.getLogger().info("fxEngine.entityLoader.loadEntity.entitySuccessfullyLoaded", controllerMetaData.fxml());
+            return new Entity<>(controller, root);
+        } else
+            throw new FXMLNotFoundException("Unable to find fxml file at path '" + location + "'");
     }
 
     @NotNull

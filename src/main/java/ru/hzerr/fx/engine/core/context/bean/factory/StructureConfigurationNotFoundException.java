@@ -1,4 +1,4 @@
-package ru.hzerr.fx.engine.core.bean.factory;
+package ru.hzerr.fx.engine.core.context.bean.factory;
 
 import org.springframework.beans.BeansException;
 

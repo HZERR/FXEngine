@@ -29,6 +29,6 @@ public class StructureConfiguration implements IStructureConfiguration {
 
     @Override
     public BaseFile getSoftwareConfigurationFile() {
-        return getConfigDirectory().getSubFile("configurable.json");
+        return getConfigDirectory().getSubFile("application.json");
     }
 }

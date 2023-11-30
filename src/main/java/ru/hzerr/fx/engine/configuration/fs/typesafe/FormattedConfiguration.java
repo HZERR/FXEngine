@@ -321,6 +321,8 @@ public class FormattedConfiguration implements IFormattedConfiguration {
             throw new ClassCastException(e.getMessage());
         } catch (ConfigException.Missing e) {
             throw new MissingValueException(e.getMessage());
+        } catch (ConfigException.BadValue e) {
+            throw new IncorrectValueException(e.getMessage());
         }
     }
 

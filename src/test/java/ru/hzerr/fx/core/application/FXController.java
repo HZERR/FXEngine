@@ -14,7 +14,7 @@ import ru.hzerr.fx.engine.logging.factory.ILogProvider;
 
 import java.util.Locale;
 
-@FXEntity(fxml = "fxml/main.fxml", internationalization = "main.json", theme = "main.css")
+@FXEntity(fxml = "main.fxml", internationalization = "main.json", theme = "main.css")
 public class FXController extends Controller {
 
     @FXML

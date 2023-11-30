@@ -104,9 +104,9 @@ public class ApplicationManager implements IApplicationManager {
                 ),
                 ResolvableLocation.of(
                         currentLanguageMetaData.getILocation(),
-                        NullSafeResolveLocationOptions.INSERT_EVERYWHERE
+                        NullSafeResolveLocationOptions.REMOVE_EVERYWHERE
                 ),
-                SeparatorResolveLocationOptions.INSERT_END,
+                SeparatorResolveLocationOptions.REMOVE_EVERYWHERE,
                 Separator.SLASH_SEPARATOR
         );
 

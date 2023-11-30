@@ -3,8 +3,8 @@ package ru.hzerr.fx.engine.core.path;
 public final class LocationTools {
 
     public static String resolve(ResolvableLocation location1, ResolvableLocation location2, SeparatorResolveLocationOptions resolveLocationOptions, Separator separator) {
-        if (location1 != null) {
-            if (location2 != null) {
+        if (location1.getLocation() != null) {
+            if (location2.getLocation() != null) {
                 String targetLocation = prependInEndSeparatorIfNeeded(location1.getLocation(), separator) + location2.getLocation();
 
                 return switch (resolveLocationOptions) {

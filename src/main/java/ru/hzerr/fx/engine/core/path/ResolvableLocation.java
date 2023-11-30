@@ -5,7 +5,7 @@ public class ResolvableLocation {
     private NullSafeResolveLocationOptions nullSafeOptions;
 
     public ResolvableLocation(ILocation location, NullSafeResolveLocationOptions nullSafeOptions) {
-        this.location = location.getLocation();
+        this.location = location != null ? location.getLocation() : null;
         this.nullSafeOptions = nullSafeOptions;
     }
 

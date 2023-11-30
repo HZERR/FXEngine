@@ -33,10 +33,9 @@ public class FXEngineTest extends FXEngine {
 
     @Override
     protected Scene onStart(Stage stage) {
-        CompletableFuture<Entity<FXController, Parent>> mainFuture = context.getEntityLoader().load("main", ControllerLoadData.from(FXController.class), Parent.class);
+        CompletableFuture<Entity<FXController, Parent>> mainFuture = context.getEntityLoader().load(ControllerLoadData.from(FXController.class), Parent.class);
 
         Entity<FXController, Parent> mainEntity = mainFuture.join();
-        context.getApplicationLogProvider().getLogger().info("Entity '{}' has been successfully loaded", mainEntity.getController().getMetaData().fxml());
         Scene scene = new Scene(mainEntity.getNode());
         return scene;
     }
