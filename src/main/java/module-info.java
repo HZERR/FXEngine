@@ -13,4 +13,5 @@ module FXEngine {
     requires jsr305;
     requires javafx.fxml;
     requires com.google.common;
+    requires javafx.controls;
 }
