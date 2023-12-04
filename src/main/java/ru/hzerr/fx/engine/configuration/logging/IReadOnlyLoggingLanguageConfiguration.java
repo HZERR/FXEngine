@@ -5,6 +5,6 @@ import ru.hzerr.fx.engine.core.language.Localization;
 
 public interface IReadOnlyLoggingLanguageConfiguration extends IReadOnlyConfiguration {
 
-    Localization getEngineLanguagePack();
-    Localization getApplicationLanguagePack();
+    Localization getEngineLocalization();
+    Localization getApplicationLocalization();
 }

@@ -1,5 +1,7 @@
 package ru.hzerr.fx.engine.core.entity;
 
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -20,15 +22,19 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Registered
 public class EntityLoader implements Closeable {
 
-    private static final ExecutorService service = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setDaemon(true).setNameFormat("EntityLoader %d").build());
+    private final ExecutorService service = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setDaemon(true).setNameFormat("EntityLoader %d").build());
+    private final ListeningExecutorService listeningExecutorService = MoreExecutors.listeningDecorator(service);
+
 
     @IncludeAs("engineLogProvider")
     private ILogProvider engineLogProvider;
@@ -36,23 +42,24 @@ public class EntityLoader implements Closeable {
     @Include
     private IResourceStructureConfiguration resourceStructureConfiguration;
 
-    static {
+    private final AtomicReference<ClassLoader> classLoader = new AtomicReference<>(ClassLoader.getSystemClassLoader());
+
+    public EntityLoader() {
         Runtime.getRuntime().addShutdownHook(new Thread(service::shutdown));
     }
-
-    private final AtomicReference<ClassLoader> classLoader = new AtomicReference<>(ClassLoader.getSystemClassLoader());
 
     public void setClassLoader(ClassLoader classLoader) {
          this.classLoader.set(classLoader);
     }
 
     public <C extends Controller, P extends Parent> CompletableFuture<Entity<C, P>>
-    load(ControllerLoadData<C> loadData, Class<P> parent) {
-        return CompletableFuture.supplyAsync((Handler<Entity<C, P>>) () -> load0(loadData, parent), service);
+    loadAsync(ControllerLoadMetaData<C> loadData, Class<P> parent) {
+//        return Callables.asAsyncCallable(() -> load0(loadData, parent), listeningExecutorService);
+        return CompletableFuture.supplyAsync((Handler<Entity<C, P>>) () -> load(loadData, parent), service);
     }
 
-    private <C extends Controller, P extends Parent> Entity<C, P>
-    load0(ControllerLoadData<C> loadData, Class<P> parent) throws LoadControllerException, IOException {
+    public <C extends Controller, P extends Parent> Entity<C, P>
+    load(ControllerLoadMetaData<C> loadData, Class<P> parent) throws LoadControllerException, IOException {
         FXMLLoader loader = new FXMLLoader();
         C controller = loadController(loadData);
         loader.setController(controller);
@@ -70,7 +77,7 @@ public class EntityLoader implements Closeable {
 
     @NotNull
     private <C extends Controller>
-    C loadController(@NotNull ControllerLoadData<C> loadData) throws ProcessingConstructorException, ConstructorNotFoundException, LoadAbstractClassException {
+    C loadController(@NotNull ControllerLoadMetaData<C> loadData) throws ProcessingConstructorException, ConstructorNotFoundException, LoadAbstractClassException {
         Constructor<C> constructor;
         boolean withArgs = loadData.getParameterTypes() != null;
         if (withArgs) {
@@ -116,44 +123,17 @@ public class EntityLoader implements Closeable {
         service.shutdown();
     }
 
-    public static class ControllerLoadData<C extends Controller> {
+    public interface Handler<T> extends Supplier<T> {
 
-        private Class<C> controllerClass;
-
-        private Class<?>[] parameterTypes;
-        private Object[] arguments;
-
-        private ControllerLoadData(Class<C> controllerClass) {
-            this.controllerClass = controllerClass;
+        @Override
+        default T get() {
+            try {
+                return onReceive();
+            } catch (Exception e) {
+                throw new CompletionException(e);
+            }
         }
 
-        public Class<C> getControllerClass() {
-            return controllerClass;
-        }
-
-        public void setControllerClass(Class<C> controllerClass) {
-            this.controllerClass = controllerClass;
-        }
-
-        public Class<?>[] getParameterTypes() {
-            return parameterTypes;
-        }
-
-        public void setParameterTypes(Class<?>... parameterTypes) {
-            this.parameterTypes = parameterTypes;
-        }
-
-        public Object[] getArguments() {
-            return arguments;
-        }
-
-        public void setArguments(Object... arguments) {
-            this.arguments = arguments;
-        }
-
-        public static <C extends Controller>
-        ControllerLoadData<C> from(Class<C> controllerClass) {
-            return new ControllerLoadData<>(controllerClass);
-        }
+        T onReceive() throws Exception;
     }
 }

@@ -4,5 +4,5 @@ import org.springframework.context.ApplicationContext;
 
 public interface IApplicationContextProvider<T extends ApplicationContext> {
 
-    T getApplicationContext();
+    T getContext();
 }

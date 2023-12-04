@@ -20,10 +20,10 @@ public abstract class Controller {
         onConnectDestroyEvent();
         FXEngine.getContext().getApplicationManager().register(id(), this);
         engineLogProvider.getLogger().debug("fxEngine.controller.initialize.controllerSuccessfullyRegistered", this.getClass().getSimpleName());
-        engineLogProvider.getLogger().debug("fxEngine.controller.initialize.success", getClass().getSimpleName());
         FXEngine.getContext().getApplicationManager().setLanguage(FXEngine.getContext().getApplicationConfiguration().getLocale());
         onInit();
-        changeTheme(FXEngine.getContext().getApplicationManager().resolve(this));
+        FXEngine.getContext().getApplicationManager().applyTheme(this);
+        engineLogProvider.getLogger().debug("fxEngine.controller.initialize.success", getClass().getSimpleName());
     }
 
     protected abstract void onInit();
@@ -41,7 +41,7 @@ public abstract class Controller {
         engineLogProvider.getLogger().debug("fxEngine.controller.onDestroy", getClass().getSimpleName());
     }
 
-    public final void changeTheme(ResolvedThemeLocation theme) {
+    public final void applyTheme(ResolvedThemeLocation theme) {
         getContentAsParent().getStylesheets().clear();
         getContentAsParent().getStylesheets().add(0, theme.getStylesheet());
     }

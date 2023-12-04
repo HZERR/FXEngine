@@ -23,4 +23,9 @@ public class BaseReadOnlyLoggingConfiguration extends ReadOnlyLoggingConfigurati
     public Locale getEngineLocale() {
         return LOCALE_RU;
     }
+
+    @Override
+    public boolean isEngineLoggingEnabled() {
+        return super.isEngineLoggingEnabled();
+    }
 }

@@ -12,6 +12,11 @@ public abstract class PopupController extends Controller implements Viewable {
         popup.onCloseRequestProperty().addListener((observable, oldValue, newValue) -> onDestroy());
     }
 
+//    protected void preInitPopup() {
+//        popup.setAutoFix(true);
+//        popup.getContent().add(getContentAsParent());
+//    }
+
     @Override
     public void view() {
         popup.show(FXEngine.getContext().getStage().getOwner());

@@ -17,6 +17,7 @@ public interface IApplicationManager {
 
     void changeTheme(Class<? extends ThemeMetaData> themeMetaDataClass) throws ResolveThemeException;
     void changeTheme(String themeName) throws ResolveThemeException;
+    <C extends Controller> void applyTheme(C controller) throws ResolveThemeException;
 
     ThemeMetaData getThemeMetaData();
 

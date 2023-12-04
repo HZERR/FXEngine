@@ -2,7 +2,9 @@ package ru.hzerr.fx.engine.core.context;
 
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.BeanFactoryAnnotationUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -12,10 +14,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import ru.hzerr.collections.list.HList;
-import ru.hzerr.fx.engine.configuration.application.IApplicationConfiguration;
-import ru.hzerr.fx.engine.configuration.application.IResourceStructureConfiguration;
-import ru.hzerr.fx.engine.configuration.application.ISoftwareConfiguration;
-import ru.hzerr.fx.engine.configuration.application.IStructureConfiguration;
+import ru.hzerr.fx.engine.configuration.application.*;
 import ru.hzerr.fx.engine.core.ApplicationManager;
 import ru.hzerr.fx.engine.core.BeanAlreadyExistsException;
 import ru.hzerr.fx.engine.core.annotation.Redefinition;
@@ -27,6 +26,7 @@ import ru.hzerr.fx.engine.logging.factory.FXEngineLogProvider;
 import ru.hzerr.fx.engine.logging.factory.ILogProvider;
 
 import java.lang.annotation.Annotation;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfigApplicationContext implements IExtendedAnnotationConfigApplicationContext {
@@ -45,14 +45,12 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
 
     private final HList<String> basePackages;
 
-    public ExtendedAnnotationConfigApplicationContext(String... basePackages) {
-        super();
-        scan(basePackages);
-        refresh();
+    public ExtendedAnnotationConfigApplicationContext(@NotNull String... basePackages) {
+        super(basePackages);
         this.basePackages = HList.of(basePackages);
     }
-    // ======================================== BEGIN FLAT ACCESS ========================================
 
+    // ======================================== BEGIN FLAT ACCESS ========================================
 
     public void setEngineLocalizationProvider(ILocalizationProvider engineLocalizationProvider) {
         this.engineLocalizationProvider = engineLocalizationProvider;
@@ -62,44 +60,56 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
         this.engineLogProvider = engineLogProvider;
     }
 
+    @Override
+    public IClassLoaderProvider getClassLoaderProvider() { return getBean(IClassLoaderProvider.class); }
+
+    @Override
     public EntityLoader getEntityLoader() {
         return getBean(EntityLoader.class);
     }
 
+    @Override
     public IStructureConfiguration getStructureConfiguration() {
         return getBean(IStructureConfiguration.class);
     }
 
-    public IResourceStructureConfiguration getResourceStructureConfiguration() {
-        return getBean(IResourceStructureConfiguration.class);
-    }
+    @Override
+    public IResourceStructureConfiguration getResourceStructureConfiguration() { return getBean(IResourceStructureConfiguration.class); }
 
+    @Override
     public ILogProvider getFXEngineLogProvider() {
         return getBean(ENGINE_LOG_PROVIDER_BEAN_NAME, FXEngineLogProvider.class);
     }
 
+    @Override
     public ILogProvider getApplicationLogProvider() {
         return getBean(APPLICATION_LOG_PROVIDER_BEAN_NAME, FXApplicationLogProvider.class);
     }
 
+    @Override
     public ISoftwareConfiguration getSoftwareConfiguration() {
         return getBeanByQualifier(SOFTWARE_CONFIGURATION_BEAN_NAME, ISoftwareConfiguration.class);
     }
 
+    @Override
     public IApplicationConfiguration getApplicationConfiguration() {
         return getBean(IApplicationConfiguration.class);
     }
 
-    public ILocalizationProvider getApplicationLocalizationProvider() {
-        return getBean(APPLICATION_LOGGING_LOCALIZATION_PROVIDER_BEAN_NAME, ILocalizationProvider.class);
-    }
+    @Override
+    public ILocalizationProvider getApplicationLocalizationProvider() { return getBean(APPLICATION_LOGGING_LOCALIZATION_PROVIDER_BEAN_NAME, ILocalizationProvider.class); }
 
-    public ILocalizationProvider getEngineLocalizationProvider() {
-        return getBean(ENGINE_LOGGING_LOCALIZATION_PROVIDER_BEAN_NAME, ILocalizationProvider.class);
-    }
+    @Override
+    public ILocalizationProvider getEngineLocalizationProvider() { return getBean(ENGINE_LOGGING_LOCALIZATION_PROVIDER_BEAN_NAME, ILocalizationProvider.class); }
 
     // ======================================== END FLAT ACCESS ========================================
 
+    @Override
+    public HList<String> getScannedPackages() {
+        return basePackages;
+    }
+
+    @Override
     public IApplicationManager getApplicationManager() {
         if (!containsBean(APPLICATION_MANAGER_BEAN_NAME)) {
             registerBean(APPLICATION_MANAGER_BEAN_NAME, ApplicationManager.class);
@@ -108,26 +118,44 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
         return getBean(APPLICATION_MANAGER_BEAN_NAME, IApplicationManager.class);
     }
 
-    public boolean containsBean(Class<?> beanClass) {
-        return !noContainsBean(beanClass);
-    }
-
-    public boolean noContainsBean(Class<?> beanClass) {
-        return getBeansOfType(beanClass).isEmpty();
-    }
-
+    @Override
     public Stage getStage() {
         return stage;
     }
 
+    @Override
     public void setStage(Stage stage) {
         this.stage = stage;
     }
 
+    @Override
     public Scene getScene() {
         return stage.getScene();
     }
 
+    @Override
+    public Window getOwner() {
+        return stage.getOwner();
+    }
+
+    @Override
+    public <T> Optional<T> fetchBean(Class<T> requiredType) {
+        return containsBean(requiredType) ?
+                Optional.of(getBean(requiredType)) :
+                Optional.empty();
+    }
+
+    @Override
+    public boolean containsBean(Class<?> beanClass) {
+        return !noContainsBean(beanClass);
+    }
+
+    @Override
+    public boolean noContainsBean(Class<?> beanClass) {
+        return getBeansOfType(beanClass).isEmpty();
+    }
+
+    @Override
     public <T> T getBeanByQualifier(Class<T> requiredType) throws BeansException {
         engineLogProvider.getLogger().debug("fxEngine.applicationContext.getBeanByQualifier.started", requiredType.getSimpleName());
         Qualifier metaData = AnnotationUtils.findAnnotation(requiredType, Qualifier.class);
@@ -157,6 +185,7 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
             );
     }
 
+    @Override
     public <T> T getBeanByQualifier(String qualifier, Class<T> requiredType) throws BeansException {
         engineLogProvider.getLogger().debug("fxEngine.applicationContext.getBeanByQualifier.getByQualifier", requiredType.getSimpleName(), qualifier);
         return BeanFactoryAnnotationUtils.qualifiedBeanOfType(getBeanFactory(), requiredType, qualifier);

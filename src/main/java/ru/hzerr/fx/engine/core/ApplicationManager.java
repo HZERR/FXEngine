@@ -3,6 +3,7 @@ package ru.hzerr.fx.engine.core;
 import ru.hzerr.collections.list.HList;
 import ru.hzerr.collections.map.HMap;
 import ru.hzerr.collections.map.Type;
+import ru.hzerr.fx.engine.configuration.application.IClassLoaderProvider;
 import ru.hzerr.fx.engine.configuration.application.IResourceStructureConfiguration;
 import ru.hzerr.fx.engine.core.annotation.Include;
 import ru.hzerr.fx.engine.core.annotation.IncludeAs;
@@ -16,21 +17,29 @@ import ru.hzerr.fx.engine.core.language.BaseLocalizationMetaData;
 import ru.hzerr.fx.engine.core.language.Localization;
 import ru.hzerr.fx.engine.core.language.LocalizationLoader;
 import ru.hzerr.fx.engine.core.language.localization.ILocalizationProvider;
-import ru.hzerr.fx.engine.core.path.*;
+import ru.hzerr.fx.engine.core.path.resolver.ControllerLocalizationResolver;
 import ru.hzerr.fx.engine.core.theme.*;
+import ru.hzerr.fx.engine.logging.factory.ILogProvider;
 
 import java.util.Locale;
+import java.util.Optional;
 
 @Multithreaded
 @Redefinition(isRedefined = false)
 public class ApplicationManager implements IApplicationManager {
 
     private final HMap<String, Controller> controllers = HMap.create(Type.SYNCHRONIZED);
-    private final HList<ResolvedThemeLocation> themes = HList.createProtectedList();
+    private final HList<DesignLoadedData> designLoadedData = HList.createProtectedList();
     private final HList<ThemeMetaData> themesMetaData = HList.createProtectedList();
+
+    @Include
+    private IClassLoaderProvider classLoaderProvider;
 
     @IncludeAs("engineLoggingLocalizationProvider")
     private ILocalizationProvider localizationProvider;
+
+    @IncludeAs("engineLogProvider")
+    private ILogProvider engineLogProvider;
 
     @Include
     private IResourceStructureConfiguration resourceStructureConfiguration;
@@ -62,7 +71,19 @@ public class ApplicationManager implements IApplicationManager {
                 .find(data -> data.getClass().equals(themeMetaDataClass))
                 .orElseThrow(() -> new ThemeNotFoundException("Unknown themeMetaDataClass: " + themeMetaDataClass.getSimpleName()));
 
-        controllers.forEach((id, controller) -> controller.changeTheme(resolve(themeMetaData, controller)), ResolveThemeException.class);
+        controllers.forEach((id, controller) -> {
+            Optional<DesignLoadedData> targetLoadedData = designLoadedData.find(data -> data.isAllow(controller.getClass(), themeMetaData.getName()));
+            ResolvedThemeLocation resolvedThemeLocation;
+            if (targetLoadedData.isPresent()) {
+                engineLogProvider.getLogger().debug("fxEngine.applicationManager.theme.gettingThemeFromCache", themeMetaData.getName(), controller.getClass().getSimpleName());
+                resolvedThemeLocation = targetLoadedData.get().getResolvedThemeLocation();
+            } else {
+                resolvedThemeLocation = resolve(themeMetaData, controller);
+                designLoadedData.add(new DesignLoadedData(controller.getClass(), themeMetaData.getName(), resolvedThemeLocation));
+            }
+
+            controller.applyTheme(resolvedThemeLocation);
+        }, ResolveThemeException.class);
         FXEngine.getContext().getApplicationConfiguration().setThemeName(themeMetaData.getName());
     }
 
@@ -70,10 +91,38 @@ public class ApplicationManager implements IApplicationManager {
     public void changeTheme(String themeName) throws ResolveThemeException {
         ThemeMetaData themeMetaData = themesMetaData
                 .find(data -> data.getName().equals(themeName))
-                .orElseThrow(() -> new ThemeNotFoundException("Unknown theme: " + themeName));
+                .orElseThrow(() -> new ThemeNotFoundException(localizationProvider.getLocalization().getConfiguration().getString("fxEngine.applicationManager.changeThemeUsingThemeName.themeNotFoundException", themeName)));
 
-        controllers.forEach((id, controller) -> controller.changeTheme(resolve(themeMetaData, controller)), ResolveThemeException.class);
+        controllers.forEach((id, controller) -> {
+            Optional<DesignLoadedData> targetLoadedData = designLoadedData.find(data -> data.isAllow(controller.getClass(), themeMetaData.getName()));
+            ResolvedThemeLocation resolvedThemeLocation;
+            if (targetLoadedData.isPresent()) {
+                engineLogProvider.getLogger().debug("fxEngine.applicationManager.theme.gettingThemeFromCache", themeName, controller.getClass().getSimpleName());
+                resolvedThemeLocation = targetLoadedData.get().getResolvedThemeLocation();
+            } else {
+                resolvedThemeLocation = resolve(themeMetaData, controller);
+                designLoadedData.add(new DesignLoadedData(controller.getClass(), themeMetaData.getName(), resolvedThemeLocation));
+            }
+
+            controller.applyTheme(resolvedThemeLocation);
+        }, ResolveThemeException.class);
         FXEngine.getContext().getApplicationConfiguration().setThemeName(themeMetaData.getName());
+    }
+
+    @Override
+    public <C extends Controller> void applyTheme(C controller) throws ResolveThemeException {
+        ThemeMetaData themeMetaData = getThemeMetaData();
+        Optional<DesignLoadedData> targetLoadedData = designLoadedData.find(data -> data.isAllow(controller.getClass(), themeMetaData.getName()));
+        ResolvedThemeLocation resolvedThemeLocation;
+        if (targetLoadedData.isPresent()) {
+            engineLogProvider.getLogger().debug("fxEngine.applicationManager.theme.gettingThemeFromCache", themeMetaData.getName(), controller.getClass().getSimpleName());
+            resolvedThemeLocation = targetLoadedData.get().getResolvedThemeLocation();
+        } else {
+            resolvedThemeLocation = resolve(themeMetaData, controller);
+            designLoadedData.add(new DesignLoadedData(controller.getClass(), themeMetaData.getName(), resolvedThemeLocation));
+        }
+
+        controller.applyTheme(resolvedThemeLocation);
     }
 
     @Override
@@ -97,28 +146,13 @@ public class ApplicationManager implements IApplicationManager {
 
     private Localization getControllerInternationalizationFile(Controller controller, Locale locale) {
         BaseLocalizationMetaData currentLanguageMetaData = getApplicationLanguageMetaData(locale);
-        String currentLanguagePackageLocation = LocationTools.resolve(
-                ResolvableLocation.of(
-                        resourceStructureConfiguration.getApplicationInternationalizationPackage(),
-                        NullSafeResolveLocationOptions.THROW_EXCEPTION
-                ),
-                ResolvableLocation.of(
-                        currentLanguageMetaData.getILocation(),
-                        NullSafeResolveLocationOptions.REMOVE_EVERYWHERE
-                ),
-                SeparatorResolveLocationOptions.REMOVE_EVERYWHERE,
-                Separator.SLASH_SEPARATOR
-        );
 
-        String currentLanguagePackLocation = LocationTools.resolve(
-                ResolvableLocation.of(currentLanguagePackageLocation, NullSafeResolveLocationOptions.THROW_EXCEPTION),
-                ResolvableLocation.of(controller.getMetaData().internationalization(), NullSafeResolveLocationOptions.THROW_EXCEPTION),
-                SeparatorResolveLocationOptions.DEFAULT,
-                Separator.SLASH_SEPARATOR
-        );
+        String relativePath = FXEngine.getContext().getBean(ControllerLocalizationResolver.class,
+                currentLanguageMetaData,
+                controller.getMetaData().internationalization()
+        ).resolve();
 
-        LocalizationLoader localizationLoader = LocalizationLoader.from(currentLanguageMetaData, currentLanguagePackLocation);
-        return localizationLoader.load();
+        return FXEngine.getContext().getBean(LocalizationLoader.class, currentLanguageMetaData, relativePath).load();
     }
 
     private BaseLocalizationMetaData getApplicationLanguageMetaData(Locale locale) {
@@ -131,5 +165,25 @@ public class ApplicationManager implements IApplicationManager {
         throw new LanguagePackMetaDataNotFoundException(localizationProvider.getLocalization().getConfiguration().getString(
                 "fx.engine.controller.getApplicationLanguageMetaData.languageMetaDataNotFoundException", locale.getLanguage() + "/" + locale.getCountry()
         ));
+    }
+
+    private static class DesignLoadedData {
+        private final Class<? extends Controller> controllerClass;
+        private final String theme;
+        private final ResolvedThemeLocation resolvedThemeLocation;
+
+        private DesignLoadedData(Class<? extends Controller> controllerClass, String theme, ResolvedThemeLocation resolvedThemeLocation) {
+            this.controllerClass = controllerClass;
+            this.theme = theme;
+            this.resolvedThemeLocation = resolvedThemeLocation;
+        }
+
+        public boolean isAllow(Class<? extends Controller> controllerClass, String theme) {
+            return this.controllerClass.equals(controllerClass) && this.theme.equals(theme);
+        }
+
+        public ResolvedThemeLocation getResolvedThemeLocation() {
+            return resolvedThemeLocation;
+        }
     }
 }

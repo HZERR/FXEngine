@@ -1,9 +1,10 @@
 package ru.hzerr.fx.engine.core.context.initializer;
 
+import org.springframework.context.annotation.DependsOn;
 import ru.hzerr.fx.engine.configuration.logging.ILoggingConfiguration;
 import ru.hzerr.fx.engine.core.ApplicationContextInitializationException;
 import ru.hzerr.fx.engine.core.annotation.Include;
-import ru.hzerr.fx.engine.core.annotation.Registered;
+import ru.hzerr.fx.engine.core.annotation.RegisteredAs;
 import ru.hzerr.fx.engine.core.context.IExtendedAnnotationConfigApplicationContext;
 import ru.hzerr.fx.engine.core.context.InitializedBean;
 import ru.hzerr.fx.engine.core.language.*;
@@ -13,7 +14,9 @@ import ru.hzerr.fx.engine.core.path.resolver.Resolver;
 
 import static ru.hzerr.fx.engine.core.context.ExtendedAnnotationConfigApplicationContext.*;
 
-@Registered
+@RegisteredAs("localizationApplicationContextInitializer")
+@DependsOn({"classLoaderApplicationContextInitializer"})
+@SuppressWarnings("SpringDependsOnUnresolvedBeanInspection")
 public class ExtendedAnnotationConfigApplicationContextLoggingLocalizationInitializer implements IExtendedAnnotationConfigApplicationContextInitializer, InitializedBean {
 
     private IExtendedAnnotationConfigApplicationContext context;
@@ -31,15 +34,24 @@ public class ExtendedAnnotationConfigApplicationContextLoggingLocalizationInitia
             registerApplicationLoggingLocalizationMetaData();
 
             // register engine logging localization
-            Localization engineLoggingLocalization = LocalizationLoader.from(getEngineLoggingLocalizationMetaData(), getEngineLoggingLocalizationMetaData().getILocation().getLocation()).load();
+            Localization engineLoggingLocalization = context.getBean(LocalizationLoader.class,
+                    getEngineLoggingLocalizationMetaData(),
+                    getEngineLoggingLocalizationMetaData().getILocation().getLocation()
+            ).load();
+
             context.registerBean(ENGINE_LOGGING_LOCALIZATION_PROVIDER_BEAN_NAME, LocalizationProvider.class, engineLoggingLocalization);
 
             // register application logging localization
             context.register(ApplicationLoggingLocalizationResolver.class);
             Resolver applicationLocalizationResolver = context.getBean(ApplicationLoggingLocalizationResolver.class);
-            Localization applicationLoggingLocalization = LocalizationLoader.from(getApplicationLoggingLocalizationMetaData(), applicationLocalizationResolver.resolve()).load();
+            Localization applicationLoggingLocalization = context.getBean(LocalizationLoader.class,
+                    getApplicationLoggingLocalizationMetaData(),
+                    applicationLocalizationResolver.resolve()
+            ).load();
+
             context.registerBean(APPLICATION_LOGGING_LOCALIZATION_PROVIDER_BEAN_NAME, LocalizationProvider.class, applicationLoggingLocalization);
-        } catch (ApplicationLoggingLanguageMetaDataNotFoundException | EngineLoggingLanguageMetaDataNotFoundException e) {
+        } catch (ApplicationLoggingLanguageMetaDataNotFoundException |
+                 EngineLoggingLanguageMetaDataNotFoundException e) {
             throw new ApplicationContextInitializationException("Unable to create ApplicationContext. An error occurred while configuring the internationalization of the application", e);
         }
     }

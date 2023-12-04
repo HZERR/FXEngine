@@ -6,21 +6,21 @@ import ru.hzerr.fx.engine.core.language.Localization;
 @Registered
 public class LoggingLanguageConfiguration implements ILoggingLanguageConfiguration {
 
-    private Localization engineLanguagePack;
-    private Localization applicationLanguagePack;
+    private Localization engineLocalization;
+    private Localization applicationLocalization;
 
     @Override
-    public void setEngineLanguagePack(Localization engineLanguagePack) {
-        this.engineLanguagePack = engineLanguagePack;
+    public void setEngineLocalization(Localization engineLocalization) {
+        this.engineLocalization = engineLocalization;
     }
 
     @Override
-    public void setApplicationLanguagePack(Localization applicationLanguagePack) {
-        this.applicationLanguagePack = applicationLanguagePack;
+    public void setApplicationLocalization(Localization applicationLocalization) {
+        this.applicationLocalization = applicationLocalization;
     }
 
     @Override
     public IReadOnlyLoggingLanguageConfiguration getReadOnlyConfiguration() {
-        return new ReadOnlyLoggingLanguageConfiguration(engineLanguagePack, applicationLanguagePack);
+        return new ReadOnlyLoggingLanguageConfiguration(engineLocalization, applicationLocalization);
     }
 }

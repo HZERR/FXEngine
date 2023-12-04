@@ -2,6 +2,7 @@ package ru.hzerr.fx.engine.core.context;
 
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinitionCustomizer;
@@ -11,20 +12,20 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigRegistry;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.lang.Nullable;
-import ru.hzerr.fx.engine.configuration.application.IApplicationConfiguration;
-import ru.hzerr.fx.engine.configuration.application.IResourceStructureConfiguration;
-import ru.hzerr.fx.engine.configuration.application.ISoftwareConfiguration;
-import ru.hzerr.fx.engine.configuration.application.IStructureConfiguration;
+import ru.hzerr.collections.list.HList;
+import ru.hzerr.fx.engine.configuration.application.*;
 import ru.hzerr.fx.engine.core.entity.EntityLoader;
 import ru.hzerr.fx.engine.core.entity.IApplicationManager;
 import ru.hzerr.fx.engine.core.language.localization.ILocalizationProvider;
 import ru.hzerr.fx.engine.logging.factory.ILogProvider;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 public interface IExtendedAnnotationConfigApplicationContext extends AnnotationConfigRegistry, BeanDefinitionRegistry, ConfigurableApplicationContext, ResourceLoader {
 
     // BEGIN FLAT
+    IClassLoaderProvider getClassLoaderProvider();
     EntityLoader getEntityLoader();
     IStructureConfiguration getStructureConfiguration();
     IResourceStructureConfiguration getResourceStructureConfiguration();
@@ -41,9 +42,12 @@ public interface IExtendedAnnotationConfigApplicationContext extends AnnotationC
     Stage getStage();
     void setStage(Stage stage);
     Scene getScene();
+    Window getOwner();
+    HList<String> getScannedPackages();
     // END НА ПЕРЕСМОТРЕ
 
     // BEGIN EXTENDED METHOD CONTEXT
+    <T> Optional<T> fetchBean(Class<T> requiredType);
     boolean containsBean(Class<?> beanClass);
     boolean noContainsBean(Class<?> beanClass);
     <T> T getBeanByQualifier(Class<T> requiredType) throws BeansException;

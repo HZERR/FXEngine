@@ -5,6 +5,6 @@ import ru.hzerr.fx.engine.core.language.Localization;
 
 public interface ILoggingLanguageConfiguration extends InMemoryReadOnlyConfiguration<IReadOnlyLoggingLanguageConfiguration> {
 
-    void setEngineLanguagePack(Localization pack);
-    void setApplicationLanguagePack(Localization pack);
+    void setEngineLocalization(Localization pack);
+    void setApplicationLocalization(Localization pack);
 }

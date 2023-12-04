@@ -49,6 +49,17 @@
       "loadEntity": {
         "entitySuccessfullyLoaded": "Сущность '{}' была успешно загружена"
       }
+    },
+    "applicationManager": {
+      "changeThemeUsingThemeName": {
+        "themeNotFoundException": "Тема '{}' не найдена"
+      },
+      "changeThemeUsingThemeMetaData": {
+        "themeNotFoundException": "Невозможно найти тему приложения по классу метаданных '{}'"
+      },
+      "theme": {
+        "gettingThemeFromCache": "Получение '{}' темы для '{}' из кэша..."
+      }
     }
   }
 }

@@ -49,6 +49,17 @@
       "loadEntity": {
         "entitySuccessfullyLoaded": "The '{}' entity has been successfully loaded"
       }
+    },
+    "applicationManager": {
+      "changeThemeUsingThemeName": {
+        "themeNotFoundException": "The '{}' theme was not found"
+      },
+      "changeThemeUsingThemeMetaData": {
+        "themeNotFoundException": "It is not possible to find the application theme by metadata class '{}'"
+      },
+      "theme": {
+        "gettingThemeFromCache": "Getting the '{}' theme for '{}' from the cache..."
+      }
     }
   }
 }
