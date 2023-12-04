@@ -1,7 +1,5 @@
 package ru.hzerr.fx.engine.core.entity;
 
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -33,7 +31,7 @@ import java.util.stream.Collectors;
 public class EntityLoader implements Closeable {
 
     private final ExecutorService service = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setDaemon(true).setNameFormat("EntityLoader %d").build());
-    private final ListeningExecutorService listeningExecutorService = MoreExecutors.listeningDecorator(service);
+//    private final ListeningExecutorService listeningExecutorService = MoreExecutors.listeningDecorator(service);
 
 
     @IncludeAs("engineLogProvider")
@@ -123,7 +121,7 @@ public class EntityLoader implements Closeable {
         service.shutdown();
     }
 
-    public interface Handler<T> extends Supplier<T> {
+    private interface Handler<T> extends Supplier<T> {
 
         @Override
         default T get() {

@@ -3,9 +3,6 @@ package ru.hzerr.fx.engine.core;
 import ru.hzerr.collections.list.HList;
 import ru.hzerr.collections.map.HMap;
 import ru.hzerr.collections.map.Type;
-import ru.hzerr.fx.engine.configuration.application.IClassLoaderProvider;
-import ru.hzerr.fx.engine.configuration.application.IResourceStructureConfiguration;
-import ru.hzerr.fx.engine.core.annotation.Include;
 import ru.hzerr.fx.engine.core.annotation.IncludeAs;
 import ru.hzerr.fx.engine.core.annotation.Multithreaded;
 import ru.hzerr.fx.engine.core.annotation.Redefinition;
@@ -29,20 +26,14 @@ import java.util.Optional;
 public class ApplicationManager implements IApplicationManager {
 
     private final HMap<String, Controller> controllers = HMap.create(Type.SYNCHRONIZED);
-    private final HList<DesignLoadedData> designLoadedData = HList.createProtectedList();
+    private final HList<ThemeLoadedData> themeLoadedData = HList.createProtectedList();
     private final HList<ThemeMetaData> themesMetaData = HList.createProtectedList();
-
-    @Include
-    private IClassLoaderProvider classLoaderProvider;
 
     @IncludeAs("engineLoggingLocalizationProvider")
     private ILocalizationProvider localizationProvider;
 
     @IncludeAs("engineLogProvider")
     private ILogProvider engineLogProvider;
-
-    @Include
-    private IResourceStructureConfiguration resourceStructureConfiguration;
 
     @Override
     public void register(String id, Controller controller) {
@@ -61,7 +52,7 @@ public class ApplicationManager implements IApplicationManager {
 
     @Override
     public void setLanguage(Locale locale) {
-        controllers.forEach((id, controller) -> controller.onChangeLanguage(getControllerInternationalizationFile(controller, locale)));
+        controllers.forEach((id, controller) -> controller.onChangeLanguage(getLocalization(controller, locale)));
         FXEngine.getContext().getApplicationConfiguration().setLocale(locale);
     }
 
@@ -72,14 +63,14 @@ public class ApplicationManager implements IApplicationManager {
                 .orElseThrow(() -> new ThemeNotFoundException("Unknown themeMetaDataClass: " + themeMetaDataClass.getSimpleName()));
 
         controllers.forEach((id, controller) -> {
-            Optional<DesignLoadedData> targetLoadedData = designLoadedData.find(data -> data.isAllow(controller.getClass(), themeMetaData.getName()));
+            Optional<ThemeLoadedData> targetLoadedData = themeLoadedData.find(data -> data.isAllow(controller.getClass(), themeMetaData.getName()));
             ResolvedThemeLocation resolvedThemeLocation;
             if (targetLoadedData.isPresent()) {
                 engineLogProvider.getLogger().debug("fxEngine.applicationManager.theme.gettingThemeFromCache", themeMetaData.getName(), controller.getClass().getSimpleName());
                 resolvedThemeLocation = targetLoadedData.get().getResolvedThemeLocation();
             } else {
                 resolvedThemeLocation = resolve(themeMetaData, controller);
-                designLoadedData.add(new DesignLoadedData(controller.getClass(), themeMetaData.getName(), resolvedThemeLocation));
+                themeLoadedData.add(new ThemeLoadedData(controller.getClass(), themeMetaData.getName(), resolvedThemeLocation));
             }
 
             controller.applyTheme(resolvedThemeLocation);
@@ -94,14 +85,14 @@ public class ApplicationManager implements IApplicationManager {
                 .orElseThrow(() -> new ThemeNotFoundException(localizationProvider.getLocalization().getConfiguration().getString("fxEngine.applicationManager.changeThemeUsingThemeName.themeNotFoundException", themeName)));
 
         controllers.forEach((id, controller) -> {
-            Optional<DesignLoadedData> targetLoadedData = designLoadedData.find(data -> data.isAllow(controller.getClass(), themeMetaData.getName()));
+            Optional<ThemeLoadedData> targetLoadedData = themeLoadedData.find(data -> data.isAllow(controller.getClass(), themeMetaData.getName()));
             ResolvedThemeLocation resolvedThemeLocation;
             if (targetLoadedData.isPresent()) {
                 engineLogProvider.getLogger().debug("fxEngine.applicationManager.theme.gettingThemeFromCache", themeName, controller.getClass().getSimpleName());
                 resolvedThemeLocation = targetLoadedData.get().getResolvedThemeLocation();
             } else {
                 resolvedThemeLocation = resolve(themeMetaData, controller);
-                designLoadedData.add(new DesignLoadedData(controller.getClass(), themeMetaData.getName(), resolvedThemeLocation));
+                themeLoadedData.add(new ThemeLoadedData(controller.getClass(), themeMetaData.getName(), resolvedThemeLocation));
             }
 
             controller.applyTheme(resolvedThemeLocation);
@@ -112,14 +103,14 @@ public class ApplicationManager implements IApplicationManager {
     @Override
     public <C extends Controller> void applyTheme(C controller) throws ResolveThemeException {
         ThemeMetaData themeMetaData = getThemeMetaData();
-        Optional<DesignLoadedData> targetLoadedData = designLoadedData.find(data -> data.isAllow(controller.getClass(), themeMetaData.getName()));
+        Optional<ThemeLoadedData> targetLoadedData = themeLoadedData.find(data -> data.isAllow(controller.getClass(), themeMetaData.getName()));
         ResolvedThemeLocation resolvedThemeLocation;
         if (targetLoadedData.isPresent()) {
             engineLogProvider.getLogger().debug("fxEngine.applicationManager.theme.gettingThemeFromCache", themeMetaData.getName(), controller.getClass().getSimpleName());
             resolvedThemeLocation = targetLoadedData.get().getResolvedThemeLocation();
         } else {
             resolvedThemeLocation = resolve(themeMetaData, controller);
-            designLoadedData.add(new DesignLoadedData(controller.getClass(), themeMetaData.getName(), resolvedThemeLocation));
+            themeLoadedData.add(new ThemeLoadedData(controller.getClass(), themeMetaData.getName(), resolvedThemeLocation));
         }
 
         controller.applyTheme(resolvedThemeLocation);
@@ -144,7 +135,7 @@ public class ApplicationManager implements IApplicationManager {
         return resolve(getThemeMetaData(), controller);
     }
 
-    private Localization getControllerInternationalizationFile(Controller controller, Locale locale) {
+    private Localization getLocalization(Controller controller, Locale locale) {
         BaseLocalizationMetaData currentLanguageMetaData = getApplicationLanguageMetaData(locale);
 
         String relativePath = FXEngine.getContext().getBean(ControllerLocalizationResolver.class,
@@ -167,12 +158,12 @@ public class ApplicationManager implements IApplicationManager {
         ));
     }
 
-    private static class DesignLoadedData {
+    private static class ThemeLoadedData {
         private final Class<? extends Controller> controllerClass;
         private final String theme;
         private final ResolvedThemeLocation resolvedThemeLocation;
 
-        private DesignLoadedData(Class<? extends Controller> controllerClass, String theme, ResolvedThemeLocation resolvedThemeLocation) {
+        private ThemeLoadedData(Class<? extends Controller> controllerClass, String theme, ResolvedThemeLocation resolvedThemeLocation) {
             this.controllerClass = controllerClass;
             this.theme = theme;
             this.resolvedThemeLocation = resolvedThemeLocation;
