@@ -27,6 +27,6 @@ public class ResourceStructureConfiguration implements IResourceStructureConfigu
     @Nullable
     @Override
     public BaseLocation getApplicationLoggingInternationalizationPackage() {
-        return new BaseLocation("language/logging");
+        return null;
     }
 }

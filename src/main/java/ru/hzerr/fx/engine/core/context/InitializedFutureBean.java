@@ -2,7 +2,7 @@ package ru.hzerr.fx.engine.core.context;
 
 import org.springframework.beans.factory.InitializingBean;
 
-public interface InitializedBean extends InitializingBean {
+public interface InitializedFutureBean extends InitializingBean {
 
     @Override
     default void afterPropertiesSet() throws Exception {

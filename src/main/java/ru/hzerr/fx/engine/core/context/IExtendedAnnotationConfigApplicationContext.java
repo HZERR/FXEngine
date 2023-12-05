@@ -14,6 +14,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.lang.Nullable;
 import ru.hzerr.collections.list.HList;
 import ru.hzerr.fx.engine.configuration.application.*;
+import ru.hzerr.fx.engine.configuration.logging.IReadOnlyLoggingConfiguration;
 import ru.hzerr.fx.engine.core.entity.EntityLoader;
 import ru.hzerr.fx.engine.core.entity.IApplicationManager;
 import ru.hzerr.fx.engine.core.language.localization.ILocalizationProvider;
@@ -25,6 +26,7 @@ import java.util.function.Supplier;
 public interface IExtendedAnnotationConfigApplicationContext extends AnnotationConfigRegistry, BeanDefinitionRegistry, ConfigurableApplicationContext, ResourceLoader {
 
     // BEGIN FLAT
+    IReadOnlyLoggingConfiguration getLoggingConfiguration();
     IClassLoaderProvider getClassLoaderProvider();
     EntityLoader getEntityLoader();
     IStructureConfiguration getStructureConfiguration();

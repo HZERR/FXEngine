@@ -5,12 +5,12 @@ import ru.hzerr.fx.engine.core.ApplicationContextInitializationException;
 import ru.hzerr.fx.engine.core.annotation.Include;
 import ru.hzerr.fx.engine.core.annotation.RegisteredAs;
 import ru.hzerr.fx.engine.core.context.IExtendedAnnotationConfigApplicationContext;
-import ru.hzerr.fx.engine.core.context.InitializedBean;
+import ru.hzerr.fx.engine.core.context.InitializedFutureBean;
 import ru.hzerr.fx.engine.core.context.Ordered;
 
 @Ordered(1)
 @RegisteredAs("classLoaderApplicationContextInitializer")
-public class ExtendedAnnotationConfigApplicationContextClassLoaderInitializer implements IExtendedAnnotationConfigApplicationContextInitializer, InitializedBean {
+public class ExtendedAnnotationConfigApplicationContextClassLoaderInitializer implements IExtendedAnnotationConfigApplicationContextInitializer, InitializedFutureBean {
 
     private IExtendedAnnotationConfigApplicationContext context;
 

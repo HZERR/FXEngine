@@ -14,8 +14,8 @@
         "qualifierValueIsEmptyException": "The required 'Qualifier' annotation is present in the {} class. However, it has an empty value, and the engine cannot find a child annotation relative to the qualifier annotation",
         "qualifierAnnotationNotFoundException": "The required 'Qualifier' annotation is missing in class '{}'"
       },
-      "registerControllers": {
-        "controllerSuccessfullyRegistered": "'{}' was successfully registered in system"
+      "getApplicationLocalizationProvider": {
+        "illegalAccessBeanException": "It is not possible to access the application debugging localization if it is disabled"
       }
     },
     "init": {
@@ -32,14 +32,17 @@
       "getApplicationLanguageMetaData": {
         "languageMetaDataNotFoundException": "Unable to find metadata with locale '{}'"
       },
-      "initialize": "'{}' has been successfully initialized",
+      "initialize": {
+        "success": "'{}' has been successfully initialized",
+        "controllerSuccessfullyRegistered": "'{}' has been successfully registered in the system"
+      },
       "onDestroy": "'{}' has been successfully destroyed"
     },
     "stylesheetLoader": {
       "stylesheetLocationNotFoundException": "Unable to find stylesheet on path '{}'"
     },
     "themeLoader": {
-      "loadingTheme": "Loading '{}' theme...",
+      "prepareTheme": "Preparing the '{}' theme for the '{}' controller",
       "targetThemeFileLocationNotFoundException": "The '{}' theme file for the '{}' was not found",
       "skippingUseThemeOnTargetController": "Skipping the use of the '{}' theme on the '{}'...",
       "themeOnTargetControllerSuccessfullySettingUp": "Setting up the '{}' theme for the '{}' has been successfully completed",

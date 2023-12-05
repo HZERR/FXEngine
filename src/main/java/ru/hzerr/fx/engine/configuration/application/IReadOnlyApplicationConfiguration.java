@@ -12,4 +12,6 @@ public interface IReadOnlyApplicationConfiguration extends IReadOnlyConfiguratio
 
     @NotNull
     String getThemeName();
+
+    Locale LOCALE_RU = Locale.of("ru", "RU");
 }

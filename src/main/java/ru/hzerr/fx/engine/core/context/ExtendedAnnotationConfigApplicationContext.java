@@ -17,6 +17,7 @@ import org.springframework.core.metrics.StartupStep;
 import org.springframework.util.Assert;
 import ru.hzerr.collections.list.HList;
 import ru.hzerr.fx.engine.configuration.application.*;
+import ru.hzerr.fx.engine.configuration.logging.IReadOnlyLoggingConfiguration;
 import ru.hzerr.fx.engine.core.ApplicationManager;
 import ru.hzerr.fx.engine.core.BeanAlreadyExistsException;
 import ru.hzerr.fx.engine.core.annotation.Redefinition;
@@ -55,6 +56,8 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
         this.scanner = new OrderedClassPathBeanDefinitionScanner(this);
         scan(basePackages);
         refresh();
+        engineLogProvider = getFXEngineLogProvider();
+        engineLocalizationProvider = getEngineLocalizationProvider();
         this.basePackages = HList.of(basePackages);
     }
 
@@ -76,6 +79,9 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
     public void setEngineLogProvider(ILogProvider engineLogProvider) {
         this.engineLogProvider = engineLogProvider;
     }
+
+    @Override
+    public IReadOnlyLoggingConfiguration getLoggingConfiguration() { return getBean(IReadOnlyLoggingConfiguration.class); }
 
     @Override
     public IClassLoaderProvider getClassLoaderProvider() { return getBean(IClassLoaderProvider.class); }
@@ -114,7 +120,13 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
     }
 
     @Override
-    public ILocalizationProvider getApplicationLocalizationProvider() { return getBean(APPLICATION_LOGGING_LOCALIZATION_PROVIDER_BEAN_NAME, ILocalizationProvider.class); }
+    public ILocalizationProvider getApplicationLocalizationProvider() {
+        if (getLoggingConfiguration().isInternationalizationEnabled()) {
+            return getBean(APPLICATION_LOGGING_LOCALIZATION_PROVIDER_BEAN_NAME, ILocalizationProvider.class);
+        }
+
+        throw new IllegalAccessBeanException(engineLocalizationProvider.getLocalization().getConfiguration().getString("fxEngine.applicationContext.getApplicationLocalizationProvider.illegalAccessBeanException"));
+    }
 
     @Override
     public ILocalizationProvider getEngineLocalizationProvider() { return getBean(ENGINE_LOGGING_LOCALIZATION_PROVIDER_BEAN_NAME, ILocalizationProvider.class); }

@@ -32,6 +32,7 @@ public abstract class FXEngine extends Application {
 
     @Override
     public final void init() throws Exception {
+        System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
         context = createApplicationContext();
         for (ThemeMetaData themeMetaData : context.getBeansOfType(ThemeMetaData.class).values()) {
             context.getFXEngineLogProvider().getLogger().info("fxEngine.init.registrationThemeInSystem", themeMetaData.getName());

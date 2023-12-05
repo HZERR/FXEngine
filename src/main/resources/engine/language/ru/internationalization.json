@@ -13,6 +13,9 @@
         "getByQualifier": "Получение бина '{}' по квалификатору '{}'",
         "qualifierValueIsEmptyException": "Необходимая аннотация 'Qualifier' присутствует в классе '{}'. Однако она имеет пустое значение и движок не может найти дочернюю аннотацию по отношению к Qualifier аннотации",
         "qualifierAnnotationNotFoundException": "Необходимая аннотация 'Qualifier' отсутствует в классе '{}'"
+      },
+      "getApplicationLocalizationProvider": {
+        "illegalAccessBeanException": "Невозможно получить доступ к локализации отладки приложения, если она отключена"
       }
     },
     "init": {
