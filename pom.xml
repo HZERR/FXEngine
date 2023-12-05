@@ -6,7 +6,7 @@
 
     <groupId>ru.hzerr</groupId>
     <artifactId>FXEngine</artifactId>
-    <version>1.0-Early</version>
+    <version>1.0.2-Early</version>
 
     <packaging>jar</packaging>
 
