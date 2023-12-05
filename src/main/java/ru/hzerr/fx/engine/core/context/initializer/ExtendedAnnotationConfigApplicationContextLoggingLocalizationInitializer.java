@@ -1,12 +1,12 @@
 package ru.hzerr.fx.engine.core.context.initializer;
 
-import org.springframework.context.annotation.DependsOn;
 import ru.hzerr.fx.engine.configuration.logging.ILoggingConfiguration;
 import ru.hzerr.fx.engine.core.ApplicationContextInitializationException;
 import ru.hzerr.fx.engine.core.annotation.Include;
 import ru.hzerr.fx.engine.core.annotation.RegisteredAs;
 import ru.hzerr.fx.engine.core.context.IExtendedAnnotationConfigApplicationContext;
 import ru.hzerr.fx.engine.core.context.InitializedBean;
+import ru.hzerr.fx.engine.core.context.Ordered;
 import ru.hzerr.fx.engine.core.language.*;
 import ru.hzerr.fx.engine.core.language.localization.LocalizationProvider;
 import ru.hzerr.fx.engine.core.path.resolver.ApplicationLoggingLocalizationResolver;
@@ -14,9 +14,8 @@ import ru.hzerr.fx.engine.core.path.resolver.Resolver;
 
 import static ru.hzerr.fx.engine.core.context.ExtendedAnnotationConfigApplicationContext.*;
 
+@Ordered(2)
 @RegisteredAs("localizationApplicationContextInitializer")
-@DependsOn({"classLoaderApplicationContextInitializer"})
-@SuppressWarnings("SpringDependsOnUnresolvedBeanInspection")
 public class ExtendedAnnotationConfigApplicationContextLoggingLocalizationInitializer implements IExtendedAnnotationConfigApplicationContextInitializer, InitializedBean {
 
     private IExtendedAnnotationConfigApplicationContext context;
@@ -88,3 +87,4 @@ public class ExtendedAnnotationConfigApplicationContextLoggingLocalizationInitia
         throw new ApplicationLoggingLanguageMetaDataNotFoundException("The metadata of the language pack for debugging the application with the language locale \"" + configuration.getEngineLocale().toString() + "\" was not found");
     }
 }
+

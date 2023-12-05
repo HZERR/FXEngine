@@ -13,6 +13,8 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.metrics.StartupStep;
+import org.springframework.util.Assert;
 import ru.hzerr.collections.list.HList;
 import ru.hzerr.fx.engine.configuration.application.*;
 import ru.hzerr.fx.engine.core.ApplicationManager;
@@ -26,10 +28,13 @@ import ru.hzerr.fx.engine.logging.factory.FXEngineLogProvider;
 import ru.hzerr.fx.engine.logging.factory.ILogProvider;
 
 import java.lang.annotation.Annotation;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Supplier;
 
 public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfigApplicationContext implements IExtendedAnnotationConfigApplicationContext {
+
+    private final OrderedClassPathBeanDefinitionScanner scanner;
 
     public static final String APPLICATION_LOGGING_LOCALIZATION_META_DATA_BEAN_NAME = "applicationLoggingLocalizationMetaData";
     public static final String ENGINE_LOGGING_LOCALIZATION_META_DATA_BEAN_NAME = "engineLoggingLocalizationMetaData";
@@ -46,8 +51,20 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
     private final HList<String> basePackages;
 
     public ExtendedAnnotationConfigApplicationContext(@NotNull String... basePackages) {
-        super(basePackages);
+        super();
+        this.scanner = new OrderedClassPathBeanDefinitionScanner(this);
+        scan(basePackages);
+        refresh();
         this.basePackages = HList.of(basePackages);
+    }
+
+    @Override
+    public void scan(String... basePackages) {
+        Assert.notEmpty(basePackages, "At least one base package must be specified");
+        StartupStep scanPackages = getApplicationStartup().start("spring.context.base-packages.scan")
+                .tag("packages", () -> Arrays.toString(basePackages));
+        this.scanner.scan(basePackages);
+        scanPackages.end();
     }
 
     // ======================================== BEGIN FLAT ACCESS ========================================
