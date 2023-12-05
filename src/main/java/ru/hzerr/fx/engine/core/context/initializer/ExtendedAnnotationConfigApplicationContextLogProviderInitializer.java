@@ -1,6 +1,8 @@
 package ru.hzerr.fx.engine.core.context.initializer;
 
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import ru.hzerr.fx.engine.core.ApplicationContextInitializationException;
 import ru.hzerr.fx.engine.core.annotation.Include;
 import ru.hzerr.fx.engine.core.annotation.Registered;
@@ -14,6 +16,7 @@ import static ru.hzerr.fx.engine.core.context.ExtendedAnnotationConfigApplicatio
 import static ru.hzerr.fx.engine.core.context.ExtendedAnnotationConfigApplicationContext.ENGINE_LOG_PROVIDER_BEAN_NAME;
 
 @Registered
+@Order(Ordered.HIGHEST_PRECEDENCE)
 @DependsOn({"classLoaderApplicationContextInitializer", "localizationApplicationContextInitializer"})
 @SuppressWarnings("SpringDependsOnUnresolvedBeanInspection")
 public class ExtendedAnnotationConfigApplicationContextLogProviderInitializer implements IExtendedAnnotationConfigApplicationContextInitializer, InitializedBean {
