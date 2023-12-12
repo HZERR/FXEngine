@@ -10,8 +10,6 @@ import java.util.function.*;
 
 public class ExtendedCompletableFuture<T> implements IExtendedCompletionStage<T> {
 
-    public static final ExecutorService APPLICATION_THREAD_EXECUTOR = new JavaFXApplicationExecutorService();
-
     private CompletableFuture<T> wrapped;
 
     public ExtendedCompletableFuture(CompletableFuture<T> wrapped) {

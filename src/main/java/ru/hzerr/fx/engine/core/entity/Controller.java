@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import ru.hzerr.fx.engine.core.FXEngine;
 import ru.hzerr.fx.engine.core.annotation.FXEntity;
+import ru.hzerr.fx.engine.core.annotation.IncludeAs;
 import ru.hzerr.fx.engine.core.language.Localization;
 import ru.hzerr.fx.engine.core.theme.ResolveThemeException;
 import ru.hzerr.fx.engine.core.theme.ResolvedThemeLocation;
@@ -14,7 +15,7 @@ public abstract class Controller {
     @FXML
     private Parent content;
 
-    private ILogProvider engineLogProvider = FXEngine.getContext().getFXEngineLogProvider();
+    private ILogProvider engineLogProvider;
 
     public final void initialize() throws ResolveThemeException {
         onConnectDestroyEvent();
@@ -29,7 +30,7 @@ public abstract class Controller {
     protected abstract void onInit();
 
     protected void onConnectDestroyEvent() {
-        content.sceneProperty().addListener((observable, oldValue, newValue) -> {
+        content.sceneProperty().addListener((_, oldValue, newValue) -> {
             if (newValue == null) {
                 onDestroy();
             }
@@ -60,5 +61,9 @@ public abstract class Controller {
 
     public Parent getContentAsParent() {
         return content;
+    }
+
+    void setEngineLogProvider(ILogProvider engineLogProvider) {
+        this.engineLogProvider = engineLogProvider;
     }
 }

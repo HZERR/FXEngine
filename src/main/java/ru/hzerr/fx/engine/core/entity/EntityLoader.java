@@ -4,11 +4,10 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import org.jetbrains.annotations.NotNull;
+import ru.hzerr.fx.engine.configuration.application.IClassLoaderProvider;
 import ru.hzerr.fx.engine.configuration.application.IResourceStructureConfiguration;
-import ru.hzerr.fx.engine.core.annotation.FXEntity;
-import ru.hzerr.fx.engine.core.annotation.Include;
-import ru.hzerr.fx.engine.core.annotation.IncludeAs;
-import ru.hzerr.fx.engine.core.annotation.Registered;
+import ru.hzerr.fx.engine.core.FXEngine;
+import ru.hzerr.fx.engine.core.annotation.*;
 import ru.hzerr.fx.engine.core.concurrent.ExtendedCompletableFuture;
 import ru.hzerr.fx.engine.core.concurrent.IExtendedCompletionStage;
 import ru.hzerr.fx.engine.core.entity.exception.*;
@@ -24,7 +23,6 @@ import java.util.Arrays;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -38,35 +36,88 @@ public class EntityLoader implements Closeable {
             .build()
     );
 
-    @IncludeAs("engineLogProvider")
     private ILogProvider engineLogProvider;
 
-    @Include
     private IResourceStructureConfiguration resourceStructureConfiguration;
 
-    private final AtomicReference<ClassLoader> classLoader = new AtomicReference<>(ClassLoader.getSystemClassLoader());
+    private IClassLoaderProvider classLoaderProvider;
 
     public EntityLoader() {
         Runtime.getRuntime().addShutdownHook(new Thread(service::shutdown));
     }
 
-    public void setClassLoader(ClassLoader classLoader) {
-         this.classLoader.set(classLoader);
-    }
-
-    public <C extends Controller, P extends Parent> IExtendedCompletionStage<Entity<C, P>>
-    loadAsync(LoadMetaData<C> loadData, Class<P> parent) {
+    /**
+     * Класс контроллера, передаваемый сюда, обязательно должен иметь аннотации:<br>
+     * 1) {@link Registered} или аналогичная<br>
+     * 2) {@link FXController}<br>
+     * 3) {@link FXEntity}<br>
+     * @param loadData данные, для создания объекта контроллера с помощью Spring Application Context
+     * @param parent представляющий из себя тип узла
+     * @return загруженную сущность
+     * @param <C> тип контроллера
+     * @param <P> тип узла
+     * @throws LoadControllerException в виде CompletionException в случае ошибки загрузки контроллера
+     * @throws IOException в виде CompletionException в случае ошибки загрузки fxml
+     * @see #load(SpringLoadMetaData, Class)
+     */
+    public <C extends Controller, P extends Parent>
+    IExtendedCompletionStage<Entity<C, P>> loadAsync(SpringLoadMetaData<C> loadData, Class<P> parent) {
         return ExtendedCompletableFuture.supplyAsync((Handler<Entity<C, P>>) () -> load(loadData, parent), service);
     }
 
-    public <C extends Controller, P extends Parent> Entity<C, P>
-    load(LoadMetaData<C> loadData, Class<P> parent) throws LoadControllerException, IOException {
+    /**
+     * Класс контроллера, передаваемый сюда, обязательно должен иметь аннотации:<br>
+     * 1) {@link Registered} или аналогичная<br>
+     * 2) {@link FXController}<br>
+     * 3) {@link FXEntity}<br>
+     * @param loadData данные, для создания объекта контроллера с помощью Spring Application Context
+     * @param parent представляющий из себя тип узла
+     * @return загруженную сущность
+     * @param <C> тип контроллера
+     * @param <P> тип узла
+     * @throws LoadControllerException в случае ошибки загрузки контроллера
+     * @throws IOException в случае ошибки загрузки fxml
+     * @see #load(SpringLoadMetaData, Class)
+     */
+    public <C extends Controller, P extends Parent>
+    Entity<C, P> load(SpringLoadMetaData<C> loadData, Class<P> parent) throws LoadControllerException, IOException {
+        return load(loadController(loadData), parent);
+    }
+
+    public <C extends Controller, P extends Parent>
+    IExtendedCompletionStage<Entity<C, P>> loadAsync(LoadMetaData<C> loadData, Class<P> parent) {
+        return ExtendedCompletableFuture.supplyAsync((Handler<Entity<C, P>>) () -> load(loadData, parent), service);
+    }
+
+    /**
+     *
+     * @param loadData данные, для создания объекта контроллера через {@link Constructor#newInstance(Object...)}
+     * @param parent представляющий из себя тип узла
+     * @return загруженную сущность
+     * @param <C> тип контроллера
+     * @param <P> тип узла
+     * @throws LoadControllerException в случае ошибки загрузки контроллера
+     * @throws IOException в случае ошибки загрузки fxml
+     * @see #load(SpringLoadMetaData, Class)
+     */
+    public <C extends Controller, P extends Parent>
+    Entity<C, P> load(LoadMetaData<C> loadData, Class<P> parent) throws LoadControllerException, IOException {
+        return load(loadController(loadData), parent);
+    }
+
+    public <C extends Controller, P extends Parent>
+    IExtendedCompletionStage<Entity<C, P>> loadAsync(C controller, Class<P> parent) {
+        return ExtendedCompletableFuture.supplyAsync((Handler<Entity<C, P>>) () -> load(controller, parent), service);
+    }
+
+    public <C extends Controller, P extends Parent>
+    Entity<C, P> load(C controller, Class<P> parent) throws IOException {
+        controller.setEngineLogProvider(engineLogProvider);
         FXMLLoader loader = new FXMLLoader();
-        C controller = loadController(loadData);
         loader.setController(controller);
-        FXEntity controllerMetaData = loadData.getControllerClass().getAnnotation(FXEntity.class);
+        FXEntity controllerMetaData = controller.getClass().getAnnotation(FXEntity.class);
         String location = new EntityLocationResolver(resourceStructureConfiguration, controllerMetaData.fxml()).resolve();
-        URL locationAsURL = classLoader.get().getResource(location);
+        URL locationAsURL = classLoaderProvider.getApplicationResourceClassLoader().getResource(location);
         if (locationAsURL != null) {
             loader.setLocation(locationAsURL);
             P root = loader.load();
@@ -74,6 +125,16 @@ public class EntityLoader implements Closeable {
             return new Entity<>(controller, root);
         } else
             throw new FXMLNotFoundException("Unable to find fxml file at path '" + location + "'");
+    }
+
+    @NotNull
+    private <C extends Controller>
+    C loadController(@NotNull SpringLoadMetaData<C> loadData) throws BeanControllerNotFoundException {
+        if (FXEngine.getContext().containsBean(loadData.getControllerClass())) {
+            return FXEngine.getContext().getBean(loadData.getControllerClass(), loadData.getArguments());
+        }
+
+        throw new BeanControllerNotFoundException("Контроллер " + loadData.getControllerClass().getSimpleName() + " не найден");
     }
 
     @NotNull
@@ -122,6 +183,21 @@ public class EntityLoader implements Closeable {
     @Override
     public void close() {
         service.shutdown();
+    }
+
+    @IncludeAs("engineLogProvider")
+    public void setEngineLogProvider(ILogProvider engineLogProvider) {
+        this.engineLogProvider = engineLogProvider;
+    }
+
+    @Include
+    public void setClassLoaderProvider(IClassLoaderProvider classLoaderProvider) {
+        this.classLoaderProvider = classLoaderProvider;
+    }
+
+    @Include
+    public void setResourceStructureConfiguration(IResourceStructureConfiguration resourceStructureConfiguration) {
+        this.resourceStructureConfiguration = resourceStructureConfiguration;
     }
 
     private interface Handler<T> extends Supplier<T> {
