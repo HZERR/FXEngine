@@ -11,7 +11,7 @@ public abstract class PopupController extends Controller implements Viewable {
 
     @Override
     protected void onConnectDestroyEvent() {
-        popup.onCloseRequestProperty().addListener((_, _, _) -> onDestroy());
+        popup.onCloseRequestProperty().addListener((observable, o, n) -> onDestroy());
     }
 
 //    protected void preInitPopup() {

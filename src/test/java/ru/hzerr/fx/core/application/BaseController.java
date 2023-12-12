@@ -35,8 +35,8 @@ public class BaseController extends Controller {
 
     @Override
     public void onInit() {
-        destroy.setOnAction(_ -> FXEngine.getContext().getScene().setRoot(new AnchorPane()));
-        changeLocalization.setOnAction(_ -> {
+        destroy.setOnAction(e -> FXEngine.getContext().getScene().setRoot(new AnchorPane()));
+        changeLocalization.setOnAction(e -> {
             logProvider.getLogger().debug("Текущий язык '" + FXEngine.getContext().getApplicationConfiguration().getLocale().getLanguage() + "'");
             if (FXEngine.getContext().getApplicationConfiguration().getLocale().equals(Locale.ENGLISH)) {
                 FXEngine.getContext().getApplicationManager().setLanguage(Locale.of("ru", "RU"));
@@ -46,7 +46,7 @@ public class BaseController extends Controller {
                 logProvider.getLogger().debug("Язык приложения изменен на 'English'");
             }
         });
-        changeTheme.setOnAction(_ -> {
+        changeTheme.setOnAction(e -> {
             // TODO: 12.11.2023 ДОПИСАТь
             if (FXEngine.getContext().getApplicationConfiguration().getThemeName().equals("White")) {
                 try {

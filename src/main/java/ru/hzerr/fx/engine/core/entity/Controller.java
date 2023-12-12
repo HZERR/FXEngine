@@ -4,7 +4,6 @@ import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import ru.hzerr.fx.engine.core.FXEngine;
 import ru.hzerr.fx.engine.core.annotation.FXEntity;
-import ru.hzerr.fx.engine.core.annotation.IncludeAs;
 import ru.hzerr.fx.engine.core.language.Localization;
 import ru.hzerr.fx.engine.core.theme.ResolveThemeException;
 import ru.hzerr.fx.engine.core.theme.ResolvedThemeLocation;
@@ -30,7 +29,7 @@ public abstract class Controller {
     protected abstract void onInit();
 
     protected void onConnectDestroyEvent() {
-        content.sceneProperty().addListener((_, oldValue, newValue) -> {
+        content.sceneProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == null) {
                 onDestroy();
             }
