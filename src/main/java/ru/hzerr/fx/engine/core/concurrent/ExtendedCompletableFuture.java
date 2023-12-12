@@ -234,6 +234,31 @@ public class ExtendedCompletableFuture<T> implements IExtendedCompletionStage<T>
     }
 
     @Override
+    public IExtendedCompletionStage<T> exceptionallyAsync(Function<Throwable, ? extends T> fn) {
+        return new ExtendedCompletableFuture<>(wrapped.exceptionallyAsync(fn));
+    }
+
+    @Override
+    public IExtendedCompletionStage<T> exceptionallyAsync(Function<Throwable, ? extends T> fn, Executor executor) {
+        return new ExtendedCompletableFuture<>(wrapped.exceptionallyAsync(fn, executor));
+    }
+
+    @Override
+    public IExtendedCompletionStage<T> exceptionallyCompose(Function<Throwable, ? extends CompletionStage<T>> fn) {
+        return new ExtendedCompletableFuture<>(wrapped.exceptionallyCompose(fn));
+    }
+
+    @Override
+    public IExtendedCompletionStage<T> exceptionallyComposeAsync(Function<Throwable, ? extends CompletionStage<T>> fn) {
+        return new ExtendedCompletableFuture<>(wrapped.exceptionallyComposeAsync(fn));
+    }
+
+    @Override
+    public IExtendedCompletionStage<T> exceptionallyComposeAsync(Function<Throwable, ? extends CompletionStage<T>> fn, Executor executor) {
+        return new ExtendedCompletableFuture<>(wrapped.exceptionallyComposeAsync(fn, executor));
+    }
+
+    @Override
     public CompletableFuture<T> toCompletableFuture() {
         return wrapped.toCompletableFuture();
     }
