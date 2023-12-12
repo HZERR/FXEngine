@@ -1,13 +1,13 @@
 package ru.hzerr.fx.engine.core.entity;
 
-public class ControllerLoadMetaData<C extends Controller> {
+public class LoadMetaData<C extends Controller> {
 
     private Class<C> controllerClass;
 
     private Class<?>[] parameterTypes;
     private Object[] arguments;
 
-    private ControllerLoadMetaData(Class<C> controllerClass) {
+    private LoadMetaData(Class<C> controllerClass) {
         this.controllerClass = controllerClass;
     }
 
@@ -36,7 +36,7 @@ public class ControllerLoadMetaData<C extends Controller> {
     }
 
     public static <C extends Controller>
-    ControllerLoadMetaData<C> from(Class<C> controllerClass) {
-        return new ControllerLoadMetaData<>(controllerClass);
+    LoadMetaData<C> from(Class<C> controllerClass) {
+        return new LoadMetaData<>(controllerClass);
     }
 }

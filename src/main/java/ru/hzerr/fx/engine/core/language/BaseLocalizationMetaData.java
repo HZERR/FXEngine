@@ -7,7 +7,7 @@ import java.util.Locale;
 
 public abstract class BaseLocalizationMetaData {
 
-    protected static final Locale LOCALE_RU = new Locale("ru", "RU");
+    protected static final Locale LOCALE_RU = Locale.of("ru", "RU");
 
     private final Locale locale;
     private final ILocation location;

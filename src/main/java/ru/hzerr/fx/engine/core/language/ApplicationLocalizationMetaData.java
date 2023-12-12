@@ -7,10 +7,17 @@ import java.util.Locale;
 
 public abstract class ApplicationLocalizationMetaData extends BaseLocalizationMetaData {
 
+    /**
+     * @param locale для "ru" локали используйте {@link #LOCALE_RU}
+     * @param location {@link ru.hzerr.fx.engine.core.path.BaseLocation}, например, new BaseLocation("ru-RU")
+     */
     protected ApplicationLocalizationMetaData(Locale locale, ILocation location) {
         super(locale, location);
     }
-
+    /**
+     * @param locale для "ru" локали используйте {@link #LOCALE_RU}
+     * @param location {@link ru.hzerr.fx.engine.core.path.BaseLocation}, например, new BaseLocation("ru-RU")
+     */
     protected ApplicationLocalizationMetaData(Locale locale, ILocation location, ConfigSyntax syntax) {
         super(locale, location, syntax);
     }

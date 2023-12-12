@@ -14,4 +14,5 @@ module FXEngine {
     requires javafx.fxml;
     requires com.google.common;
     requires javafx.controls;
+    requires com.google.errorprone.annotations;
 }

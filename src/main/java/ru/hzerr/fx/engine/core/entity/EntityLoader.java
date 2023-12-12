@@ -9,6 +9,8 @@ import ru.hzerr.fx.engine.core.annotation.FXEntity;
 import ru.hzerr.fx.engine.core.annotation.Include;
 import ru.hzerr.fx.engine.core.annotation.IncludeAs;
 import ru.hzerr.fx.engine.core.annotation.Registered;
+import ru.hzerr.fx.engine.core.concurrent.ExtendedCompletableFuture;
+import ru.hzerr.fx.engine.core.concurrent.IExtendedCompletionStage;
 import ru.hzerr.fx.engine.core.entity.exception.*;
 import ru.hzerr.fx.engine.core.path.resolver.EntityLocationResolver;
 import ru.hzerr.fx.engine.logging.factory.ILogProvider;
@@ -19,7 +21,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -30,9 +31,12 @@ import java.util.stream.Collectors;
 @Registered
 public class EntityLoader implements Closeable {
 
-    private final ExecutorService service = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setDaemon(true).setNameFormat("EntityLoader %d").build());
-//    private final ListeningExecutorService listeningExecutorService = MoreExecutors.listeningDecorator(service);
-
+    private final ExecutorService service = Executors.newCachedThreadPool(
+            new ThreadFactoryBuilder()
+            .setDaemon(true)
+            .setNameFormat("EntityLoader %d")
+            .build()
+    );
 
     @IncludeAs("engineLogProvider")
     private ILogProvider engineLogProvider;
@@ -50,14 +54,13 @@ public class EntityLoader implements Closeable {
          this.classLoader.set(classLoader);
     }
 
-    public <C extends Controller, P extends Parent> CompletableFuture<Entity<C, P>>
-    loadAsync(ControllerLoadMetaData<C> loadData, Class<P> parent) {
-//        return Callables.asAsyncCallable(() -> load0(loadData, parent), listeningExecutorService);
-        return CompletableFuture.supplyAsync((Handler<Entity<C, P>>) () -> load(loadData, parent), service);
+    public <C extends Controller, P extends Parent> IExtendedCompletionStage<Entity<C, P>>
+    loadAsync(LoadMetaData<C> loadData, Class<P> parent) {
+        return ExtendedCompletableFuture.supplyAsync((Handler<Entity<C, P>>) () -> load(loadData, parent), service);
     }
 
     public <C extends Controller, P extends Parent> Entity<C, P>
-    load(ControllerLoadMetaData<C> loadData, Class<P> parent) throws LoadControllerException, IOException {
+    load(LoadMetaData<C> loadData, Class<P> parent) throws LoadControllerException, IOException {
         FXMLLoader loader = new FXMLLoader();
         C controller = loadController(loadData);
         loader.setController(controller);
@@ -75,7 +78,7 @@ public class EntityLoader implements Closeable {
 
     @NotNull
     private <C extends Controller>
-    C loadController(@NotNull ControllerLoadMetaData<C> loadData) throws ProcessingConstructorException, ConstructorNotFoundException, LoadAbstractClassException {
+    C loadController(@NotNull LoadMetaData<C> loadData) throws ProcessingConstructorException, ConstructorNotFoundException, LoadAbstractClassException {
         Constructor<C> constructor;
         boolean withArgs = loadData.getParameterTypes() != null;
         if (withArgs) {

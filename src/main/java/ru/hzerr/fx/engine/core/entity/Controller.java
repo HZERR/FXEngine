@@ -46,7 +46,7 @@ public abstract class Controller {
         getContentAsParent().getStylesheets().add(0, theme.getStylesheet());
     }
 
-    public abstract void onChangeLanguage(Localization languagePack);
+    public abstract void onChangeLanguage(Localization localization);
 
     protected abstract String id();
 
