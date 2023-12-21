@@ -2,20 +2,14 @@ package ru.hzerr.fx.core.application;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.layout.AnchorPane;
-import ru.hzerr.fx.core.application.theme.DarkThemeMetaData;
-import ru.hzerr.fx.core.application.theme.WhiteThemeMetaData;
+import ru.hzerr.fx.core.application.event.processor.ChangeLocalizationProcessor;
+import ru.hzerr.fx.core.application.event.processor.ChangeThemeProcessor;
+import ru.hzerr.fx.core.application.event.processor.DestroyContentProcessor;
 import ru.hzerr.fx.engine.core.FXEngine;
-import ru.hzerr.fx.engine.core.annotation.ApplicationLogProvider;
-import ru.hzerr.fx.engine.core.annotation.FXController;
-import ru.hzerr.fx.engine.core.annotation.FXEntity;
-import ru.hzerr.fx.engine.core.annotation.Registered;
+import ru.hzerr.fx.engine.core.annotation.*;
 import ru.hzerr.fx.engine.core.entity.Controller;
 import ru.hzerr.fx.engine.core.language.Localization;
-import ru.hzerr.fx.engine.core.theme.ResolveThemeException;
-import ru.hzerr.fx.engine.logging.factory.ILogProvider;
-
-import java.util.Locale;
+import ru.hzerr.fx.engine.logging.provider.ILogProvider;
 
 @Registered
 @FXController
@@ -32,36 +26,16 @@ public class BaseController extends Controller {
     private Button destroy;
 
     private ILogProvider logProvider;
+    private ChangeThemeProcessor themeProcessor;
+    private ChangeLocalizationProcessor localizationProcessor;
+    private DestroyContentProcessor contentProcessor;
 
     @Override
     public void onInit() {
-        destroy.setOnAction(e -> FXEngine.getContext().getScene().setRoot(new AnchorPane()));
-        changeLocalization.setOnAction(e -> {
-            logProvider.getLogger().debug("Текущий язык '" + FXEngine.getContext().getApplicationConfiguration().getLocale().getLanguage() + "'");
-            if (FXEngine.getContext().getApplicationConfiguration().getLocale().equals(Locale.ENGLISH)) {
-                FXEngine.getContext().getApplicationManager().setLanguage(Locale.of("ru", "RU"));
-                logProvider.getLogger().debug("Язык приложения изменен на 'Русский'");
-            } else {
-                FXEngine.getContext().getApplicationManager().setLanguage(Locale.ENGLISH);
-                logProvider.getLogger().debug("Язык приложения изменен на 'English'");
-            }
-        });
-        changeTheme.setOnAction(e -> {
-            // TODO: 12.11.2023 ДОПИСАТь
-            if (FXEngine.getContext().getApplicationConfiguration().getThemeName().equals("White")) {
-                try {
-                    FXEngine.getContext().getApplicationManager().changeTheme(DarkThemeMetaData.class);
-                } catch (ResolveThemeException ex) {
-                    throw new RuntimeException(ex);
-                }
-            } else {
-                try {
-                    FXEngine.getContext().getApplicationManager().changeTheme(WhiteThemeMetaData.class);
-                } catch (ResolveThemeException ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-        });
+        logProvider.getLogger().info("Selected assets directory: '{}'", FXEngine.getContext().getStructureConfigurationAs(IExtendedStructureConfiguration.class).getAssetsDirectory().getLocation());
+        destroy.setOnAction(contentProcessor);
+        changeLocalization.setOnAction(localizationProcessor);
+        changeTheme.setOnAction(themeProcessor);
     }
 
     @Override
@@ -79,5 +53,20 @@ public class BaseController extends Controller {
     @ApplicationLogProvider
     public void setLogProvider(ILogProvider logProvider) {
         this.logProvider = logProvider;
+    }
+
+    @Include
+    public void setThemeProcessor(ChangeThemeProcessor themeProcessor) {
+        this.themeProcessor = themeProcessor;
+    }
+
+    @Include
+    public void setLocalizationProcessor(ChangeLocalizationProcessor localizationProcessor) {
+        this.localizationProcessor = localizationProcessor;
+    }
+
+    @Include
+    public void setContentProcessor(DestroyContentProcessor contentProcessor) {
+        this.contentProcessor = contentProcessor;
     }
 }

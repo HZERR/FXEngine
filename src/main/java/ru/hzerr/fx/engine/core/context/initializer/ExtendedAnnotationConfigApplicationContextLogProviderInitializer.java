@@ -4,17 +4,17 @@ import ru.hzerr.fx.engine.core.ApplicationContextInitializationException;
 import ru.hzerr.fx.engine.core.annotation.Include;
 import ru.hzerr.fx.engine.core.annotation.Registered;
 import ru.hzerr.fx.engine.core.context.IExtendedAnnotationConfigApplicationContext;
-import ru.hzerr.fx.engine.core.context.InitializedFutureBean;
 import ru.hzerr.fx.engine.core.context.Ordered;
 import ru.hzerr.fx.engine.logging.ConfigurableException;
-import ru.hzerr.fx.engine.logging.factory.FXApplicationLogProvider;
-import ru.hzerr.fx.engine.logging.factory.FXEngineLogProvider;
+import ru.hzerr.fx.engine.logging.provider.FXApplicationLogProvider;
+import ru.hzerr.fx.engine.logging.provider.FXEngineLogProvider;
 
-import static ru.hzerr.fx.engine.core.context.ExtendedAnnotationConfigApplicationContext.*;
+import static ru.hzerr.fx.engine.core.context.ExtendedAnnotationConfigApplicationContext.APPLICATION_LOG_PROVIDER_BEAN_NAME;
+import static ru.hzerr.fx.engine.core.context.ExtendedAnnotationConfigApplicationContext.ENGINE_LOG_PROVIDER_BEAN_NAME;
 
 @Ordered(3)
 @Registered
-public class ExtendedAnnotationConfigApplicationContextLogProviderInitializer implements IExtendedAnnotationConfigApplicationContextInitializer, InitializedFutureBean {
+public class ExtendedAnnotationConfigApplicationContextLogProviderInitializer implements IExtendedAnnotationConfigApplicationContextInitializer {
 
     private IExtendedAnnotationConfigApplicationContext context;
 

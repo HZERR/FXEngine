@@ -24,9 +24,9 @@ import ru.hzerr.fx.engine.core.annotation.Redefinition;
 import ru.hzerr.fx.engine.core.entity.EntityLoader;
 import ru.hzerr.fx.engine.core.entity.IApplicationManager;
 import ru.hzerr.fx.engine.core.language.localization.ILocalizationProvider;
-import ru.hzerr.fx.engine.logging.factory.FXApplicationLogProvider;
-import ru.hzerr.fx.engine.logging.factory.FXEngineLogProvider;
-import ru.hzerr.fx.engine.logging.factory.ILogProvider;
+import ru.hzerr.fx.engine.logging.provider.FXApplicationLogProvider;
+import ru.hzerr.fx.engine.logging.provider.FXEngineLogProvider;
+import ru.hzerr.fx.engine.logging.provider.ILogProvider;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
@@ -97,7 +97,17 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
     }
 
     @Override
+    public <T extends IStructureConfiguration> T getStructureConfigurationAs(Class<T> type) {
+        return getBean(type);
+    }
+
+    @Override
     public IResourceStructureConfiguration getResourceStructureConfiguration() { return getBean(IResourceStructureConfiguration.class); }
+
+    @Override
+    public <T extends IResourceStructureConfiguration> T getResourceStructureConfiguration(Class<T> type) {
+        return getBean(type);
+    }
 
     @Override
     public ILogProvider getFXEngineLogProvider() {

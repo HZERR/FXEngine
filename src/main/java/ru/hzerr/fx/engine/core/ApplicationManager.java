@@ -16,7 +16,7 @@ import ru.hzerr.fx.engine.core.language.LocalizationLoader;
 import ru.hzerr.fx.engine.core.language.localization.ILocalizationProvider;
 import ru.hzerr.fx.engine.core.path.resolver.ControllerLocalizationResolver;
 import ru.hzerr.fx.engine.core.theme.*;
-import ru.hzerr.fx.engine.logging.factory.ILogProvider;
+import ru.hzerr.fx.engine.logging.provider.ILogProvider;
 
 import java.util.Locale;
 import java.util.Optional;

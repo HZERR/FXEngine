@@ -3,14 +3,13 @@ package ru.hzerr.fx.core.application;
 import ru.hzerr.file.BaseDirectory;
 import ru.hzerr.file.BaseFile;
 import ru.hzerr.file.HDirectory;
-import ru.hzerr.fx.engine.configuration.application.IStructureConfiguration;
 import ru.hzerr.fx.engine.core.annotation.Registered;
 import ru.hzerr.util.SystemInfo;
 
 import java.io.File;
 
 @Registered
-public class StructureConfiguration implements IStructureConfiguration {
+public class ExtendedStructureConfiguration implements IExtendedStructureConfiguration {
 
     @Override
     public BaseDirectory getProgramDirectory() {
@@ -30,5 +29,10 @@ public class StructureConfiguration implements IStructureConfiguration {
     @Override
     public BaseFile getSoftwareConfigurationFile() {
         return getConfigDirectory().getSubFile("application.json");
+    }
+
+    @Override
+    public BaseDirectory getAssetsDirectory() {
+        return getProgramDirectory().getSubDirectory("assets");
     }
 }

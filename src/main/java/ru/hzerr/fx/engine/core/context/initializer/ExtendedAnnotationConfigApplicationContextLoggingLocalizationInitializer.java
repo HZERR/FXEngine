@@ -5,7 +5,6 @@ import ru.hzerr.fx.engine.core.ApplicationContextInitializationException;
 import ru.hzerr.fx.engine.core.annotation.Include;
 import ru.hzerr.fx.engine.core.annotation.RegisteredAs;
 import ru.hzerr.fx.engine.core.context.IExtendedAnnotationConfigApplicationContext;
-import ru.hzerr.fx.engine.core.context.InitializedFutureBean;
 import ru.hzerr.fx.engine.core.context.Ordered;
 import ru.hzerr.fx.engine.core.language.*;
 import ru.hzerr.fx.engine.core.language.localization.LocalizationProvider;
@@ -16,7 +15,7 @@ import static ru.hzerr.fx.engine.core.context.ExtendedAnnotationConfigApplicatio
 
 @Ordered(2)
 @RegisteredAs("localizationApplicationContextInitializer")
-public class ExtendedAnnotationConfigApplicationContextLoggingLocalizationInitializer implements IExtendedAnnotationConfigApplicationContextInitializer, InitializedFutureBean {
+public class ExtendedAnnotationConfigApplicationContextLoggingLocalizationInitializer implements IExtendedAnnotationConfigApplicationContextInitializer {
 
     private IExtendedAnnotationConfigApplicationContext context;
 

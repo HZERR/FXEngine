@@ -7,7 +7,7 @@ import ru.hzerr.fx.engine.core.annotation.FXEntity;
 import ru.hzerr.fx.engine.core.language.Localization;
 import ru.hzerr.fx.engine.core.theme.ResolveThemeException;
 import ru.hzerr.fx.engine.core.theme.ResolvedThemeLocation;
-import ru.hzerr.fx.engine.logging.factory.ILogProvider;
+import ru.hzerr.fx.engine.logging.provider.ILogProvider;
 
 public abstract class Controller {
 

@@ -4,13 +4,15 @@ import ru.hzerr.fx.engine.configuration.application.IReadOnlyClassLoaderProvider
 import ru.hzerr.fx.engine.core.ApplicationContextInitializationException;
 import ru.hzerr.fx.engine.core.annotation.Include;
 import ru.hzerr.fx.engine.core.annotation.RegisteredAs;
+import ru.hzerr.fx.engine.core.annotation.Side;
+import ru.hzerr.fx.engine.core.annotation.SideOnly;
 import ru.hzerr.fx.engine.core.context.IExtendedAnnotationConfigApplicationContext;
-import ru.hzerr.fx.engine.core.context.InitializedFutureBean;
 import ru.hzerr.fx.engine.core.context.Ordered;
 
 @Ordered(1)
+@SideOnly(Side.CORE)
 @RegisteredAs("classLoaderApplicationContextInitializer")
-public class ExtendedAnnotationConfigApplicationContextClassLoaderInitializer implements IExtendedAnnotationConfigApplicationContextInitializer, InitializedFutureBean {
+public class ExtendedAnnotationConfigApplicationContextClassLoaderInitializer implements IExtendedAnnotationConfigApplicationContextInitializer {
 
     private IExtendedAnnotationConfigApplicationContext context;
 

@@ -12,7 +12,7 @@ import ru.hzerr.fx.engine.core.concurrent.ExtendedCompletableFuture;
 import ru.hzerr.fx.engine.core.concurrent.IExtendedCompletionStage;
 import ru.hzerr.fx.engine.core.entity.exception.*;
 import ru.hzerr.fx.engine.core.path.resolver.EntityLocationResolver;
-import ru.hzerr.fx.engine.logging.factory.ILogProvider;
+import ru.hzerr.fx.engine.logging.provider.ILogProvider;
 
 import java.io.Closeable;
 import java.io.IOException;

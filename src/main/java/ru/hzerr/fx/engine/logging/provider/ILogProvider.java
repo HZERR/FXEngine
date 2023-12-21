@@ -1,4 +1,4 @@
-package ru.hzerr.fx.engine.logging.factory;
+package ru.hzerr.fx.engine.logging.provider;
 
 import org.slf4j.Logger;
 

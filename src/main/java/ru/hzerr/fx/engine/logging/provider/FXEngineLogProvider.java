@@ -1,4 +1,4 @@
-package ru.hzerr.fx.engine.logging.factory;
+package ru.hzerr.fx.engine.logging.provider;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;

@@ -87,6 +87,7 @@ public class OrderedClassPathBeanDefinitionScanner extends ClassPathBeanDefiniti
     }
 
     private static class OrderedBeanDefinitionComparator implements Comparator<BeanDefinition> {
+
         @Override
         public int compare(BeanDefinition o1, BeanDefinition o2) {
             if (o1 instanceof AnnotatedBeanDefinition annotatedBeanDefinition1) {
