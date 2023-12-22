@@ -20,8 +20,9 @@ public abstract class ExtendedAnnotationConfigApplicationContextSequentialRegist
     }
 
     @Override
-    public final void register(Class<? extends IExtendedAnnotationConfigApplicationContextInitializer> initializer) {
-        context.register(initializer);
+    public final void register(Class<? extends IExtendedAnnotationConfigApplicationContextInitializer> initializerClass) {
+        context.register(initializerClass);
+        context.getBeanFactory().preInstantiateSingletons();
     }
 
     public abstract void onRegisterAll();
