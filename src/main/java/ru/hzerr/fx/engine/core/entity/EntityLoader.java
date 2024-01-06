@@ -26,6 +26,14 @@ import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+/**
+ * Класс EntityLoader отвечает за загрузку сущностей в приложение.
+ * Сущность — это комбинация контроллера и узла, который презентует представление.
+ * Класс EntityLoader использует среду Spring для создания экземпляра контроллера, а затем использует класс JavaFX FXMLLoader для загрузки узла из файла FXML.
+ *
+ * Класс EntityLoader использует ExecutorService для асинхронного запуска задач, чтобы процесс загрузки не блокировал основной поток.
+ * Класс EntityLoader является синглтоном и доступен через метод FXEngine.getEntityLoader().
+ */
 @Registered
 public class EntityLoader implements Closeable {
 

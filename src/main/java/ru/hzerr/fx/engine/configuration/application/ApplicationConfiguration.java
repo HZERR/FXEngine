@@ -25,7 +25,7 @@ public class ApplicationConfiguration implements IApplicationConfiguration {
     @Override
     public Locale getLocale() {
         if (configuration.containsKey(namingStrategy.localeCountry())) {
-            return new Locale(configuration.getString(namingStrategy.localeLanguage()), configuration.getString(namingStrategy.localeCountry()), configuration.getString(namingStrategy.localeVariant()));
+            return Locale.of(configuration.getString(namingStrategy.localeLanguage()), configuration.getString(namingStrategy.localeCountry()), configuration.getString(namingStrategy.localeVariant()));
         }
 
         return readOnlyApplicationConfiguration.getLocale();

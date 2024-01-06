@@ -18,7 +18,7 @@ import org.springframework.util.Assert;
 import ru.hzerr.collections.list.HList;
 import ru.hzerr.fx.engine.configuration.application.*;
 import ru.hzerr.fx.engine.configuration.logging.IReadOnlyLoggingConfiguration;
-import ru.hzerr.fx.engine.core.ApplicationManager;
+import ru.hzerr.fx.engine.core.entity.ApplicationManager;
 import ru.hzerr.fx.engine.core.BeanAlreadyExistsException;
 import ru.hzerr.fx.engine.core.annotation.Redefinition;
 import ru.hzerr.fx.engine.core.entity.EntityLoader;
@@ -57,7 +57,7 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
         scan(basePackages);
         refresh();
         engineLogProvider = getFXEngineLogProvider();
-        engineLocalizationProvider = getEngineLocalizationProvider();
+        engineLocalizationProvider = getEngineLoggingLocalizationProvider();
         this.basePackages = HList.of(basePackages);
     }
 
@@ -130,7 +130,7 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
     }
 
     @Override
-    public ILocalizationProvider getApplicationLocalizationProvider() {
+    public ILocalizationProvider getApplicationLoggingLocalizationProvider() {
         if (getLoggingConfiguration().isInternationalizationEnabled()) {
             return getBean(APPLICATION_LOGGING_LOCALIZATION_PROVIDER_BEAN_NAME, ILocalizationProvider.class);
         }
@@ -139,7 +139,7 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
     }
 
     @Override
-    public ILocalizationProvider getEngineLocalizationProvider() { return getBean(ENGINE_LOGGING_LOCALIZATION_PROVIDER_BEAN_NAME, ILocalizationProvider.class); }
+    public ILocalizationProvider getEngineLoggingLocalizationProvider() { return getBean(ENGINE_LOGGING_LOCALIZATION_PROVIDER_BEAN_NAME, ILocalizationProvider.class); }
 
     // ======================================== END FLAT ACCESS ========================================
 
@@ -217,7 +217,7 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
             } else
                 return getBeanByQualifier(metaData.value(), requiredType);
         } else
-            throw new IllegalArgumentException(getEngineLocalizationProvider()
+            throw new IllegalArgumentException(getEngineLoggingLocalizationProvider()
                     .getLocalization()
                     .getConfiguration()
                     .getString("fxEngine.applicationContext.getBeanByQualifier.qualifierAnnotationNotFoundException", requiredType.getSimpleName())

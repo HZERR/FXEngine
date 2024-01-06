@@ -1,13 +1,13 @@
-package ru.hzerr.fx.engine.core;
+package ru.hzerr.fx.engine.core.entity;
 
 import ru.hzerr.collections.list.HList;
 import ru.hzerr.collections.map.HMap;
 import ru.hzerr.collections.map.Type;
+import ru.hzerr.fx.engine.core.FXEngine;
 import ru.hzerr.fx.engine.core.annotation.IncludeAs;
 import ru.hzerr.fx.engine.core.annotation.Multithreaded;
+import ru.hzerr.fx.engine.core.annotation.Preview;
 import ru.hzerr.fx.engine.core.annotation.Redefinition;
-import ru.hzerr.fx.engine.core.entity.Controller;
-import ru.hzerr.fx.engine.core.entity.IApplicationManager;
 import ru.hzerr.fx.engine.core.entity.exception.LanguagePackMetaDataNotFoundException;
 import ru.hzerr.fx.engine.core.language.ApplicationLocalizationMetaData;
 import ru.hzerr.fx.engine.core.language.BaseLocalizationMetaData;
@@ -50,9 +50,19 @@ public class ApplicationManager implements IApplicationManager {
         themesMetaData.add(themeMetaData);
     }
 
+    /**
+     * Устанавливает язык приложения. Это обновит язык для всех зарегистрированных контроллеров и сохранит настройки в конфигурации.
+     *
+     * @param locale локаль, которую нужно установить в качестве языка приложения
+     */
     @Override
     public void setLanguage(Locale locale) {
-        controllers.forEach((id, controller) -> controller.onChangeLanguage(getLocalization(controller, locale)));
+        controllers.forEach((id, controller) -> {
+            Localization localization = getLocalization(controller, locale);
+            controller.onChangeLanguage(localization);
+            controller.setLocalization(localization);
+        });
+
         FXEngine.getContext().getApplicationConfiguration().setLocale(locale);
     }
 
@@ -135,7 +145,8 @@ public class ApplicationManager implements IApplicationManager {
         return resolve(getThemeMetaData(), controller);
     }
 
-    private Localization getLocalization(Controller controller, Locale locale) {
+    @Preview
+    public Localization getLocalization(Controller controller, Locale locale) {
         BaseLocalizationMetaData currentLanguageMetaData = getApplicationLanguageMetaData(locale);
 
         String relativePath = FXEngine.getContext().getBean(ControllerLocalizationResolver.class,

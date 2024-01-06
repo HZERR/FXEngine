@@ -19,7 +19,7 @@
       }
     },
     "init": {
-      "registrationThemeInSystem": "Регистрация '{}' темы в системе...",
+      "registerThemeInSystem": "Регистрация '{}' темы в системе...",
       "loggerSuccessfullyConfigured": "Отладчик был успешно сконфигурирован",
       "selectedLoggingDirectory": "Выбранная директория отладки: '{}'",
       "engineSuccessfullyInitialized": "FXEngine был успешно инициализирован",

@@ -6,10 +6,12 @@ import ru.hzerr.fx.core.application.event.processor.ChangeLocalizationProcessor;
 import ru.hzerr.fx.core.application.event.processor.ChangeThemeProcessor;
 import ru.hzerr.fx.core.application.event.processor.DestroyContentProcessor;
 import ru.hzerr.fx.engine.core.FXEngine;
-import ru.hzerr.fx.engine.core.annotation.*;
+import ru.hzerr.fx.engine.core.annotation.FXController;
+import ru.hzerr.fx.engine.core.annotation.FXEntity;
+import ru.hzerr.fx.engine.core.annotation.Include;
+import ru.hzerr.fx.engine.core.annotation.Registered;
 import ru.hzerr.fx.engine.core.entity.Controller;
-import ru.hzerr.fx.engine.core.language.Localization;
-import ru.hzerr.fx.engine.logging.provider.ILogProvider;
+import ru.hzerr.fx.engine.core.language.ILocalization;
 
 @Registered
 @FXController
@@ -24,22 +26,20 @@ public class BaseController extends Controller {
 
     @FXML
     private Button destroy;
-
-    private ILogProvider logProvider;
     private ChangeThemeProcessor themeProcessor;
     private ChangeLocalizationProcessor localizationProcessor;
     private DestroyContentProcessor contentProcessor;
 
     @Override
     public void onInit() {
-        logProvider.getLogger().info("Selected assets directory: '{}'", FXEngine.getContext().getStructureConfigurationAs(IExtendedStructureConfiguration.class).getAssetsDirectory().getLocation());
+        getLogProvider().getLogger().info("Selected assets directory: '{}'", FXEngine.getContext().getStructureConfigurationAs(IExtendedStructureConfiguration.class).getAssetsDirectory().getLocation());
         destroy.setOnAction(contentProcessor);
         changeLocalization.setOnAction(localizationProcessor);
         changeTheme.setOnAction(themeProcessor);
     }
 
     @Override
-    public void onChangeLanguage(Localization languagePack) {
+    public void onChangeLanguage(ILocalization languagePack) {
         destroy.setText(languagePack.getConfiguration().getString("button.destroy.parent"));
         changeLocalization.setText(languagePack.getConfiguration().getString("button.change.localization"));
         changeTheme.setText(languagePack.getConfiguration().getString("button.change.theme"));
@@ -48,11 +48,6 @@ public class BaseController extends Controller {
     @Override
     protected String id() {
         return "main";
-    }
-
-    @ApplicationLogProvider
-    public void setLogProvider(ILogProvider logProvider) {
-        this.logProvider = logProvider;
     }
 
     @Include

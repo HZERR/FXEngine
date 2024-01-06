@@ -19,7 +19,10 @@ import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * * Необходимо заимплементить интерфейсы и пометить наследующие их классы аннотацией @Registered:<br>
+ * Этот класс обеспечивает основную точку входа для приложения JavaFX.
+ * Он инициализирует среду JavaFX, устанавливает контекст приложения и вызывает методы {@link #onInit()} и {@link #onStart(Stage)}.
+ * Он также добавляет hook выключения, чтобы обеспечить правильное закрытие приложения при выходе из JVM.
+ * Необходимо заимплементить интерфейсы и пометить наследующие их классы аннотацией @Registered:<br>
  * 1) {@link IStructureConfiguration}<br>
  * 2) {@link IResourceStructureConfiguration}<br>
  * 3) {@link IReadOnlyApplicationConfiguration}<br>
@@ -32,12 +35,20 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * 3) Theme: theme/dark/main.css, theme/white/main.css, где папка "theme" - корневая папка всех тем, а папки "white" и "dark" - папки конкретной темы<br>
  * Опционально:<br>
  * 4) Application logging localization: language/logging/ru-RU/main.json, language/logging/en-EN/main.json, где папка "language/logging" - корневая папка всех локализаций отладки, а папки "ru-RU" и "en-EN" - папки конкретной локализации отладки<br>
- * * Создать классы имплементирующие интерфейс {@link ApplicationLocalizationMetaData} в том кол-ве, сколько и локализаций. Не забудьте добавить их в контекст, повесив аннотацию @Registered. Таким образом вы дадите FXEngine связь Locale -> Location<br>
- * * Опционально также и для {@link LoggingLocalizationMetaData}
+ * Создать классы имплементирующие интерфейс {@link ApplicationLocalizationMetaData} в том кол-ве, сколько и локализаций. Не забудьте добавить их в контекст, повесив аннотацию @Registered. Таким образом вы дадите FXEngine связь Locale -> Location<br>
+ * Опционально также и для {@link LoggingLocalizationMetaData}
+ * @author HZERR
  */
 public abstract class FXEngine extends Application {
 
+    /**
+     * Контекст приложения.
+     */
     protected static IExtendedAnnotationConfigApplicationContext context;
+
+    /**
+     * Флаг, указывающий, было ли закрыто приложение.
+     */
     private final AtomicBoolean closed = new AtomicBoolean(false);
 
     @Override
@@ -45,7 +56,7 @@ public abstract class FXEngine extends Application {
         System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
         context = createApplicationContext();
         for (ThemeMetaData themeMetaData : context.getBeansOfType(ThemeMetaData.class).values()) {
-            context.getFXEngineLogProvider().getLogger().info("fxEngine.init.registrationThemeInSystem", themeMetaData.getName());
+            context.getFXEngineLogProvider().getLogger().info("fxEngine.init.registerThemeInSystem", themeMetaData.getName());
             context.getApplicationManager().register(themeMetaData);
         }
         context.getFXEngineLogProvider().getLogger().info("fxEngine.init.loggerSuccessfullyConfigured");
@@ -56,7 +67,7 @@ public abstract class FXEngine extends Application {
                 stop();
             } catch (Exception e) {
                 throw new IllegalClosedException(context.isActive() ?
-                        context.getEngineLocalizationProvider().getLocalization().getConfiguration().getString("fxEngine.init.closedException") :
+                        context.getEngineLoggingLocalizationProvider().getLocalization().getConfiguration().getString("fxEngine.init.closedException") :
                         "An error occurred stopping the application", e);
             }
         }));
@@ -81,33 +92,74 @@ public abstract class FXEngine extends Application {
     }
 
     /**
+     * Создает контекст приложения.
+     * Этот метод нужно переопределить, чтобы предоставить пользовательский контекст приложения.
      * Для реализации метода используйте вспомогательные методы и дергайте getContext():<br>
      * 1) {@linkplain #createAutomaticExtendedAnnotationConfigApplicationContextProvider(Class)}<br>
      * 2) {@linkplain #createExtendedAnnotationConfigApplicationContextProvider(String...)}<br>
      * @return настроенный контекст приложения
+     * @throws Exception если возникает ошибка при создании контекста
      */
     protected abstract IExtendedAnnotationConfigApplicationContext createApplicationContext();
 
+    /**
+     * Этот метод вызывается во время инициализации.
+     * Его можно переопределить для выполнения пользовательских задач инициализации.
+     * Для более ранней инициализации рассматривайте класс {@link ru.hzerr.fx.engine.core.context.registrar.ExtendedAnnotationConfigApplicationContextSequentialRegistrar}
+     * @throws Exception если во время инициализации возникает ошибка
+     */
     protected void onInit() throws Exception {
     }
 
+    /**
+     * Этот метод вызывается для запуска приложения.
+     * Его нужно переопределить, чтобы обеспечить собственную логику запуска.
+     * Возвращаемую сцену не обязательно устанавливать на текущий stage приложения, Engine сделает это за вас
+     * @param stage базовый stage приложения
+     * @return сцена приложения
+     * @throws Exception если возникает ошибка при запуске
+     */
     protected abstract Scene onStart(Stage stage) throws Exception;
 
+    /**
+     * Этот метод вызывается во время завершения работы приложения.
+     * Его нужно переопределить для выполнения пользовательских задач очистки.
+     * @throws IOException если возникает ошибка во время завершения работы
+     */
     protected void onClose() throws IOException {
     }
 
+    /**
+     * Создает {@link IApplicationContextProvider} для создания ApplicationContext.
+     * @param basePackages базовые пакеты для сканирования компонентов
+     * @return поставщик контекста приложения
+     */
     protected final IApplicationContextProvider<IExtendedAnnotationConfigApplicationContext> createExtendedAnnotationConfigApplicationContextProvider(String... basePackages) {
         return new ExtendedAnnotationConfigApplicationContextProvider(basePackages, true);
     }
 
+    /**
+     * Создает {@link IApplicationContextProvider} для создания ApplicationContext, путем получения корневой папки приложения из переданного класса запускаемого приложения.
+     * @param startupApplicationClass класс запускаемого приложения
+     * @return поставщик контекста приложения
+     */
     protected final IApplicationContextProvider<IExtendedAnnotationConfigApplicationContext> createAutomaticExtendedAnnotationConfigApplicationContextProvider(Class<? extends FXEngine> startupApplicationClass) {
         return new AutomaticExtendedAnnotationConfigApplicationContextProvider(startupApplicationClass);
     }
 
+    /**
+     * Возвращает контекст приложения.
+     * @return контекст приложения
+     */
     public static IExtendedAnnotationConfigApplicationContext getContext() {
         return context;
     }
 
+    /**
+     * Возвращает контекст приложения указанного типа.
+     * @param contextClass тип контекста
+     * @return контекст приложения
+     */
     public static <T extends IExtendedAnnotationConfigApplicationContext> T getContextAs(Class<T> contextClass) {
         return (T) context;
     }

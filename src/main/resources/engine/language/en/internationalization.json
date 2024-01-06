@@ -19,7 +19,7 @@
       }
     },
     "init": {
-      "registrationThemeInSystem": "Registering the '{}' theme in the system...",
+      "registerThemeInSystem": "Registering the '{}' theme in the system...",
       "loggerSuccessfullyConfigured": "Logger has been successfully configured",
       "selectedLoggingDirectory": "Selected logging directory: '{}'",
       "engineSuccessfullyInitialized": "FXEngine has been successfully initialized",

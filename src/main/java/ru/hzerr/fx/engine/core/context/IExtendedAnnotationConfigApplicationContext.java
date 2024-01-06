@@ -37,8 +37,8 @@ public interface IExtendedAnnotationConfigApplicationContext extends AnnotationC
     ILogProvider getApplicationLogProvider();
     ISoftwareConfiguration getSoftwareConfiguration();
     IApplicationConfiguration getApplicationConfiguration();
-    ILocalizationProvider getApplicationLocalizationProvider();
-    ILocalizationProvider getEngineLocalizationProvider();
+    ILocalizationProvider getApplicationLoggingLocalizationProvider();
+    ILocalizationProvider getEngineLoggingLocalizationProvider();
     // END FLAT
 
     // BEGIN НА ПЕРЕСМОТРЕ
