@@ -14,7 +14,7 @@ Core/Engine for creating JavaFX applications
 	<dependency>
 		<groupId>com.github.HZERR</groupId>
 		<artifactId>FXEngine</artifactId>
-		<version>1.0.7.2-Early</version>
+		<version>1.0.8.1-Early</version>
 	</dependency>
 </dependencies>
 ```
