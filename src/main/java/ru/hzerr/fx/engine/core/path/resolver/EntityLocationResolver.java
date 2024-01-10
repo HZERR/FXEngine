@@ -6,9 +6,9 @@ import ru.hzerr.fx.engine.core.path.*;
 
 public class EntityLocationResolver implements Resolver {
 
-    private IResourceStructureConfiguration resourceStructureConfiguration;
+    private final IResourceStructureConfiguration resourceStructureConfiguration;
 
-    private String relativePath;
+    private final String relativePath;
 
     public EntityLocationResolver(IResourceStructureConfiguration resourceStructureConfiguration, String relativePath) {
         this.resourceStructureConfiguration = resourceStructureConfiguration;
@@ -18,12 +18,12 @@ public class EntityLocationResolver implements Resolver {
     @Override
     public String resolve() {
         if (resourceStructureConfiguration.getFXMLPackage() == null) {
-            return StringUtils.removeStartIgnoreCase(relativePath, "/");
+            return StringUtils.removeStart(relativePath, "/");
         }
 
         return LocationTools.resolve(
-                ResolvableLocation.of(resourceStructureConfiguration.getFXMLPackage(), NullSafeResolveLocationOptions.THROW_EXCEPTION),
-                ResolvableLocation.of(relativePath, NullSafeResolveLocationOptions.THROW_EXCEPTION),
+                ResolvableLocation.of(resourceStructureConfiguration.getFXMLPackage(), NullSafeResolveLocationOptions.THROW_ILLEGAL_ARGUMENT_EXCEPTION),
+                ResolvableLocation.of(relativePath, NullSafeResolveLocationOptions.THROW_ILLEGAL_ARGUMENT_EXCEPTION),
                 SeparatorResolveLocationOptions.START_REMOVE,
                 Separator.SLASH_SEPARATOR
         );

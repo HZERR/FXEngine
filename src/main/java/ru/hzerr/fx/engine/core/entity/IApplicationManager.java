@@ -1,9 +1,9 @@
 package ru.hzerr.fx.engine.core.entity;
 
 import ru.hzerr.fx.engine.core.annotation.Preview;
-import ru.hzerr.fx.engine.core.language.Localization;
-import ru.hzerr.fx.engine.core.theme.ResolveThemeException;
-import ru.hzerr.fx.engine.core.theme.ResolvedThemeLocation;
+import ru.hzerr.fx.engine.core.language.localization.Localization;
+import ru.hzerr.fx.engine.core.theme.LoadThemeException;
+import ru.hzerr.fx.engine.core.theme.LoadedThemeData;
 import ru.hzerr.fx.engine.core.theme.ThemeMetaData;
 
 import java.util.Locale;
@@ -17,17 +17,17 @@ public interface IApplicationManager {
 
     void setLanguage(Locale locale);
 
-    void changeTheme(Class<? extends ThemeMetaData> themeMetaDataClass) throws ResolveThemeException;
-    void changeTheme(String themeName) throws ResolveThemeException;
+    void changeTheme(Class<? extends ThemeMetaData> themeMetaDataClass) throws LoadThemeException;
+    void changeTheme(String themeName) throws LoadThemeException;
 
     @Preview
     Localization getLocalization(Controller controller, Locale locale);
 
-    <C extends Controller> void applyTheme(C controller) throws ResolveThemeException;
+    <C extends Controller> void applyTheme(C controller) throws LoadThemeException;
 
 
     ThemeMetaData getThemeMetaData();
 
-    <C extends Controller> ResolvedThemeLocation resolve(ThemeMetaData themeMetaData, C controller) throws ResolveThemeException;
-    <C extends Controller> ResolvedThemeLocation resolve(C controller) throws ResolveThemeException;
+    <C extends Controller> LoadedThemeData load(ThemeMetaData themeMetaData, C controller) throws LoadThemeException;
+    <C extends Controller> LoadedThemeData load(C controller) throws LoadThemeException;
 }

@@ -1,18 +1,15 @@
 package ru.hzerr.fx.engine.core.language.localization;
 
-import ru.hzerr.fx.engine.core.language.ILocalization;
-import ru.hzerr.fx.engine.core.language.Localization;
+public abstract class LocalizationProvider<T extends Localization> implements ILocalizationProvider<T> {
 
-public class LocalizationProvider implements ILocalizationProvider {
+    private T localization;
 
-    private Localization localization;
-
-    public LocalizationProvider(Localization localization) {
+    protected LocalizationProvider(T localization) {
         this.localization = localization;
     }
 
     @Override
-    public ILocalization getLocalization() {
+    public T getLocalization() {
         return localization;
     }
 }

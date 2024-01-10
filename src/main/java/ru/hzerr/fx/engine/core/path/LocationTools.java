@@ -2,10 +2,10 @@ package ru.hzerr.fx.engine.core.path;
 
 public final class LocationTools {
 
-    public static String resolve(ResolvableLocation location1, ResolvableLocation location2, SeparatorResolveLocationOptions resolveLocationOptions, Separator separator) {
-        if (location1.getLocation() != null) {
-            if (location2.getLocation() != null) {
-                String targetLocation = prependInEndSeparatorIfNeeded(location1.getLocation(), separator) + location2.getLocation();
+    public static String resolve(ResolvableLocation firstLocation, ResolvableLocation secondLocation, SeparatorResolveLocationOptions resolveLocationOptions, Separator separator) {
+        if (firstLocation.getLocation() != null) {
+            if (secondLocation.getLocation() != null) {
+                String targetLocation = prependInEndSeparatorIfNeeded(firstLocation.getLocation(), separator) + secondLocation.getLocation();
 
                 return switch (resolveLocationOptions) {
                     case INSERT_EVERYWHERE -> prependEverywhereSeparatorIfNeeded(targetLocation, separator);
@@ -16,29 +16,29 @@ public final class LocationTools {
                     case END_REMOVE -> removeInEndSeparatorIfNeeded(targetLocation, separator);
                     case DEFAULT -> targetLocation;
                 };
-            } else return switch (location1.getNullSafeOptions()) {
-                case INSERT_START -> prependInStartSeparatorIfNeeded(location1.getLocation(), separator);
-                case INSERT_END -> prependInEndSeparatorIfNeeded(location1.getLocation(), separator);
-                case INSERT_EVERYWHERE -> prependEverywhereSeparatorIfNeeded(location1.getLocation(), separator);
-                case REMOVE_START -> removeInStartSeparatorIfNeeded(location1.getLocation(), separator);
-                case REMOVE_END -> removeInEndSeparatorIfNeeded(location1.getLocation(), separator);
-                case REMOVE_EVERYWHERE -> removeEverywhereSeparatorIfNeeded(location1.getLocation(), separator);
-                case THROW_EXCEPTION -> throw new IllegalArgumentException("Location2 can't be null");
-                case DEFAULT -> location1.getLocation();
+            } else return switch (firstLocation.getNullSafeOptions()) {
+                case INSERT_START -> prependInStartSeparatorIfNeeded(firstLocation.getLocation(), separator);
+                case INSERT_END -> prependInEndSeparatorIfNeeded(firstLocation.getLocation(), separator);
+                case INSERT_EVERYWHERE -> prependEverywhereSeparatorIfNeeded(firstLocation.getLocation(), separator);
+                case REMOVE_START -> removeInStartSeparatorIfNeeded(firstLocation.getLocation(), separator);
+                case REMOVE_END -> removeInEndSeparatorIfNeeded(firstLocation.getLocation(), separator);
+                case REMOVE_EVERYWHERE -> removeEverywhereSeparatorIfNeeded(firstLocation.getLocation(), separator);
+                case THROW_ILLEGAL_ARGUMENT_EXCEPTION -> throw new IllegalArgumentException("The second argument can't be null");
+                case DEFAULT -> firstLocation.getLocation();
             };
-        } else if (location2 != null) {
-            return switch (location2.getNullSafeOptions()) {
-                case INSERT_START -> prependInStartSeparatorIfNeeded(location2.getLocation(), separator);
-                case INSERT_END -> prependInEndSeparatorIfNeeded(location2.getLocation(), separator);
-                case INSERT_EVERYWHERE -> prependEverywhereSeparatorIfNeeded(location2.getLocation(), separator);
-                case REMOVE_START -> removeInStartSeparatorIfNeeded(location2.getLocation(), separator);
-                case REMOVE_END -> removeInEndSeparatorIfNeeded(location2.getLocation(), separator);
-                case REMOVE_EVERYWHERE -> removeEverywhereSeparatorIfNeeded(location2.getLocation(), separator);
-                case THROW_EXCEPTION -> throw new IllegalArgumentException("Location1 can't be null");
-                case DEFAULT -> location2.getLocation();
+        } else if (secondLocation != null) {
+            return switch (secondLocation.getNullSafeOptions()) {
+                case INSERT_START -> prependInStartSeparatorIfNeeded(secondLocation.getLocation(), separator);
+                case INSERT_END -> prependInEndSeparatorIfNeeded(secondLocation.getLocation(), separator);
+                case INSERT_EVERYWHERE -> prependEverywhereSeparatorIfNeeded(secondLocation.getLocation(), separator);
+                case REMOVE_START -> removeInStartSeparatorIfNeeded(secondLocation.getLocation(), separator);
+                case REMOVE_END -> removeInEndSeparatorIfNeeded(secondLocation.getLocation(), separator);
+                case REMOVE_EVERYWHERE -> removeEverywhereSeparatorIfNeeded(secondLocation.getLocation(), separator);
+                case THROW_ILLEGAL_ARGUMENT_EXCEPTION -> throw new IllegalArgumentException("The first argument can't be null");
+                case DEFAULT -> secondLocation.getLocation();
             };
         } else
-            throw new IllegalArgumentException("Location1 && Location2 can't be null");
+            throw new IllegalArgumentException("The first and second arguments cannot be null");
     }
 
     private static String prependInStartSeparatorIfNeeded(String location, Separator separator) {

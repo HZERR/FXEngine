@@ -13,16 +13,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.hzerr.file.BaseFile;
 import ru.hzerr.file.SizeType;
-import ru.hzerr.fx.engine.core.annotation.Include;
-import ru.hzerr.fx.engine.core.annotation.MetaData;
 import ru.hzerr.fx.engine.configuration.application.IStructureConfiguration;
 import ru.hzerr.fx.engine.configuration.logging.IReadOnlyLoggingConfiguration;
-import ru.hzerr.fx.engine.core.language.CombineLocalization;
-import ru.hzerr.fx.engine.core.language.localization.ILocalizationProvider;
-import ru.hzerr.fx.engine.logging.ConfigurableException;
+import ru.hzerr.fx.engine.core.annotation.Include;
+import ru.hzerr.fx.engine.core.language.localization.ApplicationLoggingLocalizationProvider;
+import ru.hzerr.fx.engine.core.language.localization.EngineLoggingLocalizationProvider;
+import ru.hzerr.fx.engine.logging.StartupException;
 import ru.hzerr.fx.engine.logging.FactoryCloseableException;
-import ru.hzerr.fx.engine.logging.decorator.MultiLanguageLogger;
 import ru.hzerr.fx.engine.logging.decorator.PlainLogger;
+import ru.hzerr.fx.engine.logging.decorator.SharedLogger;
 import ru.hzerr.fx.engine.logging.policy.CancelRollingPolicy;
 
 import java.io.IOException;
@@ -30,8 +29,8 @@ import java.io.IOException;
 public class FXApplicationLogProvider implements ILogProvider {
 
     private final IReadOnlyLoggingConfiguration readOnlyLoggingConfiguration;
-    private final ILocalizationProvider engineLocalizationProvider;
-    private final ILocalizationProvider applicationLocalizationProvider;
+    private final EngineLoggingLocalizationProvider engineLocalizationProvider;
+    private final ApplicationLoggingLocalizationProvider applicationLocalizationProvider;
 
     private final BaseFile sessionLogFile;
     private final LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
@@ -47,8 +46,8 @@ public class FXApplicationLogProvider implements ILogProvider {
     @Include
     public FXApplicationLogProvider(@NotNull IReadOnlyLoggingConfiguration readOnlyLoggingConfiguration,
                                     @NotNull IStructureConfiguration structureConfiguration,
-                                    @NotNull @MetaData("engineLoggingLocalizationProvider") ILocalizationProvider engineLocalizationProvider,
-                                    @NotNull @MetaData("applicationLoggingLocalizationProvider") ILocalizationProvider applicationLocalizationProvider) {
+                                    @NotNull @ru.hzerr.fx.engine.core.annotation.as.EngineLoggingLocalizationProvider EngineLoggingLocalizationProvider engineLocalizationProvider,
+                                    @NotNull @ru.hzerr.fx.engine.core.annotation.as.ApplicationLoggingLocalizationProvider ApplicationLoggingLocalizationProvider applicationLocalizationProvider) {
 
         this.readOnlyLoggingConfiguration = readOnlyLoggingConfiguration;
         this.engineLocalizationProvider = engineLocalizationProvider;
@@ -81,7 +80,7 @@ public class FXApplicationLogProvider implements ILogProvider {
     }
 
     @Override
-    public void configure() throws ConfigurableException {
+    public void start() throws StartupException {
         ch.qos.logback.classic.Logger logbackLogger = lc.getLogger(readOnlyLoggingConfiguration.getLoggerName());
         if (readOnlyLoggingConfiguration.isEnabled()) {
             if (readOnlyLoggingConfiguration.isConsoleLoggingEnabled()) {
@@ -104,7 +103,7 @@ public class FXApplicationLogProvider implements ILogProvider {
                     try {
                         sessionLogFile.create();
                     } catch (IOException io) {
-                        throw new ConfigurableException("Unable to create a log file for the current session", io);
+                        throw new StartupException("Unable to create a log file for the current session", io);
                     }
                 }
 
@@ -141,10 +140,10 @@ public class FXApplicationLogProvider implements ILogProvider {
 
         // initialize target logger
         if (readOnlyLoggingConfiguration.isInternationalizationEnabled()) {
-            log = new MultiLanguageLogger(logbackLogger, new CombineLocalization(
+            log = new SharedLogger(logbackLogger,
                     engineLocalizationProvider.getLocalization(),
                     applicationLocalizationProvider.getLocalization()
-            ));
+            );
         } else
             log = new PlainLogger(logbackLogger, engineLocalizationProvider.getLocalization());
 

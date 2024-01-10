@@ -2,12 +2,12 @@ package ru.hzerr.fx.engine.core.theme;
 
 import java.util.Objects;
 
-public class ResolvedThemeLocation {
+public class LoadedThemeData {
 
     private ThemeMetaData metaData;
     private final String stylesheet;
 
-    public ResolvedThemeLocation(ThemeMetaData metaData, String stylesheet) {
+    public LoadedThemeData(ThemeMetaData metaData, String stylesheet) {
         this.metaData = metaData;
         this.stylesheet = stylesheet;
     }
@@ -28,7 +28,7 @@ public class ResolvedThemeLocation {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ResolvedThemeLocation that = (ResolvedThemeLocation) o;
+        LoadedThemeData that = (LoadedThemeData) o;
         return Objects.equals(metaData, that.metaData) && Objects.equals(stylesheet, that.stylesheet);
     }
 

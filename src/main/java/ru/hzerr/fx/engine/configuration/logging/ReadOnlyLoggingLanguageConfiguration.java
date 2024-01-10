@@ -1,6 +1,6 @@
 package ru.hzerr.fx.engine.configuration.logging;
 
-import ru.hzerr.fx.engine.core.language.Localization;
+import ru.hzerr.fx.engine.core.language.localization.Localization;
 
 public class ReadOnlyLoggingLanguageConfiguration implements IReadOnlyLoggingLanguageConfiguration {
 

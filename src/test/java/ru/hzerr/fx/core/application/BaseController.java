@@ -9,11 +9,9 @@ import ru.hzerr.fx.engine.core.FXEngine;
 import ru.hzerr.fx.engine.core.annotation.FXController;
 import ru.hzerr.fx.engine.core.annotation.FXEntity;
 import ru.hzerr.fx.engine.core.annotation.Include;
-import ru.hzerr.fx.engine.core.annotation.Registered;
 import ru.hzerr.fx.engine.core.entity.Controller;
 import ru.hzerr.fx.engine.core.language.ILocalization;
 
-@Registered
 @FXController
 @FXEntity(fxml = "main.fxml", internationalization = "main.json", theme = "main.css")
 public class BaseController extends Controller {
@@ -39,10 +37,10 @@ public class BaseController extends Controller {
     }
 
     @Override
-    public void onChangeLanguage(ILocalization languagePack) {
-        destroy.setText(languagePack.getConfiguration().getString("button.destroy.parent"));
-        changeLocalization.setText(languagePack.getConfiguration().getString("button.change.localization"));
-        changeTheme.setText(languagePack.getConfiguration().getString("button.change.theme"));
+    public void onChangeLanguage(ILocalization localization) {
+        destroy.setText(localization.getConfiguration().getString("button.destroy.parent"));
+        changeLocalization.setText(localization.getConfiguration().getString("button.change.localization"));
+        changeTheme.setText(localization.getConfiguration().getString("button.change.theme"));
     }
 
     @Override

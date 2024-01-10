@@ -8,6 +8,7 @@ import ru.hzerr.fx.engine.configuration.application.IClassLoaderProvider;
 import ru.hzerr.fx.engine.configuration.application.IResourceStructureConfiguration;
 import ru.hzerr.fx.engine.core.FXEngine;
 import ru.hzerr.fx.engine.core.annotation.*;
+import ru.hzerr.fx.engine.core.annotation.as.EngineLogProvider;
 import ru.hzerr.fx.engine.core.concurrent.ExtendedCompletableFuture;
 import ru.hzerr.fx.engine.core.concurrent.IExtendedCompletionStage;
 import ru.hzerr.fx.engine.core.entity.exception.*;
@@ -193,7 +194,7 @@ public class EntityLoader implements Closeable {
         service.shutdown();
     }
 
-    @IncludeAs("engineLogProvider")
+    @EngineLogProvider
     public void setEngineLogProvider(ILogProvider engineLogProvider) {
         this.engineLogProvider = engineLogProvider;
     }

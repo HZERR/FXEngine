@@ -4,9 +4,12 @@ import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import ru.hzerr.fx.engine.core.FXEngine;
 import ru.hzerr.fx.engine.core.annotation.*;
+import ru.hzerr.fx.engine.core.annotation.as.ApplicationLogProvider;
 import ru.hzerr.fx.engine.core.language.ILocalization;
-import ru.hzerr.fx.engine.core.theme.ResolveThemeException;
-import ru.hzerr.fx.engine.core.theme.ResolvedThemeLocation;
+import ru.hzerr.fx.engine.core.language.localization.EntityLocalization;
+import ru.hzerr.fx.engine.core.language.localization.ILocalizationProvider;
+import ru.hzerr.fx.engine.core.theme.LoadThemeException;
+import ru.hzerr.fx.engine.core.theme.LoadedThemeData;
 import ru.hzerr.fx.engine.logging.provider.ILogProvider;
 
 import java.util.Locale;
@@ -40,7 +43,7 @@ public abstract class Controller {
     /**
      * This field represents the localization service.
      */
-    private final AtomicReference<ILocalization> localization = new AtomicReference<>();
+    private final AtomicReference<ILocalizationProvider<EntityLocalization>> localizationProvider = new AtomicReference<>();
 
     /**
      * This method is called when the controller is initialized. It performs the following tasks:
@@ -54,9 +57,9 @@ public abstract class Controller {
      *     <li>Logs a debug message indicating that the controller initialization was successful.</li>
      * </ul>
      *
-     * @throws ResolveThemeException if there was an error resolving the theme
+     * @throws LoadThemeException if there was an error resolving the theme
      */
-    public final void initialize() throws ResolveThemeException {
+    public final void initialize() throws LoadThemeException {
         onConnectDestroyEvent();
         FXEngine.getContext().getApplicationManager().register(id(), this);
         engineLogProvider.getLogger().debug("fxEngine.controller.initialize.controllerSuccessfullyRegistered", this.getClass().getSimpleName());
@@ -100,7 +103,8 @@ public abstract class Controller {
      *
      * @param theme the theme to apply
      */
-    public final void applyTheme(ResolvedThemeLocation theme) {
+    @SideOnly(Side.CORE)
+    public final void applyTheme(LoadedThemeData theme) {
         getContentAsParent().getStylesheets().clear();
         getContentAsParent().getStylesheets().addFirst(theme.getStylesheet());
     }
@@ -111,6 +115,7 @@ public abstract class Controller {
      *
      * @param localization the localization service
      */
+    @SideOnly(Side.CORE)
     protected abstract void onChangeLanguage(ILocalization localization);
 
     /**
@@ -168,6 +173,7 @@ public abstract class Controller {
         this.applicationLogProvider = applicationLogProvider;
     }
 
+    @SideOnly(Side.APPLICATION)
     protected ILogProvider getLogProvider() {
         if (applicationLogProvider != null) {
             return applicationLogProvider;
@@ -177,23 +183,13 @@ public abstract class Controller {
                 "See the EntityLoader.load(SpringLoadMetaData metaData) method for more information");
     }
 
-    /**
-     * This method returns the localization service.
-     *
-     * @return the localization service
-     */
-    @Preview
-    public ILocalization getLocalization() {
-        return localization.getAcquire();
+    @Preview(version = "1.1E")
+    public ILocalizationProvider<EntityLocalization> getLocalizationProvider() {
+        return localizationProvider.getAcquire();
     }
 
-    /**
-     * This method sets the localization service. It is intended to be called by the FXEngine to set the localization service.
-     *
-     * @param localization the localization service
-     */
     @SideOnly(Side.CORE)
-    public void setLocalization(ILocalization localization) {
-        this.localization.set(localization);
+    public void setLocalizationProvider(ILocalizationProvider<EntityLocalization> localizationProvider) {
+        this.localizationProvider.set(localizationProvider);
     }
 }

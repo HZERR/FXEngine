@@ -1,21 +1,19 @@
 package ru.hzerr.fx.engine.core.path.resolver;
 
-import org.springframework.context.annotation.Scope;
 import ru.hzerr.fx.engine.configuration.application.IResourceStructureConfiguration;
 import ru.hzerr.fx.engine.core.annotation.Include;
-import ru.hzerr.fx.engine.core.annotation.Registered;
+import ru.hzerr.fx.engine.core.annotation.RegisteredPrototype;
 import ru.hzerr.fx.engine.core.language.BaseLocalizationMetaData;
 import ru.hzerr.fx.engine.core.path.*;
 
-@Registered
-@Scope("prototype")
+@RegisteredPrototype
 public class ControllerLocalizationResolver implements Resolver {
 
-    private BaseLocalizationMetaData metaData;
     private String internationalizationFile;
+    private BaseLocalizationMetaData metaData;
     private IResourceStructureConfiguration resourceStructureConfiguration;
 
-    public ControllerLocalizationResolver(BaseLocalizationMetaData metaData, String internationalizationFile) {
+    private ControllerLocalizationResolver(BaseLocalizationMetaData metaData, String internationalizationFile) {
         this.metaData = metaData;
         this.internationalizationFile = internationalizationFile;
     }
@@ -25,7 +23,7 @@ public class ControllerLocalizationResolver implements Resolver {
         String currentLanguagePackageLocation = LocationTools.resolve(
                 ResolvableLocation.of(
                         resourceStructureConfiguration.getApplicationInternationalizationPackage(),
-                        NullSafeResolveLocationOptions.THROW_EXCEPTION
+                        NullSafeResolveLocationOptions.THROW_ILLEGAL_ARGUMENT_EXCEPTION
                 ),
                 ResolvableLocation.of(
                         metaData.getILocation(),
@@ -36,8 +34,8 @@ public class ControllerLocalizationResolver implements Resolver {
         );
 
         return LocationTools.resolve(
-                ResolvableLocation.of(currentLanguagePackageLocation, NullSafeResolveLocationOptions.THROW_EXCEPTION),
-                ResolvableLocation.of(internationalizationFile, NullSafeResolveLocationOptions.THROW_EXCEPTION),
+                ResolvableLocation.of(currentLanguagePackageLocation, NullSafeResolveLocationOptions.THROW_ILLEGAL_ARGUMENT_EXCEPTION),
+                ResolvableLocation.of(internationalizationFile, NullSafeResolveLocationOptions.THROW_ILLEGAL_ARGUMENT_EXCEPTION),
                 SeparatorResolveLocationOptions.DEFAULT,
                 Separator.SLASH_SEPARATOR
         );

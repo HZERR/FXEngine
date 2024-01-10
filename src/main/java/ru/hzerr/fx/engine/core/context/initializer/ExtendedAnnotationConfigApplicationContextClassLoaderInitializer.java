@@ -23,7 +23,7 @@ public class ExtendedAnnotationConfigApplicationContextClassLoaderInitializer im
 
     @Override
     public void onInitialize() throws ApplicationContextInitializationException {
-        context.fetchBean(IReadOnlyClassLoaderProvider.class).ifPresent(classLoaderProvider -> {
+        context.findBean(IReadOnlyClassLoaderProvider.class).ifPresent(classLoaderProvider -> {
             context.getClassLoaderProvider().setApplicationClassLoader(classLoaderProvider.getApplicationClassLoader());
             context.getClassLoaderProvider().setSpringContextClassLoader(classLoaderProvider.getSpringContextClassLoader());
             context.getClassLoaderProvider().setApplicationResourceClassLoader(classLoaderProvider.getApplicationResourceClassLoader());

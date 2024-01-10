@@ -51,7 +51,8 @@ public interface IExtendedAnnotationConfigApplicationContext extends AnnotationC
     // END НА ПЕРЕСМОТРЕ
 
     // BEGIN EXTENDED METHOD CONTEXT
-    <T> Optional<T> fetchBean(Class<T> requiredType);
+    <T> T registerAndGetBean(Class<T> beanClass, Object... constructorArgs);
+    <T> Optional<T> findBean(Class<T> requiredType);
     boolean containsBean(Class<?> beanClass);
     boolean noContainsBean(Class<?> beanClass);
     <T> T getBeanByQualifier(Class<T> requiredType) throws BeansException;

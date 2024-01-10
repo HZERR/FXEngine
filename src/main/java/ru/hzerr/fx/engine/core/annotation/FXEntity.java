@@ -1,11 +1,14 @@
 package ru.hzerr.fx.engine.core.annotation;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * Аннотация должна использоваться на каждом контроллере. Она дает системе понять, где искать конкретные css, fxml и bundle файлы
  */
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface FXEntity {
 

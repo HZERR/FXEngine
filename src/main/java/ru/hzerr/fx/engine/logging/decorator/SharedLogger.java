@@ -3,23 +3,25 @@ package ru.hzerr.fx.engine.logging.decorator;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Marker;
 import org.slf4j.event.Level;
 import org.slf4j.event.LoggingEvent;
 import org.slf4j.spi.LoggingEventBuilder;
 import ru.hzerr.fx.engine.configuration.fs.typesafe.IFormattedConfiguration;
-import ru.hzerr.fx.engine.core.language.ICombineLocalization;
+import ru.hzerr.fx.engine.core.language.localization.ApplicationLoggingLocalization;
+import ru.hzerr.fx.engine.core.language.localization.EngineLoggingLocalization;
 
 import java.util.Iterator;
 
-public class MultiLanguageLogger implements ILogger {
+public class SharedLogger implements ILogger {
 
     private final Logger logger;
-    private final transient IFormattedConfiguration config;
+    private transient IFormattedConfiguration config;
 
-    public MultiLanguageLogger(ch.qos.logback.classic.Logger logger, ICombineLocalization combineLocalization) {
+    public SharedLogger(@NotNull ch.qos.logback.classic.Logger logger, @NotNull EngineLoggingLocalization engineLoggingLocalization, ApplicationLoggingLocalization applicationLoggingLocalization) {
         this.logger = logger;
-        this.config = combineLocalization.getConfiguration();
+        this.config = engineLoggingLocalization.getConfiguration().withFallback(applicationLoggingLocalization.getConfiguration()).resolve();
     }
 
     @Override

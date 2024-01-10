@@ -11,7 +11,7 @@ import ru.hzerr.fx.engine.configuration.logging.IReadOnlyLoggingConfiguration;
 import ru.hzerr.fx.engine.core.context.AutomaticExtendedAnnotationConfigApplicationContextProvider;
 import ru.hzerr.fx.engine.core.context.ExtendedAnnotationConfigApplicationContextProvider;
 import ru.hzerr.fx.engine.core.context.IExtendedAnnotationConfigApplicationContext;
-import ru.hzerr.fx.engine.core.language.ApplicationLocalizationMetaData;
+import ru.hzerr.fx.engine.core.language.EntityLocalizationMetaData;
 import ru.hzerr.fx.engine.core.language.LoggingLocalizationMetaData;
 import ru.hzerr.fx.engine.core.theme.ThemeMetaData;
 
@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * 3) Theme: theme/dark/main.css, theme/white/main.css, где папка "theme" - корневая папка всех тем, а папки "white" и "dark" - папки конкретной темы<br>
  * Опционально:<br>
  * 4) Application logging localization: language/logging/ru-RU/main.json, language/logging/en-EN/main.json, где папка "language/logging" - корневая папка всех локализаций отладки, а папки "ru-RU" и "en-EN" - папки конкретной локализации отладки<br>
- * Создать классы имплементирующие интерфейс {@link ApplicationLocalizationMetaData} в том кол-ве, сколько и локализаций. Не забудьте добавить их в контекст, повесив аннотацию @Registered. Таким образом вы дадите FXEngine связь Locale -> Location<br>
+ * Создать классы имплементирующие интерфейс {@link EntityLocalizationMetaData} в том кол-ве, сколько и локализаций. Не забудьте добавить их в контекст, повесив аннотацию @Registered. Таким образом вы дадите FXEngine связь Locale -> Location<br>
  * Опционально также и для {@link LoggingLocalizationMetaData}
  * @author HZERR
  */
@@ -123,7 +123,7 @@ public abstract class FXEngine extends Application {
 
     /**
      * Этот метод вызывается во время завершения работы приложения.
-     * Его нужно переопределить для выполнения пользовательских задач очистки.
+     * Его можно переопределить для выполнения пользовательских задач очистки.
      * @throws IOException если возникает ошибка во время завершения работы
      */
     protected void onClose() throws IOException {
@@ -140,8 +140,12 @@ public abstract class FXEngine extends Application {
 
     /**
      * Создает {@link IApplicationContextProvider} для создания ApplicationContext, путем получения корневой папки приложения из переданного класса запускаемого приложения.
+     * Имейте в виду, если корневая папка - это "ru" или "com" и тп, движок просканирует все классы в точности и в библиотеках.
+     * <p>
+     * Используйте данный provider осторожно
      * @param startupApplicationClass класс запускаемого приложения
      * @return поставщик контекста приложения
+     * @see #createExtendedAnnotationConfigApplicationContextProvider(String...)
      */
     protected final IApplicationContextProvider<IExtendedAnnotationConfigApplicationContext> createAutomaticExtendedAnnotationConfigApplicationContextProvider(Class<? extends FXEngine> startupApplicationClass) {
         return new AutomaticExtendedAnnotationConfigApplicationContextProvider(startupApplicationClass);

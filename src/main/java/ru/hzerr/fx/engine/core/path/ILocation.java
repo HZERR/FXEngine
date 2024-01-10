@@ -1,6 +1,8 @@
 package ru.hzerr.fx.engine.core.path;
 
-public interface ILocation {
+import ru.hzerr.fx.engine.core.path.impl.ClassPathLocation;
+
+public sealed interface ILocation permits CombineRelativeDirectoryLocation, RelativeDirectoryLocation, ClassPathLocation {
 
     String getLocation();
 }

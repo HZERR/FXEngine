@@ -5,7 +5,7 @@ import ru.hzerr.fx.engine.core.annotation.Include;
 import ru.hzerr.fx.engine.core.annotation.Registered;
 import ru.hzerr.fx.engine.core.context.IExtendedAnnotationConfigApplicationContext;
 import ru.hzerr.fx.engine.core.context.Ordered;
-import ru.hzerr.fx.engine.logging.ConfigurableException;
+import ru.hzerr.fx.engine.logging.StartupException;
 import ru.hzerr.fx.engine.logging.provider.FXApplicationLogProvider;
 import ru.hzerr.fx.engine.logging.provider.FXEngineLogProvider;
 
@@ -29,8 +29,8 @@ public class ExtendedAnnotationConfigApplicationContextLogProviderInitializer im
         context.registerBean(ENGINE_LOG_PROVIDER_BEAN_NAME, FXEngineLogProvider.class);
 
         try {
-            context.getFXEngineLogProvider().configure();
-        } catch (ConfigurableException e) {
+            context.getFXEngineLogProvider().start();
+        } catch (StartupException e) {
             throw new ApplicationContextInitializationException("Unable to create ApplicationContext. A logger configuration error has occurred", e);
         }
     }

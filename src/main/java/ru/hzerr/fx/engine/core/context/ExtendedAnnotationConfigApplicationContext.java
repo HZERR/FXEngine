@@ -149,6 +149,15 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
     }
 
     @Override
+    public <T> T registerAndGetBean(Class<T> beanClass, Object... constructorArgs) {
+        if (noContainsBean(beanClass)) {
+            registerBean(beanClass, constructorArgs);
+        }
+
+        return getBean(beanClass);
+    }
+
+    @Override
     public IApplicationManager getApplicationManager() {
         if (!containsBean(APPLICATION_MANAGER_BEAN_NAME)) {
             registerBean(APPLICATION_MANAGER_BEAN_NAME, ApplicationManager.class);
@@ -178,7 +187,7 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
     }
 
     @Override
-    public <T> Optional<T> fetchBean(Class<T> requiredType) {
+    public <T> Optional<T> findBean(Class<T> requiredType) {
         return containsBean(requiredType) ?
                 Optional.of(getBean(requiredType)) :
                 Optional.empty();

@@ -1,7 +1,7 @@
 package ru.hzerr.fx.engine.configuration.logging;
 
 import ru.hzerr.fx.engine.core.annotation.Registered;
-import ru.hzerr.fx.engine.core.language.Localization;
+import ru.hzerr.fx.engine.core.language.localization.Localization;
 
 @Registered
 public class LoggingLanguageConfiguration implements ILoggingLanguageConfiguration {

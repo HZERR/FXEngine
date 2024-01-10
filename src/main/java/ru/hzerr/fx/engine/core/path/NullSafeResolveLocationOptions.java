@@ -28,7 +28,7 @@ public enum NullSafeResolveLocationOptions {
     /**
      * Бросить исключение, если другой location равен null
      */
-    THROW_EXCEPTION,
+    THROW_ILLEGAL_ARGUMENT_EXCEPTION,
     /**
      * Ничего не делать, если другой location равен null
      */
