@@ -25,6 +25,10 @@ public interface IExtendedCompletionStage<T> extends Future<T>, CompletionStage<
     IExtendedCompletionStage<Void> acceptFXEither(CompletionStage<? extends T> other, FXConsumer<? super T> action);
 
     IExtendedCompletionStage<Void> runAfterFXEither(CompletionStage<?> other, FXRunnable action);
+    IExtendedCompletionStage<T> exceptionally(Consumer<Throwable> fn);
+
+    IExtendedCompletionStage<T> exceptionallyAsync(Consumer<Throwable> fn);
+    IExtendedCompletionStage<T> exceptionallyAsync(Consumer<Throwable> fn, Executor executor);
 
     @Override
     <U> IExtendedCompletionStage<U> thenApply(Function<? super T, ? extends U> fn);

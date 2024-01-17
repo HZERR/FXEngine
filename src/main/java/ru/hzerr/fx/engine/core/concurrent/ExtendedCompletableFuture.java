@@ -47,6 +47,21 @@ public class ExtendedCompletableFuture<T> implements IExtendedCompletionStage<T>
     }
 
     @Override
+    public IExtendedCompletionStage<T> exceptionally(Consumer<Throwable> fn) {
+        return new ExtendedCompletableFuture<>(wrapped.exceptionally(ExceptionFunction.from(fn)));
+    }
+
+    @Override
+    public IExtendedCompletionStage<T> exceptionallyAsync(Consumer<Throwable> fn) {
+        return new ExtendedCompletableFuture<>(wrapped.exceptionallyAsync(ExceptionFunction.from(fn)));
+    }
+
+    @Override
+    public IExtendedCompletionStage<T> exceptionallyAsync(Consumer<Throwable> fn, Executor executor) {
+        return new ExtendedCompletableFuture<>(wrapped.exceptionallyAsync(ExceptionFunction.from(fn), executor));
+    }
+
+    @Override
     public <U> IExtendedCompletionStage<U> thenApply(Function<? super T, ? extends U> fn) {
         return new ExtendedCompletableFuture<>(wrapped.thenApply(fn));
     }
@@ -342,5 +357,24 @@ public class ExtendedCompletableFuture<T> implements IExtendedCompletionStage<T>
 
     public static <T> IExtendedCompletionStage<T> from(CompletableFuture<T> wrapped) {
         return new ExtendedCompletableFuture<>(wrapped);
+    }
+
+    static class ExceptionFunction<T> implements Function<Throwable, T> {
+
+        private Consumer<Throwable> consumer;
+
+        private ExceptionFunction(Consumer<Throwable> consumer) {
+            this.consumer = consumer;
+        }
+
+        @Override
+        public T apply(Throwable throwable) {
+            consumer.accept(throwable);
+            return null;
+        }
+
+        static <T> ExceptionFunction<T> from(Consumer<Throwable> action) {
+            return new ExceptionFunction<>(action);
+        }
     }
 }
