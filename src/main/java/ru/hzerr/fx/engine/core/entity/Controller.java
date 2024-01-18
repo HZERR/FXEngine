@@ -92,7 +92,7 @@ public abstract class Controller {
      * This method is called when the controller is being destroyed. It is intended to be overridden by subclasses to
      * perform any cleanup tasks that are specific to their implementation.
      */
-    protected void onDestroy() {
+    public void onDestroy() {
         FXEngine.getContext().getApplicationManager().unregister(id());
         engineLogProvider.getLogger().debug("fxEngine.controller.onDestroy", getClass().getSimpleName());
     }

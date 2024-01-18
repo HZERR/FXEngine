@@ -10,7 +10,7 @@ public abstract class PopupController extends Controller implements Viewable {
     protected final String id = RandomStringUtils.randomAlphanumeric(12);
 
     @Override
-    protected void onConnectDestroyEvent() {
+    public void onConnectDestroyEvent() {
         popup.onCloseRequestProperty().addListener((observable, o, n) -> onDestroy());
     }
 
