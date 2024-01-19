@@ -14,17 +14,10 @@ public abstract class BasicCellFactory<T> implements Callback<ListView<T>, ListC
 
     @Override
     public ListCell<T> call(ListView<T> param) {
-        return new ListCell<>() {
-            @Override
-            protected void updateItem(T item, boolean empty) {
-                super.updateItem(item, empty);
-
-                onUpdateItem(item, empty);
-            }
-        };
+        return createListCell();
     }
 
-    public abstract void onUpdateItem(T item, boolean empty);
+    public abstract BasicListCell<T> createListCell();
 
     @ApplicationLogProvider
     public void setLogProvider(ILogProvider logProvider) {
