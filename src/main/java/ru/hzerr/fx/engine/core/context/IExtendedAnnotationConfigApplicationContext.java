@@ -17,7 +17,8 @@ import ru.hzerr.fx.engine.configuration.application.*;
 import ru.hzerr.fx.engine.configuration.logging.IReadOnlyLoggingConfiguration;
 import ru.hzerr.fx.engine.core.entity.EntityLoader;
 import ru.hzerr.fx.engine.core.entity.IApplicationManager;
-import ru.hzerr.fx.engine.core.language.localization.ILocalizationProvider;
+import ru.hzerr.fx.engine.core.language.localization.ApplicationLoggingLocalizationProvider;
+import ru.hzerr.fx.engine.core.language.localization.EngineLoggingLocalizationProvider;
 import ru.hzerr.fx.engine.logging.provider.ILogProvider;
 
 import java.util.Optional;
@@ -32,13 +33,13 @@ public interface IExtendedAnnotationConfigApplicationContext extends AnnotationC
     IStructureConfiguration getStructureConfiguration();
     <T extends IStructureConfiguration> T getStructureConfigurationAs(Class<T> type);
     IResourceStructureConfiguration getResourceStructureConfiguration();
-    <T extends IResourceStructureConfiguration> T getResourceStructureConfiguration(Class<T> type);
+    <T extends IResourceStructureConfiguration> T getResourceStructureConfigurationAs(Class<T> type);
     ILogProvider getFXEngineLogProvider();
     ILogProvider getApplicationLogProvider();
     ISoftwareConfiguration getSoftwareConfiguration();
     IApplicationConfiguration getApplicationConfiguration();
-    ILocalizationProvider getApplicationLoggingLocalizationProvider();
-    ILocalizationProvider getEngineLoggingLocalizationProvider();
+    ApplicationLoggingLocalizationProvider getApplicationLoggingLocalizationProvider();
+    EngineLoggingLocalizationProvider getEngineLoggingLocalizationProvider();
     // END FLAT
 
     // BEGIN НА ПЕРЕСМОТРЕ

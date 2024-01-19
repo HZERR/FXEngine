@@ -27,7 +27,7 @@ public abstract class ExtendedAnnotationConfigApplicationContextSequentialRegist
      * @param context the application context
      */
     @Include
-    public ExtendedAnnotationConfigApplicationContextSequentialRegistrar(IExtendedAnnotationConfigApplicationContext context) {
+    protected ExtendedAnnotationConfigApplicationContextSequentialRegistrar(IExtendedAnnotationConfigApplicationContext context) {
         this.context = context;
     }
 

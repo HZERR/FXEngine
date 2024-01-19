@@ -18,11 +18,12 @@ import org.springframework.util.Assert;
 import ru.hzerr.collections.list.HList;
 import ru.hzerr.fx.engine.configuration.application.*;
 import ru.hzerr.fx.engine.configuration.logging.IReadOnlyLoggingConfiguration;
-import ru.hzerr.fx.engine.core.entity.ApplicationManager;
 import ru.hzerr.fx.engine.core.BeanAlreadyExistsException;
 import ru.hzerr.fx.engine.core.annotation.Redefinition;
 import ru.hzerr.fx.engine.core.entity.EntityLoader;
 import ru.hzerr.fx.engine.core.entity.IApplicationManager;
+import ru.hzerr.fx.engine.core.language.localization.ApplicationLoggingLocalizationProvider;
+import ru.hzerr.fx.engine.core.language.localization.EngineLoggingLocalizationProvider;
 import ru.hzerr.fx.engine.core.language.localization.ILocalizationProvider;
 import ru.hzerr.fx.engine.logging.provider.FXApplicationLogProvider;
 import ru.hzerr.fx.engine.logging.provider.FXEngineLogProvider;
@@ -72,7 +73,7 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
 
     // ======================================== BEGIN FLAT ACCESS ========================================
 
-    public void setEngineLocalizationProvider(ILocalizationProvider engineLocalizationProvider) {
+    public void setEngineLocalizationProvider(EngineLoggingLocalizationProvider engineLocalizationProvider) {
         this.engineLocalizationProvider = engineLocalizationProvider;
     }
 
@@ -105,7 +106,7 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
     public IResourceStructureConfiguration getResourceStructureConfiguration() { return getBean(IResourceStructureConfiguration.class); }
 
     @Override
-    public <T extends IResourceStructureConfiguration> T getResourceStructureConfiguration(Class<T> type) {
+    public <T extends IResourceStructureConfiguration> T getResourceStructureConfigurationAs(Class<T> type) {
         return getBean(type);
     }
 
@@ -130,16 +131,16 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
     }
 
     @Override
-    public ILocalizationProvider getApplicationLoggingLocalizationProvider() {
+    public ApplicationLoggingLocalizationProvider getApplicationLoggingLocalizationProvider() {
         if (getLoggingConfiguration().isInternationalizationEnabled()) {
-            return getBean(APPLICATION_LOGGING_LOCALIZATION_PROVIDER_BEAN_NAME, ILocalizationProvider.class);
+            return getBean(APPLICATION_LOGGING_LOCALIZATION_PROVIDER_BEAN_NAME, ApplicationLoggingLocalizationProvider.class);
         }
 
         throw new IllegalAccessBeanException(engineLocalizationProvider.getLocalization().getConfiguration().getString("fxEngine.applicationContext.getApplicationLocalizationProvider.illegalAccessBeanException"));
     }
 
     @Override
-    public ILocalizationProvider getEngineLoggingLocalizationProvider() { return getBean(ENGINE_LOGGING_LOCALIZATION_PROVIDER_BEAN_NAME, ILocalizationProvider.class); }
+    public EngineLoggingLocalizationProvider getEngineLoggingLocalizationProvider() { return getBean(ENGINE_LOGGING_LOCALIZATION_PROVIDER_BEAN_NAME, EngineLoggingLocalizationProvider.class); }
 
     // ======================================== END FLAT ACCESS ========================================
 
@@ -159,10 +160,6 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
 
     @Override
     public IApplicationManager getApplicationManager() {
-        if (!containsBean(APPLICATION_MANAGER_BEAN_NAME)) {
-            registerBean(APPLICATION_MANAGER_BEAN_NAME, ApplicationManager.class);
-        }
-
         return getBean(APPLICATION_MANAGER_BEAN_NAME, IApplicationManager.class);
     }
 

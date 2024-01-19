@@ -5,12 +5,15 @@ import ru.hzerr.collections.map.HMap;
 import ru.hzerr.collections.map.Type;
 import ru.hzerr.fx.engine.core.FXEngine;
 import ru.hzerr.fx.engine.core.annotation.Concurrent;
-import ru.hzerr.fx.engine.core.annotation.Preview;
+import ru.hzerr.fx.engine.core.annotation.Registered;
 import ru.hzerr.fx.engine.core.annotation.as.EngineLogProvider;
 import ru.hzerr.fx.engine.core.entity.exception.LanguagePackMetaDataNotFoundException;
 import ru.hzerr.fx.engine.core.language.BaseLocalizationMetaData;
 import ru.hzerr.fx.engine.core.language.EntityLocalizationMetaData;
-import ru.hzerr.fx.engine.core.language.localization.*;
+import ru.hzerr.fx.engine.core.language.localization.EngineLoggingLocalizationProvider;
+import ru.hzerr.fx.engine.core.language.localization.EntityLocalization;
+import ru.hzerr.fx.engine.core.language.localization.EntityLocalizationLoader;
+import ru.hzerr.fx.engine.core.language.localization.EntityLocalizationProvider;
 import ru.hzerr.fx.engine.core.path.resolver.ControllerLocalizationResolver;
 import ru.hzerr.fx.engine.core.theme.*;
 import ru.hzerr.fx.engine.logging.provider.ILogProvider;
@@ -19,6 +22,7 @@ import java.util.Locale;
 import java.util.Optional;
 
 @Concurrent
+@Registered
 public class ApplicationManager implements IApplicationManager {
 
     private final HMap<String, Controller> controllers = HMap.create(Type.SYNCHRONIZED);
@@ -138,8 +142,7 @@ public class ApplicationManager implements IApplicationManager {
         return load(getThemeMetaData(), controller);
     }
 
-    @Preview(version = "1.1E")
-    public EntityLocalization getLocalization(Controller controller, Locale locale) {
+    private EntityLocalization getLocalization(Controller controller, Locale locale) {
         BaseLocalizationMetaData entityLocalizationMetaData = getEntityLocalizationMetaData(locale);
 
         String relativePath = FXEngine.getContext().getBean(ControllerLocalizationResolver.class,

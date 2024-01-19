@@ -1,4 +1,4 @@
-package ru.hzerr.fx.engine.core.event;
+package ru.hzerr.fx.engine.core.javafx.event;
 
 import javafx.scene.input.SwipeEvent;
 import ru.hzerr.fx.engine.core.annotation.Side;

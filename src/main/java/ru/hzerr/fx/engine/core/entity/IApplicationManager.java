@@ -1,7 +1,5 @@
 package ru.hzerr.fx.engine.core.entity;
 
-import ru.hzerr.fx.engine.core.annotation.Preview;
-import ru.hzerr.fx.engine.core.language.localization.Localization;
 import ru.hzerr.fx.engine.core.theme.LoadThemeException;
 import ru.hzerr.fx.engine.core.theme.LoadedThemeData;
 import ru.hzerr.fx.engine.core.theme.ThemeMetaData;
@@ -19,9 +17,6 @@ public interface IApplicationManager {
 
     void changeTheme(Class<? extends ThemeMetaData> themeMetaDataClass) throws LoadThemeException;
     void changeTheme(String themeName) throws LoadThemeException;
-
-    @Preview
-    Localization getLocalization(Controller controller, Locale locale);
 
     <C extends Controller> void applyTheme(C controller) throws LoadThemeException;
 

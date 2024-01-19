@@ -5,7 +5,7 @@ import javafx.scene.layout.AnchorPane;
 import ru.hzerr.fx.engine.core.FXEngine;
 import ru.hzerr.fx.engine.core.annotation.as.ApplicationLogProvider;
 import ru.hzerr.fx.engine.core.annotation.Registered;
-import ru.hzerr.fx.engine.core.event.ActionEventProcessor;
+import ru.hzerr.fx.engine.core.javafx.event.ActionEventProcessor;
 import ru.hzerr.fx.engine.logging.provider.ILogProvider;
 
 @Registered
