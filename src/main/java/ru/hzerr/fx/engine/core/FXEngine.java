@@ -65,11 +65,6 @@ public abstract class FXEngine extends Application {
                 throw new IllegalClosedException(context.isActive() ?
                         context.getEngineLoggingLocalizationProvider().getLocalization().getConfiguration().getString("fxEngine.init.closedException") :
                         "An error occurred stopping the application", e);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new IllegalClosedException(context.isActive() ?
-                        context.getEngineLoggingLocalizationProvider().getLocalization().getConfiguration().getString("fxEngine.init.closedException") :
-                        "An error occurred stopping the application", e);
             }
         }));
         context.getFXEngineLogProvider().getLogger().info("fxEngine.init.engineSuccessfullyInitialized");
@@ -85,7 +80,7 @@ public abstract class FXEngine extends Application {
     }
 
     @Override
-    public final void stop() throws IOException, InterruptedException {
+    public final void stop() throws IOException {
         if (closed.compareAndSet(false, true)) {
             context.getBean(IControllerManagedRepository.class).destroyAll();
 
