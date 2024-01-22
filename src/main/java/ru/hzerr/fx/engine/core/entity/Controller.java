@@ -64,7 +64,7 @@ public abstract class Controller {
         FXEngine.getContext().getApplicationManager().register(id(), this);
         engineLogProvider.getLogger().debug("fxEngine.controller.initialize.controllerSuccessfullyRegistered", this.getClass().getSimpleName());
         Locale currentLocale = FXEngine.getContext().getApplicationConfiguration().getLocale();
-        FXEngine.getContext().getApplicationManager().setLanguage(currentLocale);
+        FXEngine.getContext().getApplicationManager().changeLanguage(currentLocale);
         onInit();
         FXEngine.getContext().getApplicationManager().applyTheme(this);
         engineLogProvider.getLogger().debug("fxEngine.controller.initialize.success", getClass().getSimpleName());

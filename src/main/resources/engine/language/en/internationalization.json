@@ -19,7 +19,6 @@
       }
     },
     "init": {
-      "registerThemeInSystem": "Registering the '{}' theme in the system...",
       "loggerSuccessfullyConfigured": "Logger has been successfully configured",
       "selectedLoggingDirectory": "Selected logging directory: '{}'",
       "engineSuccessfullyInitialized": "FXEngine has been successfully initialized",
@@ -54,15 +53,16 @@
       }
     },
     "applicationManager": {
-      "changeThemeUsingThemeName": {
-        "themeNotFoundException": "The '{}' theme was not found"
-      },
       "changeThemeUsingThemeMetaData": {
         "themeNotFoundException": "It is not possible to find the application theme by metadata class '{}'"
       },
       "theme": {
-        "gettingThemeFromCache": "Getting the '{}' theme for '{}' from the cache..."
+        "gettingThemeFromCache": "Getting the '{}' theme for '{}' from the cache...",
+        "themeByNameNotFoundException": "The '{}' theme was not found"
       }
+    },
+    "themeNotificationListener": {
+      "detectTheme": "A '{}' theme has been detected"
     }
   }
 }

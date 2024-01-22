@@ -18,10 +18,10 @@ public class ChangeLocalizationProcessor extends ActionEventProcessor {
     protected void onProcess(ActionEvent event) throws Exception {
         logProvider.getLogger().debug("Текущий язык '" + FXEngine.getContext().getApplicationConfiguration().getLocale().getLanguage() + "'");
         if (FXEngine.getContext().getApplicationConfiguration().getLocale().equals(Locale.ENGLISH)) {
-            FXEngine.getContext().getApplicationManager().setLanguage(Locale.of("ru", "RU"));
+            FXEngine.getContext().getApplicationManager().changeLanguage(Locale.of("ru", "RU"));
             logProvider.getLogger().debug("Язык приложения изменен на 'Русский'");
         } else {
-            FXEngine.getContext().getApplicationManager().setLanguage(Locale.ENGLISH);
+            FXEngine.getContext().getApplicationManager().changeLanguage(Locale.ENGLISH);
             logProvider.getLogger().debug("Язык приложения изменен на 'English'");
         }
     }

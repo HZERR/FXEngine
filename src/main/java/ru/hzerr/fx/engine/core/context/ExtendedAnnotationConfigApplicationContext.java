@@ -32,6 +32,7 @@ import ru.hzerr.fx.engine.logging.provider.ILogProvider;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfigApplicationContext implements IExtendedAnnotationConfigApplicationContext {
@@ -188,6 +189,19 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
         return containsBean(requiredType) ?
                 Optional.of(getBean(requiredType)) :
                 Optional.empty();
+    }
+
+    @Override
+    public <T> Optional<T> findBean(Class<T> requiredType, Predicate<T> predicate) {
+        if (containsBean(requiredType)) {
+            for (T bean: getBeansOfType(requiredType).values()) {
+                if (predicate.test(bean)) {
+                    return Optional.of(bean);
+                }
+            }
+        }
+
+        return Optional.empty();
     }
 
     @Override

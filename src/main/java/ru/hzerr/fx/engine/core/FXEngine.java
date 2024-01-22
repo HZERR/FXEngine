@@ -11,9 +11,9 @@ import ru.hzerr.fx.engine.configuration.logging.IReadOnlyLoggingConfiguration;
 import ru.hzerr.fx.engine.core.context.AutomaticExtendedAnnotationConfigApplicationContextProvider;
 import ru.hzerr.fx.engine.core.context.ExtendedAnnotationConfigApplicationContextProvider;
 import ru.hzerr.fx.engine.core.context.IExtendedAnnotationConfigApplicationContext;
+import ru.hzerr.fx.engine.core.entity.IControllerManagedRepository;
 import ru.hzerr.fx.engine.core.language.EntityLocalizationMetaData;
 import ru.hzerr.fx.engine.core.language.LoggingLocalizationMetaData;
-import ru.hzerr.fx.engine.core.theme.ThemeMetaData;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -39,6 +39,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Опционально также и для {@link LoggingLocalizationMetaData}
  * @author HZERR
  */
+
+// TODO: Разделить 1 контекст на несколько
 public abstract class FXEngine extends Application {
 
     /**
@@ -55,17 +57,16 @@ public abstract class FXEngine extends Application {
     public final void init() throws Exception {
         System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
         context = createApplicationContext();
-        for (ThemeMetaData themeMetaData : context.getBeansOfType(ThemeMetaData.class).values()) {
-            context.getFXEngineLogProvider().getLogger().info("fxEngine.init.registerThemeInSystem", themeMetaData.getName());
-            context.getApplicationManager().register(themeMetaData);
-        }
-        context.getFXEngineLogProvider().getLogger().info("fxEngine.init.loggerSuccessfullyConfigured");
-        context.getFXEngineLogProvider().getLogger().info("fxEngine.init.selectedLoggingDirectory", getContext().getBean(IStructureConfiguration.class).getLogDirectory().getLocation());
         onInit();
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
                 stop();
-            } catch (Exception e) {
+            } catch (IOException e) {
+                throw new IllegalClosedException(context.isActive() ?
+                        context.getEngineLoggingLocalizationProvider().getLocalization().getConfiguration().getString("fxEngine.init.closedException") :
+                        "An error occurred stopping the application", e);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
                 throw new IllegalClosedException(context.isActive() ?
                         context.getEngineLoggingLocalizationProvider().getLocalization().getConfiguration().getString("fxEngine.init.closedException") :
                         "An error occurred stopping the application", e);
@@ -84,8 +85,10 @@ public abstract class FXEngine extends Application {
     }
 
     @Override
-    public final void stop() throws IOException {
+    public final void stop() throws IOException, InterruptedException {
         if (closed.compareAndSet(false, true)) {
+            context.getBean(IControllerManagedRepository.class).destroyAll();
+
             onClose();
             context.close();
         }

@@ -22,6 +22,7 @@ import ru.hzerr.fx.engine.core.language.localization.EngineLoggingLocalizationPr
 import ru.hzerr.fx.engine.logging.provider.ILogProvider;
 
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public interface IExtendedAnnotationConfigApplicationContext extends AnnotationConfigRegistry, BeanDefinitionRegistry, ConfigurableApplicationContext, ResourceLoader {
@@ -54,6 +55,7 @@ public interface IExtendedAnnotationConfigApplicationContext extends AnnotationC
     // BEGIN EXTENDED METHOD CONTEXT
     <T> T registerAndGetBean(Class<T> beanClass, Object... constructorArgs);
     <T> Optional<T> findBean(Class<T> requiredType);
+    <T> Optional<T> findBean(Class<T> requiredType, Predicate<T> predicate);
     boolean containsBean(Class<?> beanClass);
     boolean noContainsBean(Class<?> beanClass);
     <T> T getBeanByQualifier(Class<T> requiredType) throws BeansException;

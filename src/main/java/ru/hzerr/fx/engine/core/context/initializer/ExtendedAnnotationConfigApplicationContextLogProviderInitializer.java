@@ -30,6 +30,7 @@ public class ExtendedAnnotationConfigApplicationContextLogProviderInitializer im
 
         try {
             context.getFXEngineLogProvider().start();
+            context.getFXEngineLogProvider().getLogger().info("fxEngine.init.loggerSuccessfullyConfigured");
         } catch (StartupException e) {
             throw new ApplicationContextInitializationException("Unable to create ApplicationContext. A logger configuration error has occurred", e);
         }
