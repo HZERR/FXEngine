@@ -9,7 +9,6 @@ import ru.hzerr.fx.engine.core.annotation.Side;
 import ru.hzerr.fx.engine.core.annotation.SideOnly;
 import ru.hzerr.fx.engine.core.theme.LoadedThemeData;
 
-import java.util.Iterator;
 import java.util.function.BiConsumer;
 
 @SideOnly(Side.CORE)
@@ -41,10 +40,9 @@ public class ControllerManagedRepository implements IControllerManagedRepository
 
     @Override
     public void destroyAll() {
-        Iterator<Controller> iterator = controllers.values().iterator();
-        while (iterator.hasNext()) {
+        for (Controller controller : controllers.values().toArray(Controller[]::new)) {
             // calls the 'unregister' method under the hood
-            iterator.next().onDestroy();
+            controller.onDestroy();
         }
     }
 
