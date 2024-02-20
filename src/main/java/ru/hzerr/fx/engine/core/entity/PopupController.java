@@ -3,6 +3,7 @@ package ru.hzerr.fx.engine.core.entity;
 import javafx.stage.Popup;
 import org.apache.commons.lang3.RandomStringUtils;
 import ru.hzerr.fx.engine.core.FXEngine;
+import ru.hzerr.fx.engine.core.annotation.Preview;
 
 public abstract class PopupController extends Controller implements Viewable {
 
@@ -14,19 +15,20 @@ public abstract class PopupController extends Controller implements Viewable {
         popup.onCloseRequestProperty().addListener((observable, o, n) -> onDestroy());
     }
 
-//    protected void preInitPopup() {
-//        popup.setAutoFix(true);
-//        popup.getContent().add(getContentAsParent());
-//    }
+    @Preview(version = "1.2.2.2E")
+    protected void initPopup() {
+        popup.setAutoFix(true);
+        popup.getContent().add(getContentAsParent());
+    }
 
     @Override
     public void view() {
-        popup.show(FXEngine.getContext().getStage().getOwner());
+        popup.show(FXEngine.getContext().getStage());
     }
 
     @Override
     public void view(double anchorX, double anchorY) {
-        popup.show(FXEngine.getContext().getStage().getOwner(), anchorX, anchorY);
+        popup.show(FXEngine.getContext().getStage(), anchorX, anchorY);
     }
 
     public Popup getPopup() {

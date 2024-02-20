@@ -7,7 +7,7 @@ module FXEngine {
     requires ch.qos.logback.classic;
     requires org.slf4j;
     requires ch.qos.logback.core;
-    requires annotations;
+    requires org.jetbrains.annotations;
     requires typesafe.config;
     requires org.apache.commons.configuration2;
     requires jsr305;
