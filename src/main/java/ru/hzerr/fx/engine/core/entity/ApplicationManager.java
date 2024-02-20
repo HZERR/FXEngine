@@ -133,7 +133,7 @@ public class ApplicationManager implements IApplicationManager {
     private EntityLocalizationMetaData getEntityLocalizationMetaData(Locale locale) {
         return applicationContext.findBean(EntityLocalizationMetaData.class, metaData -> metaData.getLocale().equals(locale))
                 .orElseThrow(() -> new LocalizationMetaDataNotFoundException(localizationProvider.getLocalization().getConfiguration().getString(
-                        "fx.engine.controller.getApplicationLanguageMetaData.languageMetaDataNotFoundException", locale.getLanguage() + "/" + locale.getCountry()
+                        "fxEngine.controller.getApplicationLanguageMetaData.languageMetaDataNotFoundException", locale.getLanguage() + "/" + locale.getCountry()
                 )));
     }
 
