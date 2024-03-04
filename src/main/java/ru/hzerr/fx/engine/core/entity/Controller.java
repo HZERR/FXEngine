@@ -1,5 +1,7 @@
 package ru.hzerr.fx.engine.core.entity;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import ru.hzerr.fx.engine.core.FXEngine;
@@ -44,6 +46,8 @@ public abstract class Controller {
      * This field represents the localization service.
      */
     private final AtomicReference<ILocalizationProvider<EntityLocalization>> localizationProvider = new AtomicReference<>();
+
+    private final BooleanProperty destroy = new SimpleBooleanProperty(false);
 
     /**
      * This method is called when the controller is initialized. It performs the following tasks:
@@ -94,6 +98,7 @@ public abstract class Controller {
      */
     public void onDestroy() {
         FXEngine.getContext().getApplicationManager().unregister(id());
+        destroy.set(true);
         engineLogProvider.getLogger().debug("fxEngine.controller.onDestroy", getClass().getSimpleName());
     }
 
@@ -156,6 +161,14 @@ public abstract class Controller {
      */
     public Parent getContentAsParent() {
         return content;
+    }
+
+    public BooleanProperty destroyProperty() {
+        return destroy;
+    }
+
+    public boolean isDestroy() {
+        return destroy.get();
     }
 
     /**
