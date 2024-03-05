@@ -26,6 +26,8 @@ public class FXEngineTest extends FXEngine {
 
     @Override
     protected Scene onStart(Stage stage) {
+        stage.setTitle("FXEngine Test");
+
         IExtendedCompletionStage<Entity<BaseController, Parent>> mainFuture = context.getEntityLoader().loadAsync(SpringLoadMetaData.from(BaseController.class), Parent.class);
         return new Scene(mainFuture.join().getNode());
     }

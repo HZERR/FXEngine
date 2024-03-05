@@ -1,8 +1,5 @@
 package ru.hzerr.fx.engine.core.context;
 
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import javafx.stage.Window;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
@@ -17,11 +14,12 @@ import org.springframework.core.metrics.StartupStep;
 import org.springframework.util.Assert;
 import ru.hzerr.collections.list.HList;
 import ru.hzerr.fx.engine.configuration.application.*;
+import ru.hzerr.fx.engine.configuration.environment.IFXEnvironment;
 import ru.hzerr.fx.engine.configuration.logging.IReadOnlyLoggingConfiguration;
 import ru.hzerr.fx.engine.core.BeanAlreadyExistsException;
 import ru.hzerr.fx.engine.core.annotation.Redefinition;
-import ru.hzerr.fx.engine.core.entity.EntityLoader;
 import ru.hzerr.fx.engine.core.entity.IApplicationManager;
+import ru.hzerr.fx.engine.core.entity.IEntityLoader;
 import ru.hzerr.fx.engine.core.language.localization.ApplicationLoggingLocalizationProvider;
 import ru.hzerr.fx.engine.core.language.localization.EngineLoggingLocalizationProvider;
 import ru.hzerr.fx.engine.core.language.localization.ILocalizationProvider;
@@ -48,8 +46,7 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
     public static final String APPLICATION_LOG_PROVIDER_BEAN_NAME = "applicationLogProvider";
     public static final String ENGINE_LOG_PROVIDER_BEAN_NAME = "engineLogProvider";
     private ILogProvider engineLogProvider;
-    private ILocalizationProvider engineLocalizationProvider;
-    private Stage stage;
+    private EngineLoggingLocalizationProvider engineLocalizationProvider;
 
     private final HList<String> basePackages;
 
@@ -89,8 +86,8 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
     public IClassLoaderProvider getClassLoaderProvider() { return getBean(IClassLoaderProvider.class); }
 
     @Override
-    public EntityLoader getEntityLoader() {
-        return getBean(EntityLoader.class);
+    public IEntityLoader getEntityLoader() {
+        return getBean(IEntityLoader.class);
     }
 
     @Override
@@ -165,23 +162,8 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
     }
 
     @Override
-    public Stage getStage() {
-        return stage;
-    }
-
-    @Override
-    public void setStage(Stage stage) {
-        this.stage = stage;
-    }
-
-    @Override
-    public Scene getScene() {
-        return stage.getScene();
-    }
-
-    @Override
-    public Window getOwner() {
-        return stage.getOwner();
+    public IFXEnvironment getFXEnvironment() {
+        return getBean(IFXEnvironment.class);
     }
 
     @Override
@@ -280,6 +262,7 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
         super.registerBean(beanName, beanClass, supplier, customizers);
     }
 
+    @Deprecated
     private void checkRedefinition(Class<?> componentClass) {
         if (componentClass != null) {
             if (componentClass.isAnnotationPresent(Redefinition.class)) {

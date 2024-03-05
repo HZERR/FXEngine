@@ -5,6 +5,7 @@ import javafx.scene.control.Button;
 import ru.hzerr.fx.core.application.event.processor.ChangeLocalizationProcessor;
 import ru.hzerr.fx.core.application.event.processor.ChangeThemeProcessor;
 import ru.hzerr.fx.core.application.event.processor.DestroyContentProcessor;
+import ru.hzerr.fx.engine.configuration.environment.IFXEnvironment;
 import ru.hzerr.fx.engine.core.FXEngine;
 import ru.hzerr.fx.engine.core.annotation.FXController;
 import ru.hzerr.fx.engine.core.annotation.FXEntity;
@@ -17,20 +18,18 @@ import ru.hzerr.fx.engine.core.language.ILocalization;
 public class BaseController extends Controller {
 
     @FXML
-    private Button changeLocalization;
+    private Button changeLocalization, changeTheme, destroy;
 
-    @FXML
-    private Button changeTheme;
-
-    @FXML
-    private Button destroy;
     private ChangeThemeProcessor themeProcessor;
     private ChangeLocalizationProcessor localizationProcessor;
     private DestroyContentProcessor contentProcessor;
 
+    private IFXEnvironment environment;
+
     @Override
     public void onInit() {
         getLogProvider().getLogger().info("Selected assets directory: '{}'", FXEngine.getContext().getStructureConfigurationAs(IExtendedStructureConfiguration.class).getAssetsDirectory().getLocation());
+        getLogProvider().getLogger().info("Current stage title: '{}'", environment.getStage().getTitle());
         destroy.setOnAction(contentProcessor);
         changeLocalization.setOnAction(localizationProcessor);
         changeTheme.setOnAction(themeProcessor);
@@ -61,5 +60,10 @@ public class BaseController extends Controller {
     @Include
     public void setContentProcessor(DestroyContentProcessor contentProcessor) {
         this.contentProcessor = contentProcessor;
+    }
+
+    @Include
+    public void setFXEnvironment(IFXEnvironment environment) {
+        this.environment = environment;
     }
 }

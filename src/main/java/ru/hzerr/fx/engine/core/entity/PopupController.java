@@ -5,6 +5,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import ru.hzerr.fx.engine.core.FXEngine;
 import ru.hzerr.fx.engine.core.annotation.Preview;
 
+// TODO 06.03.2024 auto inject fx environment
 public abstract class PopupController extends Controller implements Viewable {
 
     protected final Popup popup = new Popup();
@@ -23,12 +24,12 @@ public abstract class PopupController extends Controller implements Viewable {
 
     @Override
     public void view() {
-        popup.show(FXEngine.getContext().getStage());
+        popup.show(FXEngine.getContext().getFXEnvironment().getStage());
     }
 
     @Override
     public void view(double anchorX, double anchorY) {
-        popup.show(FXEngine.getContext().getStage(), anchorX, anchorY);
+        popup.show(FXEngine.getContext().getFXEnvironment().getStage(), anchorX, anchorY);
     }
 
     public Popup getPopup() {

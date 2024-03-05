@@ -7,6 +7,8 @@ import ru.hzerr.fx.engine.configuration.application.IReadOnlyApplicationConfigur
 import ru.hzerr.fx.engine.configuration.application.IReadOnlyClassLoaderProvider;
 import ru.hzerr.fx.engine.configuration.application.IResourceStructureConfiguration;
 import ru.hzerr.fx.engine.configuration.application.IStructureConfiguration;
+import ru.hzerr.fx.engine.configuration.environment.FXEnvironment;
+import ru.hzerr.fx.engine.configuration.environment.IFXEnvironment;
 import ru.hzerr.fx.engine.configuration.logging.IReadOnlyLoggingConfiguration;
 import ru.hzerr.fx.engine.core.context.AutomaticExtendedAnnotationConfigApplicationContextProvider;
 import ru.hzerr.fx.engine.core.context.ExtendedAnnotationConfigApplicationContextProvider;
@@ -22,7 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Этот класс обеспечивает основную точку входа для приложения JavaFX.
  * Он инициализирует среду JavaFX, устанавливает контекст приложения и вызывает методы {@link #onInit()} и {@link #onStart(Stage)}.
  * Он также добавляет hook выключения, чтобы обеспечить правильное закрытие приложения при выходе из JVM.
- * Необходимо заимплементить интерфейсы и пометить наследующие их классы аннотацией @Registered:<br>
+ * Необходимо заимплементить интерфейсы и пометить их аннотацией @Registered:<br>
  * 1) {@link IStructureConfiguration}<br>
  * 2) {@link IResourceStructureConfiguration}<br>
  * 3) {@link IReadOnlyApplicationConfiguration}<br>
@@ -41,6 +43,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 
 // TODO: Разделить 1 контекст на несколько
+// TODO: 1.1 ПОЛНЫЙ ПЕРЕХОД НА SPRING. см. EntityLoader
+// TODO 1.2 view methods in EntityLoader (popup)
 public abstract class FXEngine extends Application {
 
     /**
@@ -72,10 +76,10 @@ public abstract class FXEngine extends Application {
 
     @Override
     public final void start(Stage stage) throws Exception {
+        ((FXEnvironment) context.getFXEnvironment()).setStage(stage);
         Scene scene = onStart(stage);
         stage.setScene(scene);
-        context.setStage(stage);
-        context.getStage().show();
+        stage.show();
         context.getFXEngineLogProvider().getLogger().info("fxEngine.start.engineSuccessfullyStarted");
     }
 
@@ -112,7 +116,8 @@ public abstract class FXEngine extends Application {
     /**
      * Этот метод вызывается для запуска приложения.
      * Его нужно переопределить, чтобы обеспечить собственную логику запуска.
-     * Возвращаемую сцену не обязательно устанавливать на текущий stage приложения, Engine сделает это за вас
+     * Возвращаемую сцену не обязательно устанавливать на текущий stage приложения, Engine сделает это за вас.
+     * Не использовать {@link IFXEnvironment#getScene()}, т.к сцена еще не получена движком!!!
      * @param stage базовый stage приложения
      * @return сцена приложения
      * @throws Exception если возникает ошибка при запуске

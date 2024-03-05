@@ -1,10 +1,13 @@
 package ru.hzerr.fx.engine.core.entity;
 
 import ru.hzerr.collections.functions.map.ProtectedConsumer;
+import ru.hzerr.fx.engine.core.annotation.Side;
+import ru.hzerr.fx.engine.core.annotation.SideOnly;
 import ru.hzerr.fx.engine.core.theme.LoadedThemeData;
 
 import java.util.function.BiConsumer;
 
+@SideOnly(Side.CORE)
 public interface IControllerManagedRepository {
 
     void register(String id, Controller controller);

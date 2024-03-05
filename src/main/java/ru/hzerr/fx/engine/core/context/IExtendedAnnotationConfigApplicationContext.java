@@ -1,8 +1,5 @@
 package ru.hzerr.fx.engine.core.context;
 
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import javafx.stage.Window;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinitionCustomizer;
@@ -14,9 +11,10 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.lang.Nullable;
 import ru.hzerr.collections.list.HList;
 import ru.hzerr.fx.engine.configuration.application.*;
+import ru.hzerr.fx.engine.configuration.environment.IFXEnvironment;
 import ru.hzerr.fx.engine.configuration.logging.IReadOnlyLoggingConfiguration;
-import ru.hzerr.fx.engine.core.entity.EntityLoader;
 import ru.hzerr.fx.engine.core.entity.IApplicationManager;
+import ru.hzerr.fx.engine.core.entity.IEntityLoader;
 import ru.hzerr.fx.engine.core.language.localization.ApplicationLoggingLocalizationProvider;
 import ru.hzerr.fx.engine.core.language.localization.EngineLoggingLocalizationProvider;
 import ru.hzerr.fx.engine.logging.provider.ILogProvider;
@@ -30,7 +28,7 @@ public interface IExtendedAnnotationConfigApplicationContext extends AnnotationC
     // BEGIN FLAT
     IReadOnlyLoggingConfiguration getLoggingConfiguration();
     IClassLoaderProvider getClassLoaderProvider();
-    EntityLoader getEntityLoader();
+    IEntityLoader getEntityLoader();
     IStructureConfiguration getStructureConfiguration();
     <T extends IStructureConfiguration> T getStructureConfigurationAs(Class<T> type);
     IResourceStructureConfiguration getResourceStructureConfiguration();
@@ -45,10 +43,7 @@ public interface IExtendedAnnotationConfigApplicationContext extends AnnotationC
 
     // BEGIN НА ПЕРЕСМОТРЕ
     IApplicationManager getApplicationManager();
-    Stage getStage();
-    void setStage(Stage stage);
-    Scene getScene();
-    Window getOwner();
+    IFXEnvironment getFXEnvironment();
     HList<String> getScannedPackages();
     // END НА ПЕРЕСМОТРЕ
 

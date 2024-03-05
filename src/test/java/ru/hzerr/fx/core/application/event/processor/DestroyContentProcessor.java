@@ -2,9 +2,10 @@ package ru.hzerr.fx.core.application.event.processor;
 
 import javafx.event.ActionEvent;
 import javafx.scene.layout.AnchorPane;
-import ru.hzerr.fx.engine.core.FXEngine;
-import ru.hzerr.fx.engine.core.annotation.as.ApplicationLogProvider;
+import ru.hzerr.fx.engine.configuration.environment.IFXEnvironment;
+import ru.hzerr.fx.engine.core.annotation.Include;
 import ru.hzerr.fx.engine.core.annotation.Registered;
+import ru.hzerr.fx.engine.core.annotation.as.ApplicationLogProvider;
 import ru.hzerr.fx.engine.core.javafx.event.ActionEventProcessor;
 import ru.hzerr.fx.engine.logging.provider.ILogProvider;
 
@@ -12,10 +13,11 @@ import ru.hzerr.fx.engine.logging.provider.ILogProvider;
 public class DestroyContentProcessor extends ActionEventProcessor {
 
     private ILogProvider logProvider;
+    private IFXEnvironment environment;
 
     @Override
     protected void onProcess(ActionEvent event) throws Exception {
-        FXEngine.getContext().getScene().setRoot(new AnchorPane());
+        environment.getScene().setRoot(new AnchorPane());
     }
 
     @Override
@@ -26,5 +28,10 @@ public class DestroyContentProcessor extends ActionEventProcessor {
     @ApplicationLogProvider
     public void setLogProvider(ILogProvider logProvider) {
         this.logProvider = logProvider;
+    }
+
+    @Include
+    public void setEnvironment(IFXEnvironment environment) {
+        this.environment = environment;
     }
 }

@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  * Класс EntityLoader является синглтоном и доступен через метод FXEngine.getEntityLoader().
  */
 @Registered
-public class EntityLoader implements Closeable {
+public class EntityLoader implements Closeable, IEntityLoader {
 
     private final ExecutorService service = Executors.newCachedThreadPool(
             new ThreadFactoryBuilder()
@@ -69,6 +69,7 @@ public class EntityLoader implements Closeable {
      * @throws IOException в виде CompletionException в случае ошибки загрузки fxml
      * @see #load(SpringLoadMetaData, Class)
      */
+    @Override
     public <C extends Controller, P extends Parent>
     IExtendedCompletionStage<Entity<C, P>> loadAsync(SpringLoadMetaData<C> loadData, Class<P> parent) {
         return ExtendedCompletableFuture.supplyAsync((Handler<Entity<C, P>>) () -> load(loadData, parent), service);
@@ -88,11 +89,13 @@ public class EntityLoader implements Closeable {
      * @throws IOException в случае ошибки загрузки fxml
      * @see #load(SpringLoadMetaData, Class)
      */
+    @Override
     public <C extends Controller, P extends Parent>
     Entity<C, P> load(SpringLoadMetaData<C> loadData, Class<P> parent) throws LoadControllerException, IOException {
         return load(loadController(loadData), parent);
     }
 
+    @Override
     public <C extends Controller, P extends Parent>
     IExtendedCompletionStage<Entity<C, P>> loadAsync(LoadMetaData<C> loadData, Class<P> parent) {
         return ExtendedCompletableFuture.supplyAsync((Handler<Entity<C, P>>) () -> load(loadData, parent), service);
@@ -109,16 +112,19 @@ public class EntityLoader implements Closeable {
      * @throws IOException в случае ошибки загрузки fxml
      * @see #load(SpringLoadMetaData, Class)
      */
+    @Override
     public <C extends Controller, P extends Parent>
     Entity<C, P> load(LoadMetaData<C> loadData, Class<P> parent) throws LoadControllerException, IOException {
         return load(loadController(loadData), parent);
     }
 
+    @Override
     public <C extends Controller, P extends Parent>
     IExtendedCompletionStage<Entity<C, P>> loadAsync(C controller, Class<P> parent) {
         return ExtendedCompletableFuture.supplyAsync((Handler<Entity<C, P>>) () -> load(controller, parent), service);
     }
 
+    @Override
     public <C extends Controller, P extends Parent>
     Entity<C, P> load(C controller, Class<P> parent) throws IOException {
         controller.setEngineLogProvider(engineLogProvider);
