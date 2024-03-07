@@ -6,7 +6,7 @@ Core/Engine for creating JavaFX applications
 ![GitHub all releases](https://img.shields.io/github/downloads/HZERR/FXEngine/total?color=blue)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/HZERR/FXEngine)
 ![GitHub last commit](https://img.shields.io/github/last-commit/HZERR/FXEngine)
-![GitHub (Pre-)Release Date](https://img.shields.io/github/release-date-pre/HZERR/FXEngine?label=pre-release%20date)
+![GitHub Release Date](https://img.shields.io/github/release-date/HZERR/FXEngine)
 
 ```java
 <repositories>
