@@ -327,25 +327,25 @@ public class FormattedConfiguration implements IFormattedConfiguration {
     }
 
     private String replace(String msg, Object... args) {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder formattedMessage = new StringBuilder();
         int msgIndex = 0;
         int argsIndex = 0;
         while (msgIndex < msg.length() - 1) {
             if (msg.charAt(msgIndex) == '{' && msg.charAt(msgIndex + 1) == '}') {
                 if (argsIndex < args.length) {
-                    sb.append(args[argsIndex]);
+                    formattedMessage.append(args[argsIndex]);
                     msgIndex = msgIndex + 2;
                     argsIndex = argsIndex + 1;
                 } else
                     throw new FormatException("Invalid arguments length. The FXEngine has identified " + (args.length + 1) + " places to insert. Check your message: " + msg);
             } else
-                sb.append(msg.charAt(msgIndex++));
+                formattedMessage.append(msg.charAt(msgIndex++));
         }
 
         if (msgIndex != msg.length()) {
-            sb.append(msg.charAt(msg.length() - 1));
+            formattedMessage.append(msg.charAt(msg.length() - 1));
         }
 
-        return sb.toString();
+        return formattedMessage.toString();
     }
 }
