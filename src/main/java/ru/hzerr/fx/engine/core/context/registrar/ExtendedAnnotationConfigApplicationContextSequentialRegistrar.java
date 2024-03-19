@@ -9,7 +9,14 @@ import ru.hzerr.fx.engine.core.context.Ordered;
 import ru.hzerr.fx.engine.core.context.initializer.IExtendedAnnotationConfigApplicationContextInitializer;
 
 /**
- * This class is used to register all the initializers in a specific order
+ * <pre>
+ * This class is used to register all the initializers in a specific order.
+ * Registered sequence numbers:
+ * 1. {@linkplain ru.hzerr.fx.engine.core.context.initializer.ExtendedAnnotationConfigApplicationContextClassLoaderInitializer ExtendedAnnotationConfigApplicationContextClassLoaderInitializer}
+ * 2. {@linkplain ru.hzerr.fx.engine.core.context.initializer.ExtendedAnnotationConfigApplicationContextLoggingLocalizationInitializer ExtendedAnnotationConfigApplicationContextLoggingLocalizationInitializer}
+ * 3. {@linkplain ru.hzerr.fx.engine.core.context.initializer.ExtendedAnnotationConfigApplicationContextLogProviderInitializer ExtendedAnnotationConfigApplicationContextLogProviderInitializer}
+ * 4. {@linkplain ExtendedAnnotationConfigApplicationContextSequentialRegistrar}
+ * </pre>
  *
  * @author HZERR
  * @version 1.0.8.1-Early
@@ -39,7 +46,7 @@ public abstract class ExtendedAnnotationConfigApplicationContextSequentialRegist
     @Override
     public final void register(Class<? extends IExtendedAnnotationConfigApplicationContextInitializer> initializerClass) {
         context.register(initializerClass);
-        context.getBeanFactory().preInstantiateSingletons();
+        context.getBean(initializerClass);
     }
 
     /**
