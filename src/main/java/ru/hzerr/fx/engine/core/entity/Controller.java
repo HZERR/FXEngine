@@ -1,12 +1,18 @@
 package ru.hzerr.fx.engine.core.entity;
 
+import com.google.common.util.concurrent.Monitor;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
-import ru.hzerr.fx.engine.core.FXEngine;
+import ru.hzerr.fx.engine.configuration.application.IApplicationConfiguration;
 import ru.hzerr.fx.engine.core.annotation.*;
 import ru.hzerr.fx.engine.core.annotation.as.ApplicationLogProvider;
+import ru.hzerr.fx.engine.core.annotation.as.ApplicationManager;
+import ru.hzerr.fx.engine.core.annotation.as.EngineLogProvider;
 import ru.hzerr.fx.engine.core.language.ILocalization;
 import ru.hzerr.fx.engine.core.language.localization.EntityLocalization;
 import ru.hzerr.fx.engine.core.language.localization.ILocalizationProvider;
@@ -14,9 +20,8 @@ import ru.hzerr.fx.engine.core.theme.LoadThemeException;
 import ru.hzerr.fx.engine.core.theme.LoadedThemeData;
 import ru.hzerr.fx.engine.logging.provider.ILogProvider;
 
-import java.util.Locale;
-import java.util.concurrent.atomic.AtomicReference;
-
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * This class is an abstract class that serves as a base class for all controllers in the application.
@@ -42,12 +47,16 @@ public abstract class Controller {
      */
     private ILogProvider applicationLogProvider;
 
+    private IApplicationManager applicationManager;
+    private IApplicationConfiguration applicationConfiguration;
+
+    private final BooleanProperty destroy = new SimpleBooleanProperty(false);
+
     /**
      * This field represents the localization service.
      */
-    private final AtomicReference<ILocalizationProvider<EntityLocalization>> localizationProvider = new AtomicReference<>();
-
-    private final BooleanProperty destroy = new SimpleBooleanProperty(false);
+    private final ObjectProperty<ILocalizationProvider<EntityLocalization>> localizationProvider = new SimpleObjectProperty<>();
+    private final Monitor monitor = new Monitor();
 
     /**
      * This method is called when the controller is initialized. It performs the following tasks:
@@ -65,12 +74,11 @@ public abstract class Controller {
      */
     public final void initialize() throws LoadThemeException {
         onConnectDestroyEvent();
-        FXEngine.getContext().getApplicationManager().register(id(), this);
+        applicationManager.register(id(), this);
         engineLogProvider.getLogger().debug("fxEngine.controller.initialize.controllerSuccessfullyRegistered", this.getClass().getSimpleName());
-        Locale currentLocale = FXEngine.getContext().getApplicationConfiguration().getLocale();
-        FXEngine.getContext().getApplicationManager().changeLanguage(currentLocale);
+        applicationManager.changeLanguage(applicationConfiguration.getLocale());
         onInit();
-        FXEngine.getContext().getApplicationManager().applyTheme(this);
+        applicationManager.applyTheme(this);
         engineLogProvider.getLogger().debug("fxEngine.controller.initialize.success", getClass().getSimpleName());
     }
 
@@ -97,7 +105,7 @@ public abstract class Controller {
      * perform any cleanup tasks that are specific to their implementation.
      */
     public void onDestroy() {
-        FXEngine.getContext().getApplicationManager().unregister(id());
+        applicationManager.unregister(id());
         destroy.set(true);
         engineLogProvider.getLogger().debug("fxEngine.controller.onDestroy", getClass().getSimpleName());
     }
@@ -171,16 +179,11 @@ public abstract class Controller {
         return destroy.get();
     }
 
-    /**
-     * This method sets the engine's log provider. It is intended to be called by the FXEngine to set the log provider.
-     *
-     * @param engineLogProvider the engine's log provider
-     */
-    void setEngineLogProvider(ILogProvider engineLogProvider) {
+    @EngineLogProvider
+    private void setEngineLogProvider(ILogProvider engineLogProvider) {
         this.engineLogProvider = engineLogProvider;
     }
 
-    @SideOnly(Side.CORE)
     @ApplicationLogProvider
     private void setApplicationLogProvider(ILogProvider applicationLogProvider) {
         this.applicationLogProvider = applicationLogProvider;
@@ -196,13 +199,71 @@ public abstract class Controller {
                 "See the EntityLoader.load(SpringLoadMetaData metaData) method for more information");
     }
 
-    @Preview(version = "1.1E")
-    public ILocalizationProvider<EntityLocalization> getLocalizationProvider() {
-        return localizationProvider.getAcquire();
+    @ApplicationManager
+    private void setApplicationManager(IApplicationManager applicationManager) {
+        this.applicationManager = applicationManager;
+    }
+
+    public IApplicationManager getApplicationManager() {
+        return applicationManager;
+    }
+
+    @Include
+    private void setApplicationConfiguration(IApplicationConfiguration applicationConfiguration) {
+        this.applicationConfiguration = applicationConfiguration;
+    }
+
+    public IApplicationConfiguration getApplicationConfiguration() {
+        return applicationConfiguration;
+    }
+
+    @Preview(version = "1.2.7E")
+    public void acceptLocalizationProvider(Consumer<? super ILocalizationProvider<EntityLocalization>> action) {
+        monitor.enter();
+        try {
+            action.accept(localizationProvider.get());
+        } finally {
+            monitor.leave();
+        }
+    }
+
+    @Preview(version = "1.2.7E")
+    public <T> T applyLocalizationProvider(Function<? super ILocalizationProvider<EntityLocalization>, T> action) {
+        monitor.enter();
+        try {
+            return action.apply(localizationProvider.get());
+        } finally {
+            monitor.leave();
+        }
+    }
+
+    @Preview(version = "1.2.7E")
+    public void addLocalizationChangeListener(ChangeListener<? super ILocalizationProvider<EntityLocalization>> action) {
+        monitor.enter();
+        try {
+            localizationProvider.addListener(action);
+        } finally {
+            monitor.leave();
+        }
+    }
+
+    @Preview(version = "1.2.7E")
+    public void removeLocalizationChangeListener(ChangeListener<? super ILocalizationProvider<EntityLocalization>> action) {
+        monitor.enter();
+        try {
+            localizationProvider.removeListener(action);
+        } finally {
+            monitor.leave();
+        }
     }
 
     @SideOnly(Side.CORE)
     public void setLocalizationProvider(ILocalizationProvider<EntityLocalization> localizationProvider) {
-        this.localizationProvider.set(localizationProvider);
+        monitor.enter();
+        try {
+            this.localizationProvider.set(localizationProvider);
+        } finally {
+            monitor.leave();
+        }
     }
 }

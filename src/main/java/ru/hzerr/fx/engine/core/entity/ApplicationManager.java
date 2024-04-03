@@ -51,8 +51,9 @@ public class ApplicationManager implements IApplicationManager {
     @Override
     public void changeLanguage(Locale locale) {
         controllerRepository.processEveryone((id, controller) -> {
-            controller.setLocalizationProvider(new EntityLocalizationProvider(getLocalization(controller, locale)));
-            controller.onChangeLanguage(controller.getLocalizationProvider().getLocalization());
+            EntityLocalizationProvider provider = new EntityLocalizationProvider(getLocalization(controller, locale));
+            controller.setLocalizationProvider(provider);
+            controller.onChangeLanguage(provider.getLocalization());
         });
 
         applicationConfiguration.setLocale(locale);
