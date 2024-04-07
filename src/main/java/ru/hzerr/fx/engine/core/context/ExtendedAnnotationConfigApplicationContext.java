@@ -5,7 +5,6 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.BeanFactoryAnnotationUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.config.BeanDefinitionCustomizer;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.MergedAnnotation;
@@ -16,8 +15,6 @@ import ru.hzerr.collections.list.HList;
 import ru.hzerr.fx.engine.configuration.application.*;
 import ru.hzerr.fx.engine.configuration.environment.IFXEnvironment;
 import ru.hzerr.fx.engine.configuration.logging.IReadOnlyLoggingConfiguration;
-import ru.hzerr.fx.engine.core.BeanAlreadyExistsException;
-import ru.hzerr.fx.engine.core.annotation.Redefinition;
 import ru.hzerr.fx.engine.core.entity.IApplicationManager;
 import ru.hzerr.fx.engine.core.entity.IEntityLoader;
 import ru.hzerr.fx.engine.core.language.localization.ApplicationLoggingLocalizationProvider;
@@ -31,7 +28,6 @@ import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfigApplicationContext implements IExtendedAnnotationConfigApplicationContext {
 
@@ -230,49 +226,5 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
     public <T> T getBeanByQualifier(String qualifier, Class<T> requiredType) throws BeansException {
         engineLogProvider.getLogger().debug("fxEngine.applicationContext.getBeanByQualifier.getByQualifier", requiredType.getSimpleName(), qualifier);
         return BeanFactoryAnnotationUtils.qualifiedBeanOfType(getBeanFactory(), requiredType, qualifier);
-    }
-
-    @Override
-    public void register(Class<?>... componentClasses) {
-        for (Class<?> componentClass : componentClasses) {
-            checkRedefinition(componentClass);
-            super.register(componentClass);
-        }
-    }
-
-    @Override
-    public <T> void registerBean(Class<T> beanClass, Object... constructorArgs) {
-        registerBean(null, beanClass, constructorArgs);
-    }
-
-    @Override
-    public <T> void registerBean(String beanName, Class<T> beanClass, Object... constructorArgs) {
-        checkRedefinition(beanClass);
-        registerBean(beanName, beanClass, (Supplier<T>) null,
-                bd -> {
-                    for (Object arg : constructorArgs) {
-                        bd.getConstructorArgumentValues().addGenericArgumentValue(arg);
-                    }
-                });
-    }
-
-    @Override
-    public <T> void registerBean(String beanName, Class<T> beanClass, Supplier<T> supplier, BeanDefinitionCustomizer... customizers) {
-        checkRedefinition(beanClass);
-        super.registerBean(beanName, beanClass, supplier, customizers);
-    }
-
-    @Deprecated
-    private void checkRedefinition(Class<?> componentClass) {
-        if (componentClass != null) {
-            if (componentClass.isAnnotationPresent(Redefinition.class)) {
-                Redefinition redefinition = componentClass.getAnnotation(Redefinition.class);
-                if (!redefinition.isRedefined()) {
-                    if (containsBean(componentClass)) {
-                        throw new BeanAlreadyExistsException(engineLocalizationProvider.getLocalization().getConfiguration().getString("fxEngine.applicationContext.register.beanAlreadyExistsException", componentClass.getSimpleName()));
-                    }
-                }
-            }
-        }
     }
 }

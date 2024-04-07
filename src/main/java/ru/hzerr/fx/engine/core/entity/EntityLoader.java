@@ -97,13 +97,14 @@ public class EntityLoader implements Closeable, IEntityLoader {
     }
 
     @Override
-    public <C extends Controller, P extends Parent>
-    IExtendedCompletionStage<Entity<C, P>> loadAsync(C controller, Class<P> parent) {
-        return ExtendedCompletableFuture.supplyAsync((Handler<Entity<C, P>>) () -> load(controller, parent), service);
+    public <C extends PopupController, P extends Parent>
+    Entity<C, P> view(SpringLoadMetaData<C> loadData, Class<P> parent) throws IOException, LoadControllerException {
+        Entity<C, P> entity = load(loadController(loadData), parent);
+        entity.getController().view();
+        return entity;
     }
 
-    @Override
-    public <C extends Controller, P extends Parent>
+    private <C extends Controller, P extends Parent>
     Entity<C, P> load(C controller, Class<P> parent) throws IOException {
         FXMLLoader loader = new FXMLLoader();
         loader.setController(controller);
@@ -126,21 +127,7 @@ public class EntityLoader implements Closeable, IEntityLoader {
             return FXEngine.getContext().getBean(loadData.getControllerClass(), loadData.getArguments());
         }
 
-        throw new BeanControllerNotFoundException("Контроллер " + loadData.getControllerClass().getSimpleName() + " не найден");
-    }
-
-    @Override
-    public <C extends PopupController, P extends Parent>
-    IExtendedCompletionStage<Entity<C, P>> view(SpringLoadMetaData<C> loadData, Class<P> parent) {
-        return ExtendedCompletableFuture.supplyAsync((Handler<Entity<C, P>>) () -> view(loadController(loadData), parent), service);
-    }
-
-    @Override
-    public <C extends PopupController, P extends Parent>
-    Entity<C, P> view(C controller, Class<P> parent) throws IOException {
-        Entity<C, P> entity = load(controller, parent);
-        Platform.runLater(entity.getController()::view);
-        return entity;
+        throw new BeanControllerNotFoundException("Controller " + loadData.getControllerClass().getSimpleName() + " was not found");
     }
 
     @Override
