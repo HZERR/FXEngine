@@ -100,7 +100,7 @@ public class EntityLoader implements Closeable, IEntityLoader {
     public <C extends PopupController, P extends Parent>
     Entity<C, P> view(SpringLoadMetaData<C> loadData, Class<P> parent) throws IOException, LoadControllerException {
         Entity<C, P> entity = load(loadController(loadData), parent);
-        entity.getController().view();
+        Platform.runLater(entity.getController()::view);
         return entity;
     }
 
