@@ -2,6 +2,7 @@ package ru.hzerr.fx.engine.configuration.logging;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.PatternLayout;
+import ru.hzerr.fx.engine.core.interfaces.configuration.IReadOnlyLoggingConfiguration;
 import ru.hzerr.fx.engine.logging.encoder.ColoredPatternLayoutEncoder;
 
 import java.nio.charset.Charset;
@@ -12,7 +13,7 @@ import java.util.Locale;
 
 public class ReadOnlyLoggingConfiguration implements IReadOnlyLoggingConfiguration {
 
-    protected static final Locale LOCALE_RU = new Locale("ru", "RU");
+    protected static final Locale LOCALE_RU = Locale.of("ru", "RU");
 
     private static final String FORMATTED_TIME = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss").format(Calendar.getInstance().getTime());
     private static final PatternLayout consolePatternLayout = new ColoredPatternLayoutEncoder();

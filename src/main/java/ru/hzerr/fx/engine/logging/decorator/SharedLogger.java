@@ -8,7 +8,9 @@ import org.slf4j.Marker;
 import org.slf4j.event.Level;
 import org.slf4j.event.LoggingEvent;
 import org.slf4j.spi.LoggingEventBuilder;
-import ru.hzerr.fx.engine.configuration.fs.typesafe.IFormattedConfiguration;
+import ru.hzerr.fx.engine.core.interfaces.localization.IApplicationLoggingLocalization;
+import ru.hzerr.fx.engine.core.interfaces.localization.IEngineLoggingLocalization;
+import ru.hzerr.fx.engine.core.interfaces.localization.IFormattedConfiguration;
 import ru.hzerr.fx.engine.core.language.localization.ApplicationLoggingLocalization;
 import ru.hzerr.fx.engine.core.language.localization.EngineLoggingLocalization;
 
@@ -19,7 +21,7 @@ public class SharedLogger implements ILogger {
     private final Logger logger;
     private transient IFormattedConfiguration config;
 
-    public SharedLogger(@NotNull ch.qos.logback.classic.Logger logger, @NotNull EngineLoggingLocalization engineLoggingLocalization, ApplicationLoggingLocalization applicationLoggingLocalization) {
+    public SharedLogger(@NotNull ch.qos.logback.classic.Logger logger, @NotNull IEngineLoggingLocalization engineLoggingLocalization, IApplicationLoggingLocalization applicationLoggingLocalization) {
         this.logger = logger;
         this.config = engineLoggingLocalization.getConfiguration().withFallback(applicationLoggingLocalization.getConfiguration()).resolve();
     }

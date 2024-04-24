@@ -1,6 +1,6 @@
 package ru.hzerr.fx.engine.core.entity.exception;
 
-public class LoadAbstractClassException extends LoadControllerException {
+public class LoadAbstractClassException extends Exception {
 
     public LoadAbstractClassException(String message, Throwable cause) {
         super(message, cause);

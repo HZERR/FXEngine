@@ -5,21 +5,27 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import org.jetbrains.annotations.NotNull;
-import ru.hzerr.fx.engine.configuration.application.IClassLoaderProvider;
-import ru.hzerr.fx.engine.configuration.application.IResourceStructureConfiguration;
 import ru.hzerr.fx.engine.core.FXEngine;
 import ru.hzerr.fx.engine.core.annotation.FXController;
 import ru.hzerr.fx.engine.core.annotation.FXEntity;
 import ru.hzerr.fx.engine.core.annotation.Include;
 import ru.hzerr.fx.engine.core.annotation.Registered;
-import ru.hzerr.fx.engine.core.annotation.as.EngineLogProvider;
+import ru.hzerr.fx.engine.core.annotation.metadata.EngineLogProvider;
 import ru.hzerr.fx.engine.core.concurrent.ExtendedCompletableFuture;
-import ru.hzerr.fx.engine.core.concurrent.IExtendedCompletionStage;
 import ru.hzerr.fx.engine.core.entity.exception.BeanControllerNotFoundException;
 import ru.hzerr.fx.engine.core.entity.exception.FXMLNotFoundException;
-import ru.hzerr.fx.engine.core.entity.exception.LoadControllerException;
+import ru.hzerr.fx.engine.core.exception.FXMLLoadException;
+import ru.hzerr.fx.engine.core.exception.LoadControllerException;
+import ru.hzerr.fx.engine.core.interfaces.concurrent.IExtendedCompletionStage;
+import ru.hzerr.fx.engine.core.interfaces.engine.IClassLoaderProvider;
+import ru.hzerr.fx.engine.core.interfaces.engine.IEntityLoader;
+import ru.hzerr.fx.engine.core.interfaces.engine.IResourceStructureConfiguration;
+import ru.hzerr.fx.engine.core.interfaces.entity.IController;
+import ru.hzerr.fx.engine.core.interfaces.entity.IEntity;
+import ru.hzerr.fx.engine.core.interfaces.entity.IPopupController;
+import ru.hzerr.fx.engine.core.interfaces.entity.ISpringLoadMetaData;
+import ru.hzerr.fx.engine.core.interfaces.logging.ILogProvider;
 import ru.hzerr.fx.engine.core.path.resolver.EntityLocationResolver;
-import ru.hzerr.fx.engine.logging.provider.ILogProvider;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -68,12 +74,12 @@ public class EntityLoader implements Closeable, IEntityLoader {
      * @param <P> тип узла
      * @throws LoadControllerException в виде CompletionException в случае ошибки загрузки контроллера
      * @throws IOException в виде CompletionException в случае ошибки загрузки fxml
-     * @see #load(SpringLoadMetaData, Class)
+     * @see #load(ISpringLoadMetaData, Class)
      */
     @Override
-    public <C extends Controller, P extends Parent>
-    IExtendedCompletionStage<Entity<C, P>> loadAsync(SpringLoadMetaData<C> loadData, Class<P> parent) {
-        return ExtendedCompletableFuture.supplyAsync((Handler<Entity<C, P>>) () -> load(loadData, parent), service);
+    public <C extends IController, P extends Parent>
+    IExtendedCompletionStage<IEntity<C, P>> loadAsync(ISpringLoadMetaData<C> loadData, Class<P> parent) {
+        return ExtendedCompletableFuture.supplyAsync((Handler<IEntity<C, P>>) () -> load(loadData, parent), service);
     }
 
     /**
@@ -88,24 +94,24 @@ public class EntityLoader implements Closeable, IEntityLoader {
      * @param <P> тип узла
      * @throws LoadControllerException в случае ошибки загрузки контроллера
      * @throws IOException в случае ошибки загрузки fxml
-     * @see #load(SpringLoadMetaData, Class)
+     * @see #load(ISpringLoadMetaData, Class)
      */
     @Override
-    public <C extends Controller, P extends Parent>
-    Entity<C, P> load(SpringLoadMetaData<C> loadData, Class<P> parent) throws LoadControllerException, IOException {
+    public <C extends IController, P extends Parent>
+    IEntity<C, P> load(ISpringLoadMetaData<C> loadData, Class<P> parent) throws LoadControllerException, FXMLLoadException {
         return load(loadController(loadData), parent);
     }
 
     @Override
-    public <C extends PopupController, P extends Parent>
-    Entity<C, P> view(SpringLoadMetaData<C> loadData, Class<P> parent) throws IOException, LoadControllerException {
-        Entity<C, P> entity = load(loadController(loadData), parent);
+    public <C extends IPopupController, P extends Parent>
+    IEntity<C, P> view(ISpringLoadMetaData<C> loadData, Class<P> parent) throws FXMLLoadException, LoadControllerException {
+        IEntity<C, P> entity = load(loadController(loadData), parent);
         Platform.runLater(entity.getController()::view);
         return entity;
     }
 
-    private <C extends Controller, P extends Parent>
-    Entity<C, P> load(C controller, Class<P> parent) throws IOException {
+    private <C extends IController, P extends Parent>
+    IEntity<C, P> load(C controller, Class<P> parent) throws FXMLLoadException {
         FXMLLoader loader = new FXMLLoader();
         loader.setController(controller);
         FXEntity controllerMetaData = controller.getClass().getAnnotation(FXEntity.class);
@@ -113,7 +119,12 @@ public class EntityLoader implements Closeable, IEntityLoader {
         URL locationAsURL = classLoaderProvider.getApplicationResourceClassLoader().getResource(location);
         if (locationAsURL != null) {
             loader.setLocation(locationAsURL);
-            P root = loader.load();
+            P root;
+            try {
+                root = loader.load();
+            } catch (IOException io) {
+                throw new FXMLLoadException(io.getMessage(), io);
+            }
             engineLogProvider.getLogger().info("fxEngine.entityLoader.loadEntity.entitySuccessfullyLoaded", controllerMetaData.fxml());
             return new Entity<>(controller, root);
         } else
@@ -121,8 +132,8 @@ public class EntityLoader implements Closeable, IEntityLoader {
     }
 
     @NotNull
-    private <C extends Controller>
-    C loadController(@NotNull SpringLoadMetaData<C> loadData) throws BeanControllerNotFoundException {
+    private <C extends IController>
+    C loadController(@NotNull ISpringLoadMetaData<C> loadData) throws BeanControllerNotFoundException {
         if (FXEngine.getContext().containsBean(loadData.getControllerClass())) {
             return FXEngine.getContext().getBean(loadData.getControllerClass(), loadData.getArguments());
         }
@@ -135,8 +146,8 @@ public class EntityLoader implements Closeable, IEntityLoader {
         service.shutdown();
     }
 
-    @EngineLogProvider
-    public void setEngineLogProvider(ILogProvider engineLogProvider) {
+    @Include
+    public void setEngineLogProvider(@EngineLogProvider ILogProvider engineLogProvider) {
         this.engineLogProvider = engineLogProvider;
     }
 

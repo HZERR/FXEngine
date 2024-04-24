@@ -8,17 +8,18 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
-import ru.hzerr.fx.engine.configuration.application.IApplicationConfiguration;
 import ru.hzerr.fx.engine.core.annotation.*;
-import ru.hzerr.fx.engine.core.annotation.as.ApplicationLogProvider;
-import ru.hzerr.fx.engine.core.annotation.as.ApplicationManager;
-import ru.hzerr.fx.engine.core.annotation.as.EngineLogProvider;
-import ru.hzerr.fx.engine.core.language.ILocalization;
+import ru.hzerr.fx.engine.core.annotation.metadata.ApplicationLogProvider;
+import ru.hzerr.fx.engine.core.annotation.metadata.EngineLogProvider;
+import ru.hzerr.fx.engine.core.exception.LoadThemeException;
+import ru.hzerr.fx.engine.core.interfaces.engine.IApplicationConfiguration;
+import ru.hzerr.fx.engine.core.interfaces.engine.IApplicationManager;
+import ru.hzerr.fx.engine.core.interfaces.entity.IController;
+import ru.hzerr.fx.engine.core.interfaces.localization.ILocalization;
+import ru.hzerr.fx.engine.core.interfaces.localization.ILocalizationProvider;
+import ru.hzerr.fx.engine.core.interfaces.logging.ILogProvider;
 import ru.hzerr.fx.engine.core.language.localization.EntityLocalization;
-import ru.hzerr.fx.engine.core.language.localization.ILocalizationProvider;
-import ru.hzerr.fx.engine.core.theme.LoadThemeException;
 import ru.hzerr.fx.engine.core.theme.LoadedThemeData;
-import ru.hzerr.fx.engine.logging.provider.ILogProvider;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -29,7 +30,7 @@ import java.util.function.Function;
  *
  * @author HZERR
  */
-public abstract class Controller {
+public abstract class Controller implements IController {
 
     /**
      * This field represents the parent node that contains all the UI elements of the controller.
@@ -72,7 +73,7 @@ public abstract class Controller {
      *
      * @throws LoadThemeException if there was an error resolving the theme
      */
-    public final void initialize() throws LoadThemeException {
+    public final void initialize() throws Exception {
         onConnectDestroyEvent();
         applicationManager.register(id(), this);
         engineLogProvider.getLogger().debug("fxEngine.controller.initialize.controllerSuccessfullyRegistered", this.getClass().getSimpleName());
@@ -117,7 +118,7 @@ public abstract class Controller {
      * @param theme the theme to apply
      */
     @SideOnly(Side.CORE)
-    public final void applyTheme(LoadedThemeData theme) {
+    private void applyTheme(LoadedThemeData theme) {
         getContentAsParent().getStylesheets().clear();
         getContentAsParent().getStylesheets().addFirst(theme.getStylesheet());
     }
@@ -179,13 +180,13 @@ public abstract class Controller {
         return destroy.get();
     }
 
-    @EngineLogProvider
-    private void setEngineLogProvider(ILogProvider engineLogProvider) {
+    @Include
+    private void setEngineLogProvider(@EngineLogProvider ILogProvider engineLogProvider) {
         this.engineLogProvider = engineLogProvider;
     }
 
-    @ApplicationLogProvider
-    private void setApplicationLogProvider(ILogProvider applicationLogProvider) {
+    @Include
+    private void setApplicationLogProvider(@ApplicationLogProvider ILogProvider applicationLogProvider) {
         this.applicationLogProvider = applicationLogProvider;
     }
 
@@ -199,12 +200,13 @@ public abstract class Controller {
                 "See the EntityLoader.load(SpringLoadMetaData metaData) method for more information");
     }
 
-    @ApplicationManager
+
+    @Include
     private void setApplicationManager(IApplicationManager applicationManager) {
         this.applicationManager = applicationManager;
     }
 
-    public IApplicationManager getApplicationManager() {
+    protected IApplicationManager getApplicationManager() {
         return applicationManager;
     }
 
@@ -213,12 +215,12 @@ public abstract class Controller {
         this.applicationConfiguration = applicationConfiguration;
     }
 
-    public IApplicationConfiguration getApplicationConfiguration() {
+    protected IApplicationConfiguration getApplicationConfiguration() {
         return applicationConfiguration;
     }
 
     @Preview(version = "1.2.7E")
-    public void acceptLocalizationProvider(Consumer<? super ILocalizationProvider<EntityLocalization>> action) {
+    protected void acceptLocalizationProvider(Consumer<? super ILocalizationProvider<EntityLocalization>> action) {
         monitor.enter();
         try {
             action.accept(localizationProvider.get());
@@ -228,7 +230,7 @@ public abstract class Controller {
     }
 
     @Preview(version = "1.2.7E")
-    public <T> T applyLocalizationProvider(Function<? super ILocalizationProvider<EntityLocalization>, T> action) {
+    protected <T> T applyLocalizationProvider(Function<? super ILocalizationProvider<EntityLocalization>, T> action) {
         monitor.enter();
         try {
             return action.apply(localizationProvider.get());
@@ -238,7 +240,7 @@ public abstract class Controller {
     }
 
     @Preview(version = "1.2.7E")
-    public void addLocalizationChangeListener(ChangeListener<? super ILocalizationProvider<EntityLocalization>> action) {
+    protected void addLocalizationChangeListener(ChangeListener<? super ILocalizationProvider<EntityLocalization>> action) {
         monitor.enter();
         try {
             localizationProvider.addListener(action);
@@ -248,7 +250,7 @@ public abstract class Controller {
     }
 
     @Preview(version = "1.2.7E")
-    public void removeLocalizationChangeListener(ChangeListener<? super ILocalizationProvider<EntityLocalization>> action) {
+    protected void removeLocalizationChangeListener(ChangeListener<? super ILocalizationProvider<EntityLocalization>> action) {
         monitor.enter();
         try {
             localizationProvider.removeListener(action);
@@ -258,7 +260,7 @@ public abstract class Controller {
     }
 
     @SideOnly(Side.CORE)
-    public void setLocalizationProvider(ILocalizationProvider<EntityLocalization> localizationProvider) {
+    protected void setLocalizationProvider(ILocalizationProvider<EntityLocalization> localizationProvider) {
         monitor.enter();
         try {
             this.localizationProvider.set(localizationProvider);

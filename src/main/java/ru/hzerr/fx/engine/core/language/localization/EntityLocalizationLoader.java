@@ -1,17 +1,17 @@
 package ru.hzerr.fx.engine.core.language.localization;
 
 import ru.hzerr.fx.engine.core.annotation.RegisteredPrototype;
-import ru.hzerr.fx.engine.core.language.BaseLocalizationMetaData;
+import ru.hzerr.fx.engine.core.interfaces.localization.ILocalizationMetaData;
+import ru.hzerr.fx.engine.core.interfaces.path.ILocation;
 import ru.hzerr.fx.engine.core.language.LocalizationLoader;
-import ru.hzerr.fx.engine.core.path.ILocation;
 
 @RegisteredPrototype
 public class EntityLocalizationLoader extends LocalizationLoader<EntityLocalization> {
-    private EntityLocalizationLoader(BaseLocalizationMetaData metaData, ILocation location) {
+    private EntityLocalizationLoader(ILocalizationMetaData metaData, ILocation location) {
         super(metaData, location);
     }
 
-    private EntityLocalizationLoader(BaseLocalizationMetaData metaData, String location) {
+    private EntityLocalizationLoader(ILocalizationMetaData metaData, String location) {
         super(metaData, location);
     }
 

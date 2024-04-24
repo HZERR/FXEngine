@@ -1,9 +1,9 @@
 package ru.hzerr.fx.core.application;
 
 import org.jetbrains.annotations.Nullable;
-import ru.hzerr.fx.engine.configuration.application.IResourceStructureConfiguration;
 import ru.hzerr.fx.engine.core.annotation.Registered;
-import ru.hzerr.fx.engine.core.path.ILocation;
+import ru.hzerr.fx.engine.core.interfaces.engine.IResourceStructureConfiguration;
+import ru.hzerr.fx.engine.core.interfaces.path.ILocation;
 import ru.hzerr.fx.engine.core.path.RelativeDirectoryLocation;
 
 /**

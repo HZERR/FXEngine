@@ -3,6 +3,7 @@ package ru.hzerr.fx.engine.configuration.application;
 import ru.hzerr.file.BaseDirectory;
 import ru.hzerr.file.BaseFile;
 import ru.hzerr.fx.engine.core.InitializationException;
+import ru.hzerr.fx.engine.core.interfaces.engine.IStructureConfiguration;
 
 import java.io.IOException;
 

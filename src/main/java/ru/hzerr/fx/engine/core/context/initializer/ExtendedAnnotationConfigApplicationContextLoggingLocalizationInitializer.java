@@ -1,11 +1,13 @@
 package ru.hzerr.fx.engine.core.context.initializer;
 
-import ru.hzerr.fx.engine.configuration.logging.ILoggingConfiguration;
 import ru.hzerr.fx.engine.core.ApplicationContextInitializationException;
 import ru.hzerr.fx.engine.core.annotation.Include;
 import ru.hzerr.fx.engine.core.annotation.RegisteredAs;
-import ru.hzerr.fx.engine.core.context.IExtendedAnnotationConfigApplicationContext;
 import ru.hzerr.fx.engine.core.context.Ordered;
+import ru.hzerr.fx.engine.core.interfaces.configuration.ILoggingConfiguration;
+import ru.hzerr.fx.engine.core.interfaces.context.IExtendedAnnotationConfigApplicationContext;
+import ru.hzerr.fx.engine.core.interfaces.context.IExtendedAnnotationConfigApplicationContextInitializer;
+import ru.hzerr.fx.engine.core.interfaces.localization.*;
 import ru.hzerr.fx.engine.core.language.*;
 import ru.hzerr.fx.engine.core.language.localization.*;
 import ru.hzerr.fx.engine.core.path.resolver.ApplicationLoggingLocalizationResolver;
@@ -30,7 +32,7 @@ public class ExtendedAnnotationConfigApplicationContextLoggingLocalizationInitia
             // register engine logging localization meta data
             registerEngineLoggingLocalizationMetaData();
             // register engine logging localization
-            EngineLoggingLocalization engineLoggingLocalization = context.getBean(EngineLoggingLocalizationLoader.class,
+            IEngineLoggingLocalization engineLoggingLocalization = context.getBean(EngineLoggingLocalizationLoader.class,
                     getEngineLoggingLocalizationMetaData(),
                     getEngineLoggingLocalizationMetaData().getILocation().getLocation()
             ).load();
@@ -42,14 +44,15 @@ public class ExtendedAnnotationConfigApplicationContextLoggingLocalizationInitia
                 registerApplicationLoggingLocalizationMetaData();
                 // register application logging localization
                 Resolver applicationLocalizationResolver = context.registerAndGetBean(ApplicationLoggingLocalizationResolver.class);
-                ApplicationLoggingLocalization applicationLoggingLocalization = context.getBean(ApplicationLoggingLocalizationLoader.class,
+                IApplicationLoggingLocalization applicationLoggingLocalization = context.getBean(ApplicationLoggingLocalizationLoader.class,
                         getApplicationLoggingLocalizationMetaData(),
                         applicationLocalizationResolver.resolve()
                 ).load();
 
                 context.registerBean(APPLICATION_LOGGING_LOCALIZATION_PROVIDER_BEAN_NAME, ApplicationLoggingLocalizationProvider.class, applicationLoggingLocalization);
             } else
-                context.registerBean(APPLICATION_LOGGING_LOCALIZATION_PROVIDER_BEAN_NAME, ApplicationLoggingLocalizationProvider.class, ((Localization)null));
+                context.registerBean(APPLICATION_LOGGING_LOCALIZATION_PROVIDER_BEAN_NAME, ApplicationLoggingLocalizationProvider.class, ((ILocalization) null));
+
         } catch (ApplicationLoggingLanguageMetaDataNotFoundException | EngineLoggingLanguageMetaDataNotFoundException e) {
             throw new ApplicationContextInitializationException("Unable to create ApplicationContext. An error occurred while configuring the internationalization of the application", e);
         }

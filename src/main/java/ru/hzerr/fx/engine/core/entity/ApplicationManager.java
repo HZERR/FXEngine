@@ -1,22 +1,35 @@
 package ru.hzerr.fx.engine.core.entity;
 
-import ru.hzerr.fx.engine.configuration.application.IApplicationConfiguration;
+import com.google.common.reflect.Reflection;
+import org.springframework.util.ReflectionUtils;
 import ru.hzerr.fx.engine.core.annotation.Concurrent;
 import ru.hzerr.fx.engine.core.annotation.Include;
 import ru.hzerr.fx.engine.core.annotation.Registered;
-import ru.hzerr.fx.engine.core.annotation.as.EngineLogProvider;
-import ru.hzerr.fx.engine.core.context.IExtendedAnnotationConfigApplicationContext;
+import ru.hzerr.fx.engine.core.annotation.metadata.EngineLogProvider;
 import ru.hzerr.fx.engine.core.entity.exception.LocalizationMetaDataNotFoundException;
-import ru.hzerr.fx.engine.core.language.BaseLocalizationMetaData;
+import ru.hzerr.fx.engine.core.exception.LoadThemeException;
+import ru.hzerr.fx.engine.core.interfaces.context.IExtendedAnnotationConfigApplicationContext;
+import ru.hzerr.fx.engine.core.interfaces.engine.IApplicationConfiguration;
+import ru.hzerr.fx.engine.core.interfaces.engine.IApplicationManager;
+import ru.hzerr.fx.engine.core.interfaces.engine.ThemeMetaData;
+import ru.hzerr.fx.engine.core.interfaces.entity.IController;
+import ru.hzerr.fx.engine.core.interfaces.localization.ILocalization;
+import ru.hzerr.fx.engine.core.interfaces.localization.ILocalizationMetaData;
+import ru.hzerr.fx.engine.core.interfaces.localization.ILocalizationProvider;
+import ru.hzerr.fx.engine.core.interfaces.logging.ILogProvider;
 import ru.hzerr.fx.engine.core.language.EntityLocalizationMetaData;
 import ru.hzerr.fx.engine.core.language.localization.EngineLoggingLocalizationProvider;
 import ru.hzerr.fx.engine.core.language.localization.EntityLocalization;
 import ru.hzerr.fx.engine.core.language.localization.EntityLocalizationLoader;
 import ru.hzerr.fx.engine.core.language.localization.EntityLocalizationProvider;
 import ru.hzerr.fx.engine.core.path.resolver.ControllerLocalizationResolver;
-import ru.hzerr.fx.engine.core.theme.*;
-import ru.hzerr.fx.engine.logging.provider.ILogProvider;
+import ru.hzerr.fx.engine.core.theme.CSSLoader;
+import ru.hzerr.fx.engine.core.theme.LoadedThemeData;
+import ru.hzerr.fx.engine.core.theme.ThemeNotFoundException;
+import ru.hzerr.fx.engine.reflection.ReflectionException;
 
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -34,7 +47,7 @@ public class ApplicationManager implements IApplicationManager {
     private ILogProvider engineLogProvider;
 
     @Override
-    public void register(String id, Controller controller) {
+    public void register(String id, IController controller) {
         controllerRepository.register(id, controller);
     }
 
@@ -52,8 +65,16 @@ public class ApplicationManager implements IApplicationManager {
     public void changeLanguage(Locale locale) {
         controllerRepository.processEveryone((id, controller) -> {
             EntityLocalizationProvider provider = new EntityLocalizationProvider(getLocalization(controller, locale));
-            controller.setLocalizationProvider(provider);
-            controller.onChangeLanguage(provider.getLocalization());
+            try {
+                Method setLocalizationProvider = Controller.class.getDeclaredMethod("setLocalizationProvider", ILocalizationProvider.class);
+                setLocalizationProvider.setAccessible(true);
+                setLocalizationProvider.invoke(controller, provider);
+                Method onChangeLanguage = Controller.class.getDeclaredMethod("onChangeLanguage", ILocalization.class);
+                onChangeLanguage.setAccessible(true);
+                onChangeLanguage.invoke(controller, provider.getLocalization());
+            } catch (Exception e) {
+                throw new ReflectionException(e.getMessage(), e);
+            }
         });
 
         applicationConfiguration.setLocale(locale);
@@ -84,14 +105,14 @@ public class ApplicationManager implements IApplicationManager {
     }
 
     @Override
-    public <C extends Controller>
+    public <C extends IController>
     void applyTheme(C controller) throws LoadThemeException {
         ThemeMetaData themeMetaData = getThemeMetaData();
 
         applyTheme(controller, themeMetaData);
     }
 
-    public <C extends Controller, T extends ThemeMetaData>
+    public <C extends IController, T extends ThemeMetaData>
     void applyTheme(C controller, T themeMetaData) throws LoadThemeException {
         LoadedThemeData loadedThemeData = themeRepository.getFromCache(themeMetaData.getName(), controller.getClass());
         if (Objects.isNull(loadedThemeData)) {
@@ -101,7 +122,13 @@ public class ApplicationManager implements IApplicationManager {
             engineLogProvider.getLogger().debug("fxEngine.applicationManager.theme.gettingThemeFromCache",
                     themeMetaData.getName(), controller.getClass().getSimpleName());
 
-        controller.applyTheme(loadedThemeData);
+        try {
+            Method applyThemeMethod = Controller.class.getDeclaredMethod("applyTheme", LoadedThemeData.class);
+            applyThemeMethod.setAccessible(true);
+            applyThemeMethod.invoke(controller, loadedThemeData);
+        } catch (Exception e) {
+            throw new LoadThemeException(e.getMessage(), e);
+        }
     }
 
     @Override
@@ -114,14 +141,14 @@ public class ApplicationManager implements IApplicationManager {
                         .getString("fxEngine.applicationManager.theme.themeByNameNotFoundException", name)));
     }
 
-    private <C extends Controller> LoadedThemeData load(ThemeMetaData themeMetaData, C controller) throws LoadThemeException {
+    private <C extends IController> LoadedThemeData load(ThemeMetaData themeMetaData, C controller) throws LoadThemeException {
         CSSLoader loader = applicationContext.getBean(CSSLoader.class, themeMetaData, controller);
         loader.setInitialLocation(applicationContext.getResourceStructureConfiguration().getThemePackage());
         return loader.resolve();
     }
 
-    private EntityLocalization getLocalization(Controller controller, Locale locale) {
-        BaseLocalizationMetaData entityLocalizationMetaData = getEntityLocalizationMetaData(locale);
+    private EntityLocalization getLocalization(IController controller, Locale locale) {
+        ILocalizationMetaData entityLocalizationMetaData = getEntityLocalizationMetaData(locale);
 
         String relativePath = applicationContext.getBean(ControllerLocalizationResolver.class,
                 entityLocalizationMetaData,
@@ -143,13 +170,13 @@ public class ApplicationManager implements IApplicationManager {
         this.applicationContext = applicationContext;
     }
 
-    @EngineLogProvider
-    private void setEngineLogProvider(ILogProvider engineLogProvider) {
+    @Include
+    private void setEngineLogProvider(@EngineLogProvider ILogProvider engineLogProvider) {
         this.engineLogProvider = engineLogProvider;
     }
 
-    @ru.hzerr.fx.engine.core.annotation.as.EngineLoggingLocalizationProvider
-    private void setLocalizationProvider(EngineLoggingLocalizationProvider localizationProvider) {
+    @Include
+    private void setLocalizationProvider(@ru.hzerr.fx.engine.core.annotation.metadata.EngineLoggingLocalizationProvider EngineLoggingLocalizationProvider localizationProvider) {
         this.localizationProvider = localizationProvider;
     }
 

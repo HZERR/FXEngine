@@ -2,7 +2,9 @@ package ru.hzerr.fx.engine.configuration.application;
 
 import ru.hzerr.fx.engine.core.annotation.Include;
 import ru.hzerr.fx.engine.core.annotation.RegisteredAs;
-import ru.hzerr.fx.engine.configuration.logging.ILoggingConfiguration;
+import ru.hzerr.fx.engine.core.interfaces.engine.IApplicationConfiguration;
+import ru.hzerr.fx.engine.core.interfaces.engine.ISoftwareConfiguration;
+import ru.hzerr.fx.engine.core.interfaces.configuration.ILoggingConfiguration;
 
 /**
  * Класс представлящий из себя конфигурацию приложения.

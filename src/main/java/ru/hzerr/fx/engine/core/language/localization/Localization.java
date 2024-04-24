@@ -2,16 +2,16 @@ package ru.hzerr.fx.engine.core.language.localization;
 
 import com.typesafe.config.Config;
 import ru.hzerr.fx.engine.configuration.fs.typesafe.FormattedConfiguration;
-import ru.hzerr.fx.engine.configuration.fs.typesafe.IFormattedConfiguration;
-import ru.hzerr.fx.engine.core.language.BaseLocalizationMetaData;
-import ru.hzerr.fx.engine.core.language.ILocalization;
+import ru.hzerr.fx.engine.core.interfaces.localization.IFormattedConfiguration;
+import ru.hzerr.fx.engine.core.interfaces.localization.ILocalization;
+import ru.hzerr.fx.engine.core.interfaces.localization.ILocalizationMetaData;
 
 /**
  * This class provides localization support for the application. It loads the localization data from the configuration file and provides methods for retrieving localized strings.
  */
 public class Localization implements ILocalization {
 
-    private BaseLocalizationMetaData metaData;
+    private ILocalizationMetaData metaData;
     private IFormattedConfiguration configuration;
 
     /**
@@ -20,7 +20,7 @@ public class Localization implements ILocalization {
      * @param metaData the metadata for the localization
      * @param configuration the configuration containing the localization data
      */
-    protected Localization(BaseLocalizationMetaData metaData, Config configuration) {
+    protected Localization(ILocalizationMetaData metaData, Config configuration) {
         this.metaData = metaData;
         this.configuration = new FormattedConfiguration(configuration);
     }
@@ -31,7 +31,7 @@ public class Localization implements ILocalization {
      * @return the metadata for the localization
      */
     @Override
-    public BaseLocalizationMetaData getMetaData() {
+    public ILocalizationMetaData getMetaData() {
         return metaData;
     }
 

@@ -7,8 +7,13 @@ import ru.hzerr.fx.engine.core.annotation.Concurrent;
 import ru.hzerr.fx.engine.core.annotation.Registered;
 import ru.hzerr.fx.engine.core.annotation.Side;
 import ru.hzerr.fx.engine.core.annotation.SideOnly;
+import ru.hzerr.fx.engine.core.exception.LoadThemeException;
+import ru.hzerr.fx.engine.core.interfaces.entity.IController;
 import ru.hzerr.fx.engine.core.theme.LoadedThemeData;
+import ru.hzerr.fx.engine.reflection.ReflectionException;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.function.BiConsumer;
 
 @SideOnly(Side.CORE)
@@ -16,10 +21,10 @@ import java.util.function.BiConsumer;
 @Registered
 public class ControllerManagedRepository implements IControllerManagedRepository {
 
-    private final HMap<String, Controller> controllers = HMap.create(Type.SYNCHRONIZED);
+    private final HMap<String, IController> controllers = HMap.create(Type.SYNCHRONIZED);
 
     @Override
-    public void register(String id, Controller controller) {
+    public void register(String id, IController controller) {
         controllers.put(id, controller);
     }
 
@@ -30,7 +35,15 @@ public class ControllerManagedRepository implements IControllerManagedRepository
 
     @Override
     public void changeTheme(LoadedThemeData loadedThemeData) {
-        controllers.forEachOfValues(controller -> controller.applyTheme(loadedThemeData));
+        controllers.forEachOfValues(controller -> {
+            try {
+                Method applyThemeMethod = controller.getClass().getDeclaredMethod("applyTheme", LoadedThemeData.class);
+                applyThemeMethod.setAccessible(true);
+                applyThemeMethod.invoke(controller, loadedThemeData);
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                throw new ReflectionException(e.getMessage(), e);
+            }
+        });
     }
 
     @Override
@@ -40,19 +53,19 @@ public class ControllerManagedRepository implements IControllerManagedRepository
 
     @Override
     public void destroyAll() {
-        for (Controller controller : controllers.values().toArray(Controller[]::new)) {
+        for (IController controller : controllers.values().toArray(IController[]::new)) {
             // calls the 'unregister' method under the hood
             controller.onDestroy();
         }
     }
 
     @Override
-    public void processEveryone(BiConsumer<String, Controller> action) {
+    public void processEveryone(BiConsumer<String, IController> action) {
         controllers.forEach(action);
     }
 
     @Override
-    public <T extends Exception> void processEveryone(ProtectedConsumer<String, Controller, T> action, Class<T> type) throws T {
+    public <T extends Exception> void processEveryone(ProtectedConsumer<String, IController, T> action, Class<T> type) throws T {
         controllers.forEach(action, type);
     }
 }

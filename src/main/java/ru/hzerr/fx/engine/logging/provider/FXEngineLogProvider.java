@@ -4,9 +4,13 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.hzerr.fx.engine.configuration.logging.IReadOnlyLoggingConfiguration;
-import ru.hzerr.fx.engine.core.annotation.as.ApplicationLogProvider;
+import ru.hzerr.fx.engine.core.annotation.Include;
+import ru.hzerr.fx.engine.core.interfaces.configuration.IReadOnlyLoggingConfiguration;
+import ru.hzerr.fx.engine.core.interfaces.logging.ILogProvider;
 import ru.hzerr.fx.engine.logging.StartupException;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 public class FXEngineLogProvider implements ILogProvider {
 
@@ -26,10 +30,15 @@ public class FXEngineLogProvider implements ILogProvider {
         // ¯\_(ツ)_/¯
     }
 
-    @Override
-    public void start() throws StartupException {
-        applicationLogProvider.start();
-        nopLogger.setLevel(Level.OFF);
+    private void start() throws StartupException {
+        try {
+            Method start = applicationLogProvider.getClass().getDeclaredMethod("start");
+            start.setAccessible(true);
+            start.invoke(applicationLogProvider);
+            nopLogger.setLevel(Level.OFF);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new StartupException(e.getMessage(), e);
+        }
     }
 
     @Override
@@ -37,7 +46,7 @@ public class FXEngineLogProvider implements ILogProvider {
         return applicationLogProvider.getConfiguration();
     }
 
-    @ApplicationLogProvider
+    @Include
     public void setApplicationLogProvider(ILogProvider applicationLogProvider) {
         this.applicationLogProvider = applicationLogProvider;
     }

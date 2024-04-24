@@ -1,5 +1,7 @@
 package ru.hzerr.fx.engine.core.path;
 
+import ru.hzerr.fx.engine.core.interfaces.path.ILocation;
+
 public class ResolvableLocation {
     private String location;
     private NullSafeResolveLocationOptions nullSafeOptions;

@@ -1,6 +1,7 @@
 package ru.hzerr.fx.engine.core.context;
 
-import ru.hzerr.fx.engine.core.IApplicationContextProvider;
+import ru.hzerr.fx.engine.core.interfaces.context.IApplicationContextProvider;
+import ru.hzerr.fx.engine.core.interfaces.context.IExtendedAnnotationConfigApplicationContext;
 
 import java.util.Arrays;
 

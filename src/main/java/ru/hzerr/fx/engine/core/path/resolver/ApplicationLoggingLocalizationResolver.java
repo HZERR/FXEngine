@@ -1,10 +1,10 @@
 package ru.hzerr.fx.engine.core.path.resolver;
 
-import ru.hzerr.fx.engine.configuration.application.IResourceStructureConfiguration;
-import ru.hzerr.fx.engine.configuration.logging.ILoggingConfiguration;
 import ru.hzerr.fx.engine.core.annotation.Include;
-import ru.hzerr.fx.engine.core.annotation.as.ApplicationLoggingLocalizationMetaData;
-import ru.hzerr.fx.engine.core.language.BaseLocalizationMetaData;
+import ru.hzerr.fx.engine.core.annotation.metadata.ApplicationLoggingLocalizationMetaData;
+import ru.hzerr.fx.engine.core.interfaces.configuration.ILoggingConfiguration;
+import ru.hzerr.fx.engine.core.interfaces.engine.IResourceStructureConfiguration;
+import ru.hzerr.fx.engine.core.interfaces.localization.ILocalizationMetaData;
 import ru.hzerr.fx.engine.core.path.*;
 
 public class ApplicationLoggingLocalizationResolver implements Resolver {
@@ -13,7 +13,7 @@ public class ApplicationLoggingLocalizationResolver implements Resolver {
 
     private IResourceStructureConfiguration resourceStructureConfiguration;
 
-    private BaseLocalizationMetaData applicationLoggingLocalizationMetaData;
+    private ILocalizationMetaData applicationLoggingLocalizationMetaData;
 
     @Override
     public String resolve() {
@@ -44,8 +44,8 @@ public class ApplicationLoggingLocalizationResolver implements Resolver {
         );
     }
 
-    @ApplicationLoggingLocalizationMetaData
-    public void setApplicationLoggingLocalizationMetaData(BaseLocalizationMetaData applicationLoggingLocalizationMetaData) {
+    @Include
+    public void setApplicationLoggingLocalizationMetaData(@ApplicationLoggingLocalizationMetaData ILocalizationMetaData applicationLoggingLocalizationMetaData) {
         this.applicationLoggingLocalizationMetaData = applicationLoggingLocalizationMetaData;
     }
 

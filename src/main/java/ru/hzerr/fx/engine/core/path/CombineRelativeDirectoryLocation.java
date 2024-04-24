@@ -1,6 +1,7 @@
 package ru.hzerr.fx.engine.core.path;
 
 import com.google.common.base.Preconditions;
+import ru.hzerr.fx.engine.core.interfaces.path.ILocation;
 import ru.hzerr.fx.engine.core.path.impl.SlashCombineRelativeDirectoryLocation;
 
 public sealed class CombineRelativeDirectoryLocation implements ILocation permits SlashCombineRelativeDirectoryLocation {

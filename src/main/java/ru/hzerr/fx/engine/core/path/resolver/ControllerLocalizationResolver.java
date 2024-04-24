@@ -1,19 +1,19 @@
 package ru.hzerr.fx.engine.core.path.resolver;
 
-import ru.hzerr.fx.engine.configuration.application.IResourceStructureConfiguration;
 import ru.hzerr.fx.engine.core.annotation.Include;
 import ru.hzerr.fx.engine.core.annotation.RegisteredPrototype;
-import ru.hzerr.fx.engine.core.language.BaseLocalizationMetaData;
+import ru.hzerr.fx.engine.core.interfaces.engine.IResourceStructureConfiguration;
+import ru.hzerr.fx.engine.core.interfaces.localization.ILocalizationMetaData;
 import ru.hzerr.fx.engine.core.path.*;
 
 @RegisteredPrototype
 public class ControllerLocalizationResolver implements Resolver {
 
     private String internationalizationFile;
-    private BaseLocalizationMetaData metaData;
+    private ILocalizationMetaData metaData;
     private IResourceStructureConfiguration resourceStructureConfiguration;
 
-    private ControllerLocalizationResolver(BaseLocalizationMetaData metaData, String internationalizationFile) {
+    private ControllerLocalizationResolver(ILocalizationMetaData metaData, String internationalizationFile) {
         this.metaData = metaData;
         this.internationalizationFile = internationalizationFile;
     }

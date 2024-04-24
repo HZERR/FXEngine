@@ -3,9 +3,10 @@ package ru.hzerr.fx.engine.core.javafx.list;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.util.Callback;
+import ru.hzerr.fx.engine.core.annotation.Include;
 import ru.hzerr.fx.engine.core.annotation.Preview;
-import ru.hzerr.fx.engine.core.annotation.as.ApplicationLogProvider;
-import ru.hzerr.fx.engine.logging.provider.ILogProvider;
+import ru.hzerr.fx.engine.core.annotation.metadata.ApplicationLogProvider;
+import ru.hzerr.fx.engine.core.interfaces.logging.ILogProvider;
 
 @Preview(version = "1.1.3E")
 public abstract class BasicCellFactory<T> implements Callback<ListView<T>, ListCell<T>> {
@@ -19,8 +20,8 @@ public abstract class BasicCellFactory<T> implements Callback<ListView<T>, ListC
 
     public abstract BasicListCell<T> createListCell();
 
-    @ApplicationLogProvider
-    public void setLogProvider(ILogProvider logProvider) {
+    @Include
+    public void setLogProvider(@ApplicationLogProvider ILogProvider logProvider) {
         this.logProvider = logProvider;
     }
 

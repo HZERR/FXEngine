@@ -2,10 +2,11 @@ package ru.hzerr.fx.core.application.event.processor;
 
 import javafx.event.ActionEvent;
 import ru.hzerr.fx.engine.core.FXEngine;
-import ru.hzerr.fx.engine.core.annotation.as.ApplicationLogProvider;
+import ru.hzerr.fx.engine.core.annotation.Include;
 import ru.hzerr.fx.engine.core.annotation.Registered;
+import ru.hzerr.fx.engine.core.annotation.metadata.ApplicationLogProvider;
+import ru.hzerr.fx.engine.core.interfaces.logging.ILogProvider;
 import ru.hzerr.fx.engine.core.javafx.event.ActionEventProcessor;
-import ru.hzerr.fx.engine.logging.provider.ILogProvider;
 
 import java.util.Locale;
 
@@ -31,8 +32,8 @@ public class ChangeLocalizationProcessor extends ActionEventProcessor {
         logProvider.getLogger().error("ChangeLocalizationProcessor", e);
     }
 
-    @ApplicationLogProvider
-    public void setLogProvider(ILogProvider logProvider) {
+    @Include
+    public void setLogProvider(@ApplicationLogProvider ILogProvider logProvider) {
         this.logProvider = logProvider;
     }
 }

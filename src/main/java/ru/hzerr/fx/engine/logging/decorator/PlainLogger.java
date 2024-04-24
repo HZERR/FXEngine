@@ -6,8 +6,8 @@ import ch.qos.logback.core.Appender;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Marker;
 import org.slf4j.event.LoggingEvent;
-import ru.hzerr.fx.engine.configuration.fs.typesafe.IFormattedConfiguration;
-import ru.hzerr.fx.engine.core.language.ILocalization;
+import ru.hzerr.fx.engine.core.interfaces.localization.IFormattedConfiguration;
+import ru.hzerr.fx.engine.core.interfaces.localization.ILocalization;
 
 import java.util.Iterator;
 

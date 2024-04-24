@@ -4,9 +4,10 @@ import ru.hzerr.fx.engine.core.ApplicationContextInitializationException;
 import ru.hzerr.fx.engine.core.annotation.Include;
 import ru.hzerr.fx.engine.core.annotation.Side;
 import ru.hzerr.fx.engine.core.annotation.SideOnly;
-import ru.hzerr.fx.engine.core.context.IExtendedAnnotationConfigApplicationContext;
 import ru.hzerr.fx.engine.core.context.Ordered;
-import ru.hzerr.fx.engine.core.context.initializer.IExtendedAnnotationConfigApplicationContextInitializer;
+import ru.hzerr.fx.engine.core.interfaces.context.IExtendedAnnotationConfigApplicationContext;
+import ru.hzerr.fx.engine.core.interfaces.context.IExtendedAnnotationConfigApplicationContextInitializer;
+import ru.hzerr.fx.engine.core.interfaces.context.IExtendedAnnotationConfigApplicationContextSequentialRegistrar;
 
 /**
  * <pre>

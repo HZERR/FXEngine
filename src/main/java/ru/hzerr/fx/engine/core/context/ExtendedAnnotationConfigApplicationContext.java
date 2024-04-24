@@ -12,17 +12,15 @@ import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.metrics.StartupStep;
 import org.springframework.util.Assert;
 import ru.hzerr.collections.list.HList;
-import ru.hzerr.fx.engine.configuration.application.*;
-import ru.hzerr.fx.engine.configuration.environment.IFXEnvironment;
-import ru.hzerr.fx.engine.configuration.logging.IReadOnlyLoggingConfiguration;
-import ru.hzerr.fx.engine.core.entity.IApplicationManager;
-import ru.hzerr.fx.engine.core.entity.IEntityLoader;
-import ru.hzerr.fx.engine.core.language.localization.ApplicationLoggingLocalizationProvider;
-import ru.hzerr.fx.engine.core.language.localization.EngineLoggingLocalizationProvider;
-import ru.hzerr.fx.engine.core.language.localization.ILocalizationProvider;
+import ru.hzerr.fx.engine.core.interfaces.configuration.IReadOnlyLoggingConfiguration;
+import ru.hzerr.fx.engine.core.interfaces.context.IExtendedAnnotationConfigApplicationContext;
+import ru.hzerr.fx.engine.core.interfaces.engine.*;
+import ru.hzerr.fx.engine.core.interfaces.localization.IApplicationLoggingLocalizationProvider;
+import ru.hzerr.fx.engine.core.interfaces.localization.IEngineLoggingLocalizationProvider;
+import ru.hzerr.fx.engine.core.interfaces.localization.ILocalizationProvider;
+import ru.hzerr.fx.engine.core.interfaces.logging.ILogProvider;
 import ru.hzerr.fx.engine.logging.provider.FXApplicationLogProvider;
 import ru.hzerr.fx.engine.logging.provider.FXEngineLogProvider;
-import ru.hzerr.fx.engine.logging.provider.ILogProvider;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
@@ -42,7 +40,7 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
     public static final String APPLICATION_LOG_PROVIDER_BEAN_NAME = "applicationLogProvider";
     public static final String ENGINE_LOG_PROVIDER_BEAN_NAME = "engineLogProvider";
     private ILogProvider engineLogProvider;
-    private EngineLoggingLocalizationProvider engineLocalizationProvider;
+    private IEngineLoggingLocalizationProvider engineLocalizationProvider;
 
     private final HList<String> basePackages;
 
@@ -57,7 +55,7 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
     }
 
     @Override
-    public void scan(String... basePackages) {
+    public void scan(String @NotNull ... basePackages) {
         Assert.notEmpty(basePackages, "At least one base package must be specified");
         StartupStep scanPackages = getApplicationStartup().start("spring.context.base-packages.scan")
                 .tag("packages", () -> Arrays.toString(basePackages));
@@ -67,7 +65,7 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
 
     // ======================================== BEGIN FLAT ACCESS ========================================
 
-    public void setEngineLocalizationProvider(EngineLoggingLocalizationProvider engineLocalizationProvider) {
+    public void setEngineLocalizationProvider(IEngineLoggingLocalizationProvider engineLocalizationProvider) {
         this.engineLocalizationProvider = engineLocalizationProvider;
     }
 
@@ -125,16 +123,16 @@ public class ExtendedAnnotationConfigApplicationContext extends AnnotationConfig
     }
 
     @Override
-    public ApplicationLoggingLocalizationProvider getApplicationLoggingLocalizationProvider() {
+    public IApplicationLoggingLocalizationProvider getApplicationLoggingLocalizationProvider() {
         if (getLoggingConfiguration().isInternationalizationEnabled()) {
-            return getBean(APPLICATION_LOGGING_LOCALIZATION_PROVIDER_BEAN_NAME, ApplicationLoggingLocalizationProvider.class);
+            return getBean(APPLICATION_LOGGING_LOCALIZATION_PROVIDER_BEAN_NAME, IApplicationLoggingLocalizationProvider.class);
         }
 
         throw new IllegalAccessBeanException(engineLocalizationProvider.getLocalization().getConfiguration().getString("fxEngine.applicationContext.getApplicationLocalizationProvider.illegalAccessBeanException"));
     }
 
     @Override
-    public EngineLoggingLocalizationProvider getEngineLoggingLocalizationProvider() { return getBean(ENGINE_LOGGING_LOCALIZATION_PROVIDER_BEAN_NAME, EngineLoggingLocalizationProvider.class); }
+    public IEngineLoggingLocalizationProvider getEngineLoggingLocalizationProvider() { return getBean(ENGINE_LOGGING_LOCALIZATION_PROVIDER_BEAN_NAME, IEngineLoggingLocalizationProvider.class); }
 
     // ======================================== END FLAT ACCESS ========================================
 

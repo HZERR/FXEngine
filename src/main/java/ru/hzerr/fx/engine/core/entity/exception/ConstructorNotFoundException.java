@@ -1,6 +1,6 @@
 package ru.hzerr.fx.engine.core.entity.exception;
 
-public class ConstructorNotFoundException extends LoadControllerException {
+public class ConstructorNotFoundException extends Exception {
 
     public ConstructorNotFoundException(String message, Throwable cause) {
         super(message, cause);

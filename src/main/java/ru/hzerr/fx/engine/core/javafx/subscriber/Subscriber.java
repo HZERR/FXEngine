@@ -1,7 +1,8 @@
 package ru.hzerr.fx.engine.core.javafx.subscriber;
 
-import ru.hzerr.fx.engine.core.annotation.as.ApplicationLogProvider;
-import ru.hzerr.fx.engine.logging.provider.ILogProvider;
+import ru.hzerr.fx.engine.core.annotation.Include;
+import ru.hzerr.fx.engine.core.annotation.metadata.ApplicationLogProvider;
+import ru.hzerr.fx.engine.core.interfaces.logging.ILogProvider;
 
 public abstract class Subscriber {
 
@@ -11,8 +12,8 @@ public abstract class Subscriber {
         return logProvider;
     }
 
-    @ApplicationLogProvider
-    public void setLogProvider(ILogProvider logProvider) {
+    @Include
+    public void setLogProvider(@ApplicationLogProvider ILogProvider logProvider) {
         this.logProvider = logProvider;
     }
 }

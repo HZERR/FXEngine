@@ -13,13 +13,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.hzerr.file.BaseFile;
 import ru.hzerr.file.SizeType;
-import ru.hzerr.fx.engine.configuration.application.IStructureConfiguration;
-import ru.hzerr.fx.engine.configuration.logging.IReadOnlyLoggingConfiguration;
 import ru.hzerr.fx.engine.core.annotation.Include;
-import ru.hzerr.fx.engine.core.language.localization.ApplicationLoggingLocalizationProvider;
-import ru.hzerr.fx.engine.core.language.localization.EngineLoggingLocalizationProvider;
-import ru.hzerr.fx.engine.logging.StartupException;
+import ru.hzerr.fx.engine.core.annotation.metadata.ApplicationLoggingLocalizationProvider;
+import ru.hzerr.fx.engine.core.annotation.metadata.EngineLoggingLocalizationProvider;
+import ru.hzerr.fx.engine.core.interfaces.configuration.IReadOnlyLoggingConfiguration;
+import ru.hzerr.fx.engine.core.interfaces.engine.IStructureConfiguration;
+import ru.hzerr.fx.engine.core.interfaces.localization.IApplicationLoggingLocalizationProvider;
+import ru.hzerr.fx.engine.core.interfaces.localization.IEngineLoggingLocalizationProvider;
+import ru.hzerr.fx.engine.core.interfaces.logging.ILogProvider;
 import ru.hzerr.fx.engine.logging.FactoryCloseableException;
+import ru.hzerr.fx.engine.logging.StartupException;
 import ru.hzerr.fx.engine.logging.decorator.PlainLogger;
 import ru.hzerr.fx.engine.logging.decorator.SharedLogger;
 import ru.hzerr.fx.engine.logging.policy.CancelRollingPolicy;
@@ -29,8 +32,8 @@ import java.io.IOException;
 public class FXApplicationLogProvider implements ILogProvider {
 
     private final IReadOnlyLoggingConfiguration readOnlyLoggingConfiguration;
-    private final EngineLoggingLocalizationProvider engineLocalizationProvider;
-    private final ApplicationLoggingLocalizationProvider applicationLocalizationProvider;
+    private final IEngineLoggingLocalizationProvider engineLocalizationProvider;
+    private final IApplicationLoggingLocalizationProvider applicationLocalizationProvider;
 
     private final BaseFile sessionLogFile;
     private final LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
@@ -46,8 +49,8 @@ public class FXApplicationLogProvider implements ILogProvider {
     @Include
     public FXApplicationLogProvider(@NotNull IReadOnlyLoggingConfiguration readOnlyLoggingConfiguration,
                                     @NotNull IStructureConfiguration structureConfiguration,
-                                    @NotNull @ru.hzerr.fx.engine.core.annotation.as.EngineLoggingLocalizationProvider EngineLoggingLocalizationProvider engineLocalizationProvider,
-                                    @NotNull @ru.hzerr.fx.engine.core.annotation.as.ApplicationLoggingLocalizationProvider ApplicationLoggingLocalizationProvider applicationLocalizationProvider) {
+                                    @NotNull @EngineLoggingLocalizationProvider IEngineLoggingLocalizationProvider engineLocalizationProvider,
+                                    @NotNull @ApplicationLoggingLocalizationProvider IApplicationLoggingLocalizationProvider applicationLocalizationProvider) {
 
         this.readOnlyLoggingConfiguration = readOnlyLoggingConfiguration;
         this.engineLocalizationProvider = engineLocalizationProvider;
@@ -79,8 +82,7 @@ public class FXApplicationLogProvider implements ILogProvider {
         }
     }
 
-    @Override
-    public void start() throws StartupException {
+    private void start() throws StartupException {
         ch.qos.logback.classic.Logger logbackLogger = lc.getLogger(readOnlyLoggingConfiguration.getLoggerName());
         if (readOnlyLoggingConfiguration.isEnabled()) {
             if (readOnlyLoggingConfiguration.isConsoleLoggingEnabled()) {

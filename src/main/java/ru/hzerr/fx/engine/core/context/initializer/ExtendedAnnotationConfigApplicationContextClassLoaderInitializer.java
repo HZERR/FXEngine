@@ -6,15 +6,16 @@ import ru.hzerr.fx.engine.core.annotation.Include;
 import ru.hzerr.fx.engine.core.annotation.RegisteredAs;
 import ru.hzerr.fx.engine.core.annotation.Side;
 import ru.hzerr.fx.engine.core.annotation.SideOnly;
-import ru.hzerr.fx.engine.core.context.IExtendedAnnotationConfigApplicationContext;
 import ru.hzerr.fx.engine.core.context.Ordered;
+import ru.hzerr.fx.engine.core.interfaces.context.IExtendedAnnotationConfigApplicationContext;
+import ru.hzerr.fx.engine.core.interfaces.context.IExtendedAnnotationConfigApplicationContextInitializer;
 
 @Ordered(1)
 @SideOnly(Side.CORE)
 @RegisteredAs("classLoaderApplicationContextInitializer")
 public class ExtendedAnnotationConfigApplicationContextClassLoaderInitializer implements IExtendedAnnotationConfigApplicationContextInitializer {
 
-    private IExtendedAnnotationConfigApplicationContext context;
+    private final IExtendedAnnotationConfigApplicationContext context;
 
     @Include
     public ExtendedAnnotationConfigApplicationContextClassLoaderInitializer(IExtendedAnnotationConfigApplicationContext context) {

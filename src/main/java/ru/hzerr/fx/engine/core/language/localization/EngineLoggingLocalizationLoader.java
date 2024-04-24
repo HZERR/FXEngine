@@ -1,23 +1,24 @@
 package ru.hzerr.fx.engine.core.language.localization;
 
 import ru.hzerr.fx.engine.core.annotation.RegisteredPrototype;
-import ru.hzerr.fx.engine.core.language.BaseLocalizationMetaData;
+import ru.hzerr.fx.engine.core.interfaces.localization.IEngineLoggingLocalization;
+import ru.hzerr.fx.engine.core.interfaces.localization.ILocalizationMetaData;
+import ru.hzerr.fx.engine.core.interfaces.path.ILocation;
 import ru.hzerr.fx.engine.core.language.LocalizationLoader;
-import ru.hzerr.fx.engine.core.path.ILocation;
 
 @RegisteredPrototype
-public class EngineLoggingLocalizationLoader extends LocalizationLoader<EngineLoggingLocalization> {
+public class EngineLoggingLocalizationLoader extends LocalizationLoader<IEngineLoggingLocalization> {
 
-    private EngineLoggingLocalizationLoader(BaseLocalizationMetaData metaData, ILocation location) {
+    private EngineLoggingLocalizationLoader(ILocalizationMetaData metaData, ILocation location) {
         super(metaData, location);
     }
 
-    private EngineLoggingLocalizationLoader(BaseLocalizationMetaData metaData, String location) {
+    private EngineLoggingLocalizationLoader(ILocalizationMetaData metaData, String location) {
         super(metaData, location);
     }
 
     @Override
-    public EngineLoggingLocalization load() {
+    public IEngineLoggingLocalization load() {
         return new EngineLoggingLocalization(metaData, loadConfig());
     }
 }

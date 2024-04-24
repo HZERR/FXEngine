@@ -2,6 +2,7 @@ package ru.hzerr.fx.engine.configuration.fs.typesafe;
 
 import com.typesafe.config.*;
 import org.apache.commons.lang3.StringUtils;
+import ru.hzerr.fx.engine.core.interfaces.localization.IFormattedConfiguration;
 
 import java.time.Duration;
 import java.time.Period;

@@ -5,13 +5,13 @@ import javafx.scene.control.Button;
 import ru.hzerr.fx.core.application.event.processor.ChangeLocalizationProcessor;
 import ru.hzerr.fx.core.application.event.processor.ChangeThemeProcessor;
 import ru.hzerr.fx.core.application.event.processor.DestroyContentProcessor;
-import ru.hzerr.fx.engine.configuration.environment.IFXEnvironment;
 import ru.hzerr.fx.engine.core.FXEngine;
 import ru.hzerr.fx.engine.core.annotation.FXController;
 import ru.hzerr.fx.engine.core.annotation.FXEntity;
 import ru.hzerr.fx.engine.core.annotation.Include;
 import ru.hzerr.fx.engine.core.entity.Controller;
-import ru.hzerr.fx.engine.core.language.ILocalization;
+import ru.hzerr.fx.engine.core.interfaces.engine.IFXEnvironment;
+import ru.hzerr.fx.engine.core.interfaces.localization.ILocalization;
 
 @FXController
 @FXEntity(fxml = "main.fxml", internationalization = "main.json", theme = "main.css")

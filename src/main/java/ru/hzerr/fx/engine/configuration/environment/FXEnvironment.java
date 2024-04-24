@@ -6,6 +6,7 @@ import javafx.stage.Window;
 import ru.hzerr.fx.engine.core.annotation.Registered;
 import ru.hzerr.fx.engine.core.annotation.Side;
 import ru.hzerr.fx.engine.core.annotation.SideOnly;
+import ru.hzerr.fx.engine.core.interfaces.engine.IFXEnvironment;
 
 @Registered
 public class FXEnvironment implements IFXEnvironment {

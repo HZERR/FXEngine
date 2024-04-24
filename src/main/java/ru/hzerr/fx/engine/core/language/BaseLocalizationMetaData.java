@@ -1,11 +1,13 @@
 package ru.hzerr.fx.engine.core.language;
 
 import com.typesafe.config.ConfigSyntax;
-import ru.hzerr.fx.engine.core.path.ILocation;
 
 import java.util.Locale;
 
-public abstract class BaseLocalizationMetaData {
+import ru.hzerr.fx.engine.core.interfaces.localization.ILocalizationMetaData;
+import ru.hzerr.fx.engine.core.interfaces.path.ILocation;
+
+public abstract class BaseLocalizationMetaData implements ILocalizationMetaData {
 
     protected static final Locale LOCALE_RU = Locale.of("ru", "RU");
 
@@ -25,12 +27,15 @@ public abstract class BaseLocalizationMetaData {
         this.syntax = syntax;
     }
 
+    @Override
     public Locale getLocale() {
         return locale;
     }
 
+    @Override
     public ILocation getILocation() {
         return location;
     }
+    @Override
     public ConfigSyntax getSyntax() { return syntax; }
 }

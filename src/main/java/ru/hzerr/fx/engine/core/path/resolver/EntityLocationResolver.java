@@ -1,7 +1,7 @@
 package ru.hzerr.fx.engine.core.path.resolver;
 
 import org.apache.commons.lang3.StringUtils;
-import ru.hzerr.fx.engine.configuration.application.IResourceStructureConfiguration;
+import ru.hzerr.fx.engine.core.interfaces.engine.IResourceStructureConfiguration;
 import ru.hzerr.fx.engine.core.path.*;
 
 public class EntityLocationResolver implements Resolver {

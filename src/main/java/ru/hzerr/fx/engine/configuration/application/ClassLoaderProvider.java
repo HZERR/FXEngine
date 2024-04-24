@@ -4,7 +4,8 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.util.ClassUtils;
 import ru.hzerr.fx.engine.core.annotation.Include;
 import ru.hzerr.fx.engine.core.annotation.Registered;
-import ru.hzerr.fx.engine.core.context.IExtendedAnnotationConfigApplicationContext;
+import ru.hzerr.fx.engine.core.interfaces.context.IExtendedAnnotationConfigApplicationContext;
+import ru.hzerr.fx.engine.core.interfaces.engine.IClassLoaderProvider;
 
 @Registered
 public class ClassLoaderProvider implements IClassLoaderProvider {

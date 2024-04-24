@@ -1,9 +1,9 @@
 package ru.hzerr.fx.engine.core.path.impl;
 
-import ru.hzerr.fx.engine.core.path.ILocation;
+import ru.hzerr.fx.engine.core.interfaces.path.ILocation;
 import ru.hzerr.fx.engine.core.path.Separator;
 
-public non-sealed class ClassPathLocation implements ILocation {
+public class ClassPathLocation implements ILocation {
 
     private String location;
 

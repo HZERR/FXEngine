@@ -15,4 +15,5 @@ module FXEngine {
     requires com.google.common;
     requires javafx.controls;
     requires com.google.errorprone.annotations;
+    requires FXEngine.Bridge;
 }

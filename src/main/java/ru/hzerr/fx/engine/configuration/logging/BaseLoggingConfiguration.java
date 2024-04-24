@@ -8,6 +8,8 @@ import ru.hzerr.fx.engine.core.annotation.MetaData;
 import ru.hzerr.fx.engine.core.annotation.Registered;
 import ru.hzerr.fx.engine.configuration.logging.naming.strategy.ILoggingConfigurationNamingStrategy;
 import ru.hzerr.fx.engine.configuration.logging.naming.strategy.LoggingConfigurationNamingStrategy;
+import ru.hzerr.fx.engine.core.interfaces.configuration.ILoggingConfiguration;
+import ru.hzerr.fx.engine.core.interfaces.configuration.IReadOnlyLoggingConfiguration;
 
 import java.nio.charset.Charset;
 import java.util.Locale;

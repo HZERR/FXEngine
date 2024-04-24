@@ -1,6 +1,6 @@
 package ru.hzerr.fx.engine.configuration;
 
-public interface InMemoryReadOnlyConfiguration<T extends IReadOnlyConfiguration> {
+public interface InMemoryReadOnlyConfiguration<T> {
 
     T getReadOnlyConfiguration();
 }

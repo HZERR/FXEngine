@@ -3,9 +3,9 @@ package ru.hzerr.fx.engine.core.context.notifier;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import ru.hzerr.fx.engine.core.annotation.Registered;
-import ru.hzerr.fx.engine.core.context.IExtendedAnnotationConfigApplicationContext;
-import ru.hzerr.fx.engine.core.theme.ThemeMetaData;
-import ru.hzerr.fx.engine.logging.provider.ILogProvider;
+import ru.hzerr.fx.engine.core.interfaces.context.IExtendedAnnotationConfigApplicationContext;
+import ru.hzerr.fx.engine.core.interfaces.engine.ThemeMetaData;
+import ru.hzerr.fx.engine.core.interfaces.logging.ILogProvider;
 
 @Registered
 public class ThemeDetectionNotifier implements ApplicationListener<ContextRefreshedEvent> {

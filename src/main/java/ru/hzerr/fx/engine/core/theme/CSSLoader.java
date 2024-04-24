@@ -1,13 +1,16 @@
 package ru.hzerr.fx.engine.core.theme;
 
-import ru.hzerr.fx.engine.configuration.application.IClassLoaderProvider;
 import ru.hzerr.fx.engine.core.annotation.Include;
 import ru.hzerr.fx.engine.core.annotation.RegisteredPrototype;
-import ru.hzerr.fx.engine.core.annotation.as.EngineLogProvider;
+import ru.hzerr.fx.engine.core.annotation.metadata.EngineLogProvider;
 import ru.hzerr.fx.engine.core.entity.Controller;
+import ru.hzerr.fx.engine.core.exception.LoadThemeException;
+import ru.hzerr.fx.engine.core.interfaces.engine.IClassLoaderProvider;
+import ru.hzerr.fx.engine.core.interfaces.engine.ThemeMetaData;
+import ru.hzerr.fx.engine.core.interfaces.logging.ILogProvider;
+import ru.hzerr.fx.engine.core.interfaces.path.ILocation;
 import ru.hzerr.fx.engine.core.language.localization.EngineLoggingLocalizationProvider;
 import ru.hzerr.fx.engine.core.path.*;
-import ru.hzerr.fx.engine.logging.provider.ILogProvider;
 
 import javax.annotation.Nullable;
 import java.net.URL;
@@ -82,13 +85,13 @@ public class CSSLoader implements ICSSLoader {
         this.initialLocation = initialLocation;
     }
 
-    @EngineLogProvider
-    public void setEngineLogProvider(ILogProvider engineLogProvider) {
+    @Include
+    public void setEngineLogProvider(@EngineLogProvider ILogProvider engineLogProvider) {
         this.engineLogProvider = engineLogProvider;
     }
 
-    @ru.hzerr.fx.engine.core.annotation.as.EngineLoggingLocalizationProvider
-    public void setEngineLoggingLocalizationProvider(EngineLoggingLocalizationProvider engineLoggingLocalizationProvider) {
+    @Include
+    public void setEngineLoggingLocalizationProvider(@ru.hzerr.fx.engine.core.annotation.metadata.EngineLoggingLocalizationProvider EngineLoggingLocalizationProvider engineLoggingLocalizationProvider) {
         this.engineLoggingLocalizationProvider = engineLoggingLocalizationProvider;
     }
 

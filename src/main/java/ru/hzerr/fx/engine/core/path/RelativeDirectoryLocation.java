@@ -1,8 +1,9 @@
 package ru.hzerr.fx.engine.core.path;
 
 import com.google.common.base.Preconditions;
+import ru.hzerr.fx.engine.core.interfaces.path.ILocation;
 
-public non-sealed class RelativeDirectoryLocation implements ILocation {
+public class RelativeDirectoryLocation implements ILocation {
 
     private final String location;
 

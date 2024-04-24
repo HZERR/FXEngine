@@ -2,10 +2,11 @@ package ru.hzerr.fx.engine.core.javafx.event.async;
 
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import ru.hzerr.fx.engine.core.annotation.Include;
 import ru.hzerr.fx.engine.core.annotation.Side;
 import ru.hzerr.fx.engine.core.annotation.SideOnly;
-import ru.hzerr.fx.engine.core.annotation.as.ApplicationLogProvider;
-import ru.hzerr.fx.engine.logging.provider.ILogProvider;
+import ru.hzerr.fx.engine.core.annotation.metadata.ApplicationLogProvider;
+import ru.hzerr.fx.engine.core.interfaces.logging.ILogProvider;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -40,8 +41,8 @@ public abstract class AsyncEventProcessor<T extends Event> implements EventHandl
         executorService.close();
     }
 
-    @ApplicationLogProvider
-    public void setLogProvider(ILogProvider logProvider) {
+    @Include
+    public void setLogProvider(@ApplicationLogProvider ILogProvider logProvider) {
         this.logProvider = logProvider;
     }
 

@@ -1,6 +1,6 @@
 package ru.hzerr.fx.engine.core.path.impl;
 
-import ru.hzerr.fx.engine.core.path.ILocation;
+import ru.hzerr.fx.engine.core.interfaces.path.ILocation;
 import ru.hzerr.fx.engine.core.path.Separator;
 
 public class EngineLoggingInternationalizationFileClassPathLocation extends ClassPathLocation {

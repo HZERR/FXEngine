@@ -6,6 +6,7 @@ import ru.hzerr.fx.engine.core.annotation.MetaData;
 import ru.hzerr.fx.engine.core.annotation.Registered;
 import ru.hzerr.fx.engine.configuration.application.naming.strategy.ApplicationConfigurationNamingStrategy;
 import ru.hzerr.fx.engine.configuration.application.naming.strategy.IApplicationConfigurationNamingStrategy;
+import ru.hzerr.fx.engine.core.interfaces.engine.IApplicationConfiguration;
 
 import java.util.Locale;
 

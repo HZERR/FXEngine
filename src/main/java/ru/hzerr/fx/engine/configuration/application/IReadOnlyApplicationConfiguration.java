@@ -1,7 +1,7 @@
 package ru.hzerr.fx.engine.configuration.application;
 
 import org.jetbrains.annotations.NotNull;
-import ru.hzerr.fx.engine.configuration.IReadOnlyConfiguration;
+import ru.hzerr.fx.engine.core.interfaces.configuration.IReadOnlyConfiguration;
 
 import java.util.Locale;
 

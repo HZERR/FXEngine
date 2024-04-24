@@ -1,5 +1,7 @@
 package ru.hzerr.fx.engine.core.theme;
 
+import ru.hzerr.fx.engine.core.interfaces.engine.ThemeMetaData;
+
 import java.util.Objects;
 
 public class LoadedThemeData {

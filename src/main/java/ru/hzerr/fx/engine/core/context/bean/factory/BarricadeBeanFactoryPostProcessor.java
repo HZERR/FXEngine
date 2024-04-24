@@ -5,13 +5,13 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import ru.hzerr.fx.engine.configuration.application.IReadOnlyApplicationConfiguration;
-import ru.hzerr.fx.engine.configuration.application.IResourceStructureConfiguration;
-import ru.hzerr.fx.engine.configuration.application.IStructureConfiguration;
 import ru.hzerr.fx.engine.configuration.application.StructureInitializer;
-import ru.hzerr.fx.engine.configuration.logging.IReadOnlyLoggingConfiguration;
 import ru.hzerr.fx.engine.configuration.logging.ReadOnlyLoggingConfiguration;
 import ru.hzerr.fx.engine.core.InitializationException;
 import ru.hzerr.fx.engine.core.annotation.Registered;
+import ru.hzerr.fx.engine.core.interfaces.configuration.IReadOnlyLoggingConfiguration;
+import ru.hzerr.fx.engine.core.interfaces.engine.IResourceStructureConfiguration;
+import ru.hzerr.fx.engine.core.interfaces.engine.IStructureConfiguration;
 
 import java.util.Map;
 import java.util.Objects;

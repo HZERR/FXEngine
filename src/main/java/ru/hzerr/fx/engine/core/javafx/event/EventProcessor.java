@@ -2,10 +2,11 @@ package ru.hzerr.fx.engine.core.javafx.event;
 
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import ru.hzerr.fx.engine.core.annotation.Include;
 import ru.hzerr.fx.engine.core.annotation.Side;
 import ru.hzerr.fx.engine.core.annotation.SideOnly;
-import ru.hzerr.fx.engine.core.annotation.as.ApplicationLogProvider;
-import ru.hzerr.fx.engine.logging.provider.ILogProvider;
+import ru.hzerr.fx.engine.core.annotation.metadata.ApplicationLogProvider;
+import ru.hzerr.fx.engine.core.interfaces.logging.ILogProvider;
 
 @SideOnly(Side.EVERYWHERE)
 public abstract class EventProcessor<T extends Event> implements EventHandler<T> {
@@ -24,8 +25,8 @@ public abstract class EventProcessor<T extends Event> implements EventHandler<T>
     protected abstract void onProcess(T event) throws Exception;
     protected abstract void onFailure(Exception e);
 
-    @ApplicationLogProvider
-    public void setLogProvider(ILogProvider logProvider) {
+    @Include
+    public void setLogProvider(@ApplicationLogProvider ILogProvider logProvider) {
         this.logProvider = logProvider;
     }
 
