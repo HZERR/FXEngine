@@ -21,11 +21,6 @@ Core/Engine for creating JavaFX applications
 		<artifactId>FXEngine</artifactId>
 		<version>1.3E</version>
 	</dependency>
-	<dependency>
-    		<groupId>com.github.HZERR</groupId>
-    		<artifactId>FXEngine-Bridge</artifactId>
-		<version>1.0</version>
-	</dependency>
 </dependencies>
 ```
 
